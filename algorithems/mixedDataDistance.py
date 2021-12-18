@@ -1,6 +1,4 @@
-import numpy as np
 import pandas as pd
-import os
 
 
 class DistCalculation:
@@ -38,6 +36,23 @@ class DistCalculation:
         with open(data_path) as data_file:
             self.df = pd.read_json(data_file)
 
+        self.calc_frequencies()
+
+    def calc_distance(self, attribute, val1, val2):
+
+        min_freq = self.data_frequencies[attribute].min()
+        v1_freq = self.data_frequencies[attribute][val1]
+        v2_freq = self.data_frequencies[attribute][val2]
+        max_curr_freq = max(v1_freq, v2_freq)
+        dist = (abs(v1_freq - v2_freq) + min_freq) / max_curr_freq
+
+        print(dist)
+
+        return dist
+
+    def skills_distance(self):
+        pass
+
     def calc_frequencies(self):
         for key in self.data_keys:
             if key in self.list_attributes:
@@ -52,4 +67,6 @@ class DistCalculation:
 
 if __name__ == '__main__':
     x = DistCalculation('./dataTool/data/AppleEmployes.json')
-    x.calc_frequencies()
+
+    x.calc_distance("job_title", "senior software engineer",
+                    "software engineer")
