@@ -39,6 +39,7 @@ class DistCalculation:
         self.calc_frequencies()
 
     def calc_distance(self, attribute, val1, val2):
+        """calc the distance between two attributes based on eq3 of mixed data clustering algo """
 
         min_freq = self.data_frequencies[attribute].min()
         v1_freq = self.data_frequencies[attribute][val1]
@@ -50,8 +51,17 @@ class DistCalculation:
 
         return dist
 
-    def skills_distance(self):
-        pass
+    def calc_distance(self, new_instance):
+        """calc the distance between two attributes based on eq3 of mixed data clustering algo """
+
+    def skills_distance(self, ideal):
+        count = 0
+
+        for key in self.df["skills"]:
+            if key in ideal:
+                count += 1
+
+        print(count)
 
     def calc_frequencies(self):
         for key in self.data_keys:
@@ -68,5 +78,18 @@ class DistCalculation:
 if __name__ == '__main__':
     x = DistCalculation('./dataTool/data/AppleEmployes.json')
 
-    x.calc_distance("job_title", "senior software engineer",
-                    "software engineer")
+    skills = ["c",
+              "c++",
+              "c#",
+              "objective c",
+              "swift",
+              "java",
+              "sql",
+              "pl/sql",
+              "html",
+              "javascript"]
+
+    x.skills_distance(skills)
+
+    # x.calc_distance("job_title", "senior software engineer",
+    #                 "software engineer")
