@@ -1,4 +1,14 @@
+from typing import List
 import pandas as pd
+import glob
+import os
+
+
+def print_list_distances(dict):
+    for key in dict.keys():
+        for key2 in dict[key]:
+            print('{:<s} -> {:<25s} = {:<8f}'.format(key,
+                  key2, dict[key][key2]))
 
 
 class DistCalculation:
@@ -26,19 +36,26 @@ class DistCalculation:
                  'phone_numbers', 'emails', 'interests', 'skills', 'location_names',
                  'regions', 'countries', 'street_addresses', 'experience', 'education',
                  'profiles', 'version_status']
-    list_attributes = ['interests', 'emails', 'phone_numbers', 'skills', 'location_names', 'profiles',
-                       'personal_emails', 'education', 'street_addresses', 'countries', 'experience', 'job_title_levels', 'regions']
 
-    def __init__(self, data_path):
+    list_attributes = ['interests', 'phone_numbers', 'skills', 'location_names',
+                       'personal_emails',  'countries',  'job_title_levels', 'regions']
+
+    list_object_attributes = ['emails',  'profiles',
+                              'education', 'street_addresses' 'experience']
+
+    def __init__(self):
         self.data_frequencies = dict.fromkeys(self.data_keys, None)
 
-        # TODO need to be extended for each file in the dataset and not a specific file
-        with open(data_path) as data_file:
-            self.df = pd.read_json(data_file)
+        df_list = []
+        for name in glob.glob(f'{os.getcwd()}/dataTool/data/*'):
+            df_list.append(pd.read_json(name))
 
-        self.calc_frequencies()
+        self.df = pd.concat(df_list)
+        self.df.drop(['version_status', "company"], axis=1, inplace=True)
 
-    def calc_distance(self, attribute, val1, val2):
+        # self.calc_frequencies()
+
+    def calc_distance_by_attribute(self, attribute, val1, val2):
         """calc the distance between two attributes based on eq3 of mixed data clustering algo """
 
         min_freq = self.data_frequencies[attribute].min()
@@ -47,49 +64,151 @@ class DistCalculation:
         max_curr_freq = max(v1_freq, v2_freq)
         dist = (abs(v1_freq - v2_freq) + min_freq) / max_curr_freq
 
-        print(dist)
-
         return dist
 
-    def calc_distance(self, new_instance):
+    def calc_distance_by_instance(self, new_instance):
         """calc the distance between two attributes based on eq3 of mixed data clustering algo """
+        pass
 
-    def skills_distance(self, ideal):
-        count = 0
+    def helper(self, minimum, val1, val2):
+        return (abs(val1 - val2) + minimum) / max(val1, val2)
 
-        for key in self.df["skills"]:
-            if key in ideal:
-                count += 1
+    def calc_distance_for_lists(self, attribute, list1, list2):
+        frequencies, total_amount = self.calc_list_frequencies(attribute)
+        distances = {}
+        minimum = min(frequencies.values())
 
-        print(count)
+        for l1 in list1:
+            tmp = {}
+            for l2 in list2:
+                tmp[l2] = self.helper(
+                    minimum, frequencies[l1], frequencies[l2])
+
+            distances[l1] = tmp
+
+        print_list_distances(distances)
+
+    def calc_list_frequencies(self, key):
+        """
+            this function is used to calculate the frequency of a value in a list in our data.
+            return val:
+                frequencies-  {att1:amount, att2:amount ....}, dictionary of key to instance amount
+                total_amount- sum of all amounts in this column => |D|
+
+                TODO: change to numpy/pandas df for efficency
+        """
+        frequencies = {}
+        total_amount = 0
+
+        for items in self.df[key]:
+            if type(items) is not list:
+                continue
+
+            total_amount += len(items)
+
+            for item in items:
+                if item not in frequencies.keys():
+                    frequencies[item] = 1
+                else:
+                    frequencies[item] += 1
+
+        return frequencies,  total_amount
 
     def calc_frequencies(self):
+        """
+            driver function for generating frequencies vector.
+            for each type of field a different method is invoked.
+
+            ATTENTION - when calculating frequencies for "plain" lists, accessing the data is different
+        """
+
         for key in self.data_keys:
-            if key in self.list_attributes:
+            if key in self.list_object_attributes:
+                print(f"in object - type: {key}.\n")
                 # TODO need to decide in which way we want to deal with lists / nested objects
                 continue
 
-            self.data_frequencies[key] = self.df[key].value_counts()
-
-        # for key in self.data_frequencies:
-        #     print(f"{self.data_frequencies[key]}\n")
+            if key in self.list_attributes:
+                # will return a dictionery with 'frequencies' , and 'total_amount' as keys.
+                self.data_frequencies[key] = self.calc_list_frequencies(key)
+            else:
+                self.data_frequencies[key] = self.df[key].value_counts()
 
 
 if __name__ == '__main__':
-    x = DistCalculation('./dataTool/data/AppleEmployes.json')
+    x = DistCalculation()
+    print("****************************************")
+    a = [
+        "java",
+        "c++",
+        "c",
+        "windows",
+        "sql",
+        "javascript",
+        "html",
+        "linux",
+        "oracle",
+        "python",
+        "sql db2",
+        "uml",
+        "salesforce.com",
+        "mongodb",
+        "nosql",
+        "db2",
+        "tcp/ip",
+        "udp",
+        "dns",
+        "coldfusion",
+        "docker",
+        "jquery mobile",
+        "bootstrap",
+        "bamboo",
+        "ruby",
+        "ftp",
+        "scp",
+        "https",
+        "ieee 802.11",
+        "lte"
+    ]
 
-    skills = ["c",
-              "c++",
-              "c#",
-              "objective c",
-              "swift",
-              "java",
-              "sql",
-              "pl/sql",
-              "html",
-              "javascript"]
+    b = [
+        "java",
+        "c++",
+        "c#",
+        "xml",
+        "xcode",
+        "perl",
+        "objective c",
+        "j2ee",
+        "javascript",
+        "c",
+        "subversion",
+        "ajax",
+        "sql",
+        "mysql",
+        "linux",
+        "html",
+        "apache",
+        "iphone",
+        "jquery",
+        "php",
+        "databases",
+        "integration",
+        "java enterprise edition",
+        "mobile applications",
+        "web applications",
+        "ios"
+    ]
+    x.calc_distance_for_lists("skills", a, b)
 
-    x.skills_distance(skills)
+    # for name in glob.glob(f'{os.getcwd()}/dataTool/data/*'):
+    #     print(name)
+
+    # print(x.data_frequencies, '\n')
+    # print(x.calc_list_freq("skills"))
+    # x.calc_list_freq("skills")
+
+    # print(x.data_frequencies["skills"])
 
     # x.calc_distance("job_title", "senior software engineer",
     #                 "software engineer")
