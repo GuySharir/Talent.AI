@@ -1,7 +1,7 @@
 
 
 
-const adobe = require('./AdobeEmployes.json')
+const adobe = require('./AdobeEmployees.json')
 const amazon = require('./AmazonEmployes.json')
 const apple = require('./AppleEmployes.json')
 const facebook = require('./FacebookEmployes.json')

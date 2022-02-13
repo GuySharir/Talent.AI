@@ -48,6 +48,7 @@ class DistCalculation:
 
         df_list = []
         for name in glob.glob(f'{os.getcwd()}/dataTool/data/*'):
+            print(name)
             df_list.append(pd.read_json(name))
 
         self.df = pd.concat(df_list)
