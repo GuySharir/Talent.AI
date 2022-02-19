@@ -1,19 +1,19 @@
 
 
 
-const adobe = require('./AdobeEmployes.json')
-const amazon = require('./AmazonEmployes.json')
-const apple = require('./AppleEmployes.json')
-const facebook = require('./FacebookEmployes.json')
-const google = require('./GoogleEmployes.json')
-const ibm = require('./IbmEmployes.json')
-const microsoft = require('./MicrosoftEmployes.json')
+const adobe = require('./AdobeEmployees.json')
+const amazon = require('./AmazonEmployees.json')
+const apple = require('./AppleEmployees.json')
+const facebook = require('./FacebookEmployees.json')
+const google = require('./GoogleEmployees.json')
+const ibm = require('./IbmEmployees.json')
+const microsoft = require('./MicrosoftEmployees.json')
 const nvidia = require('./NividiaEmployes')
-const oracle = require('./OracleEmployes.json')
-const saleforce = require('./SalesforceEmployes.json')
-const tesla = require('./TeslaEmployes.json')
-const twiteer = require('./TwitterEmployes.json')
-const uber = require('./UberEmployes.json')
+const oracle = require('./OracleEmployees.json')
+const saleforce = require('./SalesforceEmployees.json')
+const tesla = require('./TeslaEmployees.json')
+const twiteer = require('./TwitterEmployees.json')
+const uber = require('./UberEmployees.json')
 
 
 let names = []
