@@ -183,7 +183,7 @@ P = {"query": json.dumps(ES_QUERY), "size": 13, "pretty": True}
 
 # this function will add peapole to the file "employes.json right after the current entries
 def write_json(new_data,):
-    with open("TwitterEmployes.json", 'r+') as file:
+    with open("TwitterEmployees.json", 'r+') as file:
         file_data = json.load(file)
         file_data["employes"].append(new_data)
         file.seek(0)

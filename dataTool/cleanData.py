@@ -7,19 +7,22 @@ import json
 
 
 class CleanData:
-    def __init__(self, file: str, fields: list, company: str):
-        self.file_name = file
-        self.company_name = company
+    def __init__(self, files: list, fields: list):
+        self.files = files
         self.fields_list = fields
         self.data_per_company = {}
 
-    def read_json_file(self):
-        with open(self.file_name) as json_file:
+    def read_json_file(self, file_path, company_name):
+        """
+        Read relevant fields from company's json files
+        """
+        with open(file_path) as json_file:
             data = json.load(json_file)
-            self.data_per_company[self.company_name] = []
+            self.data_per_company[company_name] = []
+            print("company - ", company_name)
             for p in data:
-                print("p- ", p, "\n")
-                self.data_per_company[self.company_name].append({
+                # print("p- ", p, "\n")
+                self.data_per_company[company_name].append({
                     self.fields_list[0]: p[self.fields_list[0]],
                     self.fields_list[1]: p[self.fields_list[1]],
                     self.fields_list[2]: p[self.fields_list[2]],
@@ -35,11 +38,28 @@ class CleanData:
                     self.fields_list[12]: p[self.fields_list[12]],
                     self.fields_list[13]: p[self.fields_list[13]]
                 })
-            print("after cleaning - ", self.data_per_company, "\n")
+            # print("after cleaning - ", self.data_per_company, "\n")
+
+    def company_files(self):
+        """
+        Iterate throw all company's jsons
+        """
+        for file_path in self.files:
+            company_name = file_path.split("\\")[1]
+            print("########################################################")
+            print("company - ", company_name)
+            print("########################################################")
+            self.read_json_file(file_path, company_name)
+
+        # print("after cleaning - ", self.data_per_company, "\n")
 
 
 if __name__ == '__main__':
+    files_path = ["data\\AdobeEmployees.json", "data\\AmazonEmployees.json", "data\\AppleEmployees.json",
+                  "data\\FacebookEmployees.json", "data\\GoogleEmployees.json", "data\\IbmEmployees.json",
+                  "data\\MicrosoftEmployees.json", "data\\NvidiaEmployees.json", "data\\OracleEmployees.json",
+                  "data\\SalesforceEmployees.json", "data\\TeslaEmployees.json", "data\\TwitterEmployees.json",
+                  "data\\UberEmployees.json"]
     fields_list = ["id", "full_name", "gender", "birth_year", "birth_date", "industry", "job_title", "job_title_role",
                    "job_title_sub_role", "job_title_levels", "interests", "skills", "experience", "education"]
-    CleanData("data\\AdobeEmployees.json", fields_list, "Adobe").read_json_file()
-
+    CleanData(files_path, fields_list).company_files()
