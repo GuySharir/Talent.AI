@@ -7,6 +7,12 @@ class CateDistance:
     def calc_num_distance(self, attribute: str) -> float:
         pass
 
+    def set_attributes(self):
+        pass
+
+    def nested_attributes(self):
+        pass
+
     def find_numeric_attr(self) -> dict:
         pass
 
