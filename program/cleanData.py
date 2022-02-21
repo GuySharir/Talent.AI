@@ -8,13 +8,15 @@ class CleanData:
     {companyA: [{name:val, age:val, skills:val, email:val, ...}, {name:val, age:val, skills:val, email:val, ...}, ...],
     companyB: [{name:val, age:val, skills:val, email:val, ...}, {name:val, age:val, skills:val, email:val, ...}, ...],
     ...}
+    - clean_data_path, path to a folder where we save all cleaned data
     - self.files, list of json files contains employees data
     - self.fields_list, list of relevant attributes to extract from employees' data
 
     """
-    def __init__(self, files: list, fields: list):
+    def __init__(self, files: list, fields: list, clean_data_path):
         self.files = files
         self.fields_list = fields
+        self.clean_data_path = clean_data_path
         self.data_per_company = {}
 
     def read_json_file(self, file_path, company_name):
@@ -41,12 +43,22 @@ class CleanData:
                     self.fields_list[13]: p[self.fields_list[13]]
                 })
 
-    def company_files(self) -> dict:
+    def company_files(self):
         for file_path in self.files:
             company_name = (file_path.split("\\")[-1]).replace(".json", "")
             self.read_json_file(file_path, company_name)
 
-        return self.data_per_company
+    def save_clean_employee_data(self):
+        self.company_files()
+        for company in self.data_per_company.keys():
+            # print("Company After cleaning - ", company, "\n")
+            # print("employees per company after cleaning - ", self.data_per_company[company], "\n")
+            file_name = self.clean_data_path + '\\' + company + '.json'
+
+            with open(file_name, 'w') as fp:
+                json.dump(self.data_per_company[company], fp, indent=4)
+            # for data in self.data_per_company[company]:
+            #     print("item After cleaning - ", data)
 
 
 if __name__ == '__main__':
@@ -59,4 +71,6 @@ if __name__ == '__main__':
                   "\\data\\AdobeEmployees.json"]
     fields_list = ["id", "full_name", "gender", "birth_year", "birth_date", "industry", "job_title", "job_title_role",
                    "job_title_sub_role", "job_title_levels", "interests", "skills", "experience", "education"]
-    CleanData(files_path, fields_list).company_files()
+    clean_data = 'C:\\Users\\opalp\\Documents\\opalpeltzman\\4thYearSemesterA\\final project\\Talent.AI\\dataTool' \
+                 '\\clean_data'
+    CleanData(files_path, fields_list, clean_data).save_clean_employee_data()

@@ -1,21 +1,35 @@
 class CateDistance:
-    def __init__(self, instance_a: dict, instance_b: dict):
+    """
+        This class (CateDistance) calculate distance between two values
+        of categorical attributes
+        - self.numeric_attr_dist, is the return value. A dictionary contains the attribute name and
+        the distance result
+        {experience: val}
+        - val_a, val_b, contains categorical value
+        - attr, refers to the current attribute name
+        """
+    def __init__(self, attribute: str, val_a, val_b):
         self.cate_attr_dist = {}
-        self.instance_a = instance_a
-        self.instance_b = instance_b
+        self.val_a = val_a
+        self.val_b = val_b
+        self.attr = attribute
 
     def calc_num_distance(self, attribute: str) -> float:
+        # null -> None
+        # false -> False
+        # true -> True
         pass
 
-    def set_attributes(self):
+    def calc_sets_attributes(self):
         pass
 
-    def nested_attributes(self):
+    def calc_nested_attributes(self):
         pass
 
-    def find_numeric_attr(self) -> dict:
+    def frequencies(self):
         pass
 
 
 if __name__ == '__main__':
     pass
+    # CateDistance(value_a, value_b)
