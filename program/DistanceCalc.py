@@ -6,6 +6,11 @@ import json
 class Distance:
     """
         This class (Program) is responsible for the distance calculation
+
+        contains q11, q12, q14 categorical distance calculation equations based on
+        "An incremental mixed data clustering method using a new distance measure"
+        article. (published on 6 may 2014)
+
         - self.files, list of json files contains employees data
         - self.fields_list, list of relevant attributes to extract from employees' data
         - clean_data_path, path to a folder where we save all cleaned data
@@ -19,6 +24,18 @@ class Distance:
         self.attr_dist_result = {}
         self.instance_a = instance_a
         self.instance_b = instance_b
+
+    def q12(self, attribute):
+        if self.instance_a[attribute] == self.instance_b[attribute]:
+            return 0
+        elif self.instance_a[attribute] != self.instance_b[attribute]:
+            return 1
+
+    def q11(self):
+        pass
+
+    def q14(self):
+        pass
 
     def calc_distance(self):
         self.attr_type = {attribute: type(self.instance_a.get(attribute)) for attribute in self.instance_a.keys()}
