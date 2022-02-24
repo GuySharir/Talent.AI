@@ -16,6 +16,7 @@ class Distance:
         """
     def __init__(self, instance_a: dict, instance_b: dict):
         self.attr_type = {}
+        self.attr_dist_result = {}
         self.instance_a = instance_a
         self.instance_b = instance_b
 
@@ -25,9 +26,14 @@ class Distance:
 
         for attribute in self.attr_type.keys():
             if self.attr_type[attribute] == int or self.attr_type[attribute] == float:
-                print(NumDistance(attribute, self.instance_a[attribute], self.instance_b[attribute]).calc_num_distance())
+                self.attr_dist_result.\
+                    update(NumDistance(attribute,
+                                       self.instance_a[attribute], self.instance_b[attribute]).calc_num_distance())
+
+                print(f'distance result per attribute {self.attr_dist_result}')
             elif self.attr_type[attribute] == str:
                 print(f'string attr {attribute}')
+                print(f'string attr value {self.instance_a.get(attribute)}')
 
             elif self.attr_type[attribute] == list:
                 if type(self.instance_a[attribute][0]) == dict:
