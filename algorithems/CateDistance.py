@@ -14,19 +14,13 @@ class CateDistance:
         self.val_b = val_b
         self.attr = attribute
 
-    def calc_num_distance(self, attribute: str) -> float:
-        # null -> None
-        # false -> False
-        # true -> True
+    def calc_str_distance(self, attribute: str) -> float:
         pass
 
-    def calc_sets_attributes(self):
+    def calc_list_attributes(self):
         pass
 
     def calc_nested_attributes(self):
-        pass
-
-    def frequencies(self):
         pass
 
 
