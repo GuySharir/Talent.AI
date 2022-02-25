@@ -1,0 +1,164 @@
+{
+  "employee": {
+        "full_name": "jared verdi",
+        "first_name": "jared",
+        "last_name": "verdi",
+        "gender": "male",
+        "birth_year": 1984,
+        "birth_date": "1984-10-19",
+        "industry": "computer software",
+        "job_title": "senior software engineering manager",
+        "job_title_role": "engineering",
+        "job_title_sub_role": "software",
+        "job_title_levels": [
+            "manager",
+            "senior"
+        ],
+        "job_company_id": "adobe",
+        "job_company_name": "adobe",
+        "job_start_date": "2020-01",
+        "interests": [
+            "web standards"
+        ],
+        "skills": [
+            "mobile applications"
+        ],
+        "experience": [
+            {
+                "company_name": "lounge lizard worldwide, inc. - nyc digital agency",
+                "company_size": "11-50",
+                "company_id": "lounge-lizard-worldwide-inc.",
+                "company_founded": 1998,
+                "company_industry": "internet",
+                "company_location_name": "new york, new york, united states",
+                "company_location_country": "united states",
+                "company_location_continent": "north america",
+                "_end_date": "2010-12",
+                "start_date": "2007-10",
+                "title_name": "tech lead",
+                "title_role": null,
+                "title_levels": [
+                    "manager"
+                ],
+                "current_job": false
+            }
+        ],
+        "education": [
+            {
+                "school_name": "patchogue - medford high school",
+                "school_type": "secondary school",
+                "end_date": "2006",
+                "start_date": "2002",
+                "gpa": 3.18,
+                "degrees": ["", ""],
+                "majors": ["", ""],
+                "minors": ["", ""]
+            }
+        ]
+    },
+  "social": {
+        "linkedin_url": "linkedin.com/in/jverdi",
+        "linkedin_username": "jverdi",
+        "linkedin_id": "12062549",
+        "facebook_url": "facebook.com/jaredverdi",
+        "facebook_username": "jaredverdi",
+        "facebook_id": "16306497",
+        "twitter_url": "twitter.com/jverdi",
+        "twitter_username": "jverdi",
+        "github_url": "github.com/jverdi",
+        "github_username": "jverdi",
+        "profiles": [
+                  {
+                      "network": "linkedin",
+                      "id": "12062549",
+                      "url": "linkedin.com/in/jverdi",
+                      "username": "jverdi"
+                  },
+                  {
+                      "network": "meetup",
+                      "id": "9686868",
+                      "url": "meetup.com/members/9686868",
+                      "username": "9686868"
+                  },
+                  {
+                      "network": "facebook",
+                      "id": "16306497",
+                      "url": "facebook.com/jaredverdi",
+                      "username": "jaredverdi"
+                  },
+                  {
+                      "network": "stackoverflow",
+                      "id": "281416",
+                      "url": "stackoverflow.com/users/281416",
+                      "username": null
+                  },
+                  {
+                      "network": "twitter",
+                      "id": null,
+                      "url": "twitter.com/jverdi",
+                      "username": "jverdi"
+                  },
+                  {
+                      "network": "github",
+                      "id": null,
+                      "url": "github.com/jverdi",
+                      "username": "jverdi"
+                  },
+                  {
+                      "network": "crunchbase",
+                      "id": null,
+                      "url": "crunchbase.com/person/jared-verdi",
+                      "username": "jared-verdi"
+                  },
+                  {
+                      "network": "dribbble",
+                      "id": null,
+                      "url": "dribbble.com/jverdi",
+                      "username": "jverdi"
+                  },
+                  {
+                      "network": "linkedin",
+                      "id": null,
+                      "url": "linkedin.com/in/jared-verdi-7850584",
+                      "username": "jared-verdi-7850584"
+                  },
+                  {
+                      "network": "gravatar",
+                      "id": null,
+                      "url": "gravatar.com/jverdi",
+                      "username": "jverdi"
+                  },
+                  {
+                      "network": "pinterest",
+                      "id": null,
+                      "url": "pinterest.com/jaredverdi",
+                      "username": "jaredverdi"
+                  },
+                  {
+                      "network": "klout",
+                      "id": null,
+                      "url": "klout.com/jverdi",
+                      "username": "jverdi"
+                  },
+                  {
+                      "network": "vimeo",
+                      "id": null,
+                      "url": "vimeo.com/user/6562796",
+                      "username": "6562796"
+                  },
+                  {
+                      "network": "foursquare",
+                      "id": null,
+                      "url": "foursquare.com/user/14778",
+                      "username": "14778"
+                  },
+                  {
+                      "network": "angellist",
+                      "id": null,
+                      "url": "angel.co/jverdi",
+                      "username": "jverdi"
+                  }
+              ]
+
+  }
+}
