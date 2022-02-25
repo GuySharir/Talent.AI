@@ -63,6 +63,9 @@ class Attribute:
         self.domain_size = len(self.attr_values)
         print(f'domain size {self.domain_size}')
 
+    def nested_values(self, df):
+        pass
+
     def calc_domain_and_frequency(self):
         df = self.read_employee_data()
         if self.val_type == str:
