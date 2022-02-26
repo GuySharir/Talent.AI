@@ -92,10 +92,10 @@ class DomainAndFrequency:
         elif self.val_type == dict:
             self.nested_values()
 
-        print(f'val frequency {self.value_frequency}')
-        print(f'attribute values {self.attr_values}')
-        print(f'attribute values dict {self.attr_values_dict}')
-        print(f'domain size {self.domain_size}')
+        # print(f'val frequency {self.value_frequency}')
+        # print(f'attribute values {self.attr_values}')
+        # print(f'attribute values dict {self.attr_values_dict}')
+        # print(f'domain size {self.domain_size}')
 
         return self.value_frequency, self.domain_size
 
@@ -111,7 +111,7 @@ if __name__ == '__main__':
         return df
 
 
-    data_frame = read_employee_data()
-    DomainAndFrequency('experience', dict, data_frame).calc_domain_and_frequency()
+    data = read_employee_data()
+    DomainAndFrequency('experience', dict, data).calc_domain_and_frequency()
     # DomainAndFrequency('skills', list).calc_domain_and_frequency()
     # DomainAndFrequency('gender', str).calc_domain_and_frequency()

@@ -19,8 +19,8 @@ class Distance:
 
 
     """
-    def __init__(self, instance_a: dict, instance_b: dict):
-        self.attr_type = {}
+    def __init__(self, instance_a: object, instance_b: object, attr_type: dict):
+        self.attr_type = attr_type
         self.attr_dist_result = {}
         self.instance_a = instance_a
         self.instance_b = instance_b
@@ -38,25 +38,28 @@ class Distance:
         pass
 
     def calc_distance(self):
-        self.attr_type = {attribute: type(self.instance_a.get(attribute)) for attribute in self.instance_a.keys()}
-        print(self.attr_type)
-
-        for attribute in self.attr_type.keys():
-            if self.attr_type[attribute] == int or self.attr_type[attribute] == float:
-                self.attr_dist_result.\
-                    update(NumDistance(attribute,
-                                       self.instance_a[attribute], self.instance_b[attribute]).calc_num_distance())
-
-                print(f'distance result per attribute {self.attr_dist_result}')
-            elif self.attr_type[attribute] == str:
-                print(f'string attr {attribute}')
-                print(f'string attr value {self.instance_a.get(attribute)}')
-
-            elif self.attr_type[attribute] == list:
-                if type(self.instance_a[attribute][0]) == dict:
-                    print(f'nested attr {attribute}')
-                else:
-                    print(f'list attr {attribute}')
+        # self.attr_type = {attribute: type(self.instance_a.get(attribute)) for attribute in self.instance_a.keys()}
+        # # print(self.attr_type)
+        for inx, attr in enumerate(self.attr_type.keys()):
+            print(f'attribute - {attr} \n value - {self.instance_a[inx]}')
+        self.instance_a = {attr: self.instance_a[inx] for inx, attr in enumerate(self.attr_type.keys())}
+        print(f'instance a - {self.instance_a}')
+        # for attribute in self.attr_type.keys():
+        #     if self.attr_type[attribute] == int or self.attr_type[attribute] == float:
+        #         self.attr_dist_result.\
+        #             update(NumDistance(attribute,
+        #                                self.instance_a[attribute], self.instance_b[attribute]).calc_num_distance())
+        #
+        #         print(f'distance result per attribute {self.attr_dist_result}')
+        #     elif self.attr_type[attribute] == str:
+        #         print(f'string attr {attribute}')
+        #         print(f'string attr value {self.instance_a.get(attribute)}')
+        #
+        #     elif self.attr_type[attribute] == list:
+        #         if type(self.instance_a[attribute][0]) == dict:
+        #             print(f'nested attr {attribute}')
+        #         else:
+        #             print(f'list attr {attribute}')
 
 
 if __name__ == '__main__':
