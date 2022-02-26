@@ -1,76 +1,146 @@
 import json
+import os
+from pathlib import Path
+
+
+class Education:
+    """
+    """
+
+    def __init__(self, education: dict):
+
+        self.school_name = None
+        self.school_type = None
+        if education["school"]:
+            self.school_name = education["school"]["name"]
+            self.school_type = education["school"]["type"]
+
+        self.end_date = education["end_date"]
+        self.start_date = education["start_date"]
+        self.gpa = education["gpa"]
+        self.degrees = education["degrees"]
+        self.majors = education["majors"]
+        self.minors = education["minors"]
+
+
+class Experience:
+    def __init__(self, experience: dict):
+        self.company_name = experience['company']["name"]
+        self.company_size = experience['company']["size"]
+        self.company_id = experience['company']["id"]
+        self.company_founded = experience['company']["founded"]
+        self.company_industry = experience['company']["industry"]
+        self.end_date = experience["end_date"]
+        self.start_date = experience["start_date"]
+        self.current_job = experience["is_primary"]
+
+        self.company_location_name = None
+        self.company_location_country = None
+        self.company_location_continent = None
+
+        self.title_name = None
+        self.title_role = None
+        self.title_levels = None
+
+        if experience["company"]["location"]:
+            self.company_location_name = experience["company"]["location"]["name"]
+            self.company_location_country = experience["company"]["location"]["country"]
+            self.company_location_continent = experience["company"]["location"]["continent"]
+
+        if experience["title"]:
+            self.title_name = experience["title"]["name"]
+            self.title_role = experience["title"]["role"]
+            self.title_levels = experience["title"]["levels"]
+
+
+class Employee:
+    def __init__(self, entry) -> None:
+        # print(entry)
+        self.full_name = entry["full_name"]
+        self.first_name = entry["first_name"]
+        self.last_name = entry["last_name"]
+        self.gender = entry["gender"]
+        self.birth_year = entry["birth_year"]
+        self.birth_date = entry["birth_date"]
+        self.industry = entry["industry"]
+        self.job_title = entry["job_title"]
+        self.job_title_role = entry["job_title_role"]
+        self.job_title_sub_role = entry["job_title_sub_role"]
+        self.job_title_levels = entry["job_title_levels"]
+        self.job_company_id = entry["job_company_id"]
+        self.job_company_name = entry["job_company_name"]
+        self.job_start_date = entry["job_start_date"]
+        self.interests = entry["interests"]
+        self.skills = entry["skills"]
+
+        self.experience = []
+        self.education = []
+        self.generate_experience_list(entry["experience"])
+        self.generate_education_list(entry["education"])
+
+    def generate_experience_list(self, experience) -> list:
+        for exp in experience:
+            self.experience.append(vars(Experience(exp)))
+
+    def generate_education_list(self, education) -> list:
+        for edu in education:
+            self.education.append(vars(Education(edu)))
 
 
 class CleanData:
     """
-    This class (CleanData) takes all json data and extract relevant attributes
-    - the return value (self.data_per_company) is a dictionary as shown below
-    {companyA: [{name:val, age:val, skills:val, email:val, ...}, {name:val, age:val, skills:val, email:val, ...}, ...],
-    companyB: [{name:val, age:val, skills:val, email:val, ...}, {name:val, age:val, skills:val, email:val, ...}, ...],
-    ...}
-    - clean_data_path, path to a folder where we save all cleaned data
-    - self.files, list of json files contains employees data
-    - self.fields_list, list of relevant attributes to extract from employees' data
+    This class (CleanData) accepts paths to all json data and extract relevant attributes
+    paths: a list of paths to raw data files
+    - self.json_data, temporary iterable for each json data file
+    - self.clean_data, cleaned extracted data dictionary, each company name is the key and the value is the data
 
     """
-    def __init__(self, files: list, fields: list, clean_data_path):
-        self.files = files
-        self.fields_list = fields
-        self.clean_data_path = clean_data_path
-        self.data_per_company = {}
 
-    def read_json_file(self, file_path, company_name):
+    def __init__(self, paths: list):
+        self.paths: list = paths
+        self.json_data: list = []
+        self.cleaned_data: dict = dict()
+        self.clean()
+
+    def read_json_file(self, file_path: str):
         with open(file_path) as json_file:
-            data = json.load(json_file)
-            self.data_per_company[company_name] = []
-            # print("company - ", company_name)
-            for p in data:
-                # print("p- ", p, "\n")
-                self.data_per_company[company_name].append({
-                    self.fields_list[0]: p[self.fields_list[0]],
-                    self.fields_list[1]: p[self.fields_list[1]],
-                    self.fields_list[2]: p[self.fields_list[2]],
-                    self.fields_list[3]: p[self.fields_list[3]],
-                    self.fields_list[4]: p[self.fields_list[4]],
-                    self.fields_list[5]: p[self.fields_list[5]],
-                    self.fields_list[6]: p[self.fields_list[6]],
-                    self.fields_list[7]: p[self.fields_list[7]],
-                    self.fields_list[8]: p[self.fields_list[8]],
-                    self.fields_list[9]: p[self.fields_list[9]],
-                    self.fields_list[10]: p[self.fields_list[10]],
-                    self.fields_list[11]: p[self.fields_list[11]],
-                    self.fields_list[12]: p[self.fields_list[12]],
-                    self.fields_list[13]: p[self.fields_list[13]]
-                })
+            self.json_data = json.load(json_file)
 
-    def company_files(self):
-        for file_path in self.files:
-            company_name = (file_path.split("\\")[-1]).replace(".json", "")
-            self.read_json_file(file_path, company_name)
+    def clean(self):
+        """
+            iterate through the provided paths and for each path clean the data
+        """
 
-    def save_clean_employee_data(self):
-        self.company_files()
-        for company in self.data_per_company.keys():
-            # print("Company After cleaning - ", company, "\n")
-            # print("employees per company after cleaning - ", self.data_per_company[company], "\n")
-            file_name = self.clean_data_path + '\\' + company + '.json'
+        for path in self.paths:
+            company_name = (path.split("/")[-1]).replace(".json", "")
+            print(company_name)
+            self.read_json_file(path)
+            self.cleaned_data[company_name] = []
 
-            with open(file_name, 'w') as fp:
-                json.dump(self.data_per_company[company], fp, indent=4)
-            # for data in self.data_per_company[company]:
-            #     print("item After cleaning - ", data)
+            for employee in self.json_data:
+                # print(employee)
+                self.cleaned_data[company_name].append(
+                    vars(Employee(employee)))
+
+    def save(self, path: str):
+        """
+            save the cleaned data to location 'path' property
+            'path' : a path to where the file should be saved.
+            final result - cleaned data will be saved to files at /<path>/<company_name>Employees.json
+        """
+        for key in self.cleaned_data.keys():
+            file_name = f"{path}/{key}.json"
+            with open(file_name, 'w') as dest:
+                json.dump(self.cleaned_data[key], dest, indent=4)
 
 
 if __name__ == '__main__':
-    # files_path = ["data\\AdobeEmployees.json", "data\\AmazonEmployees.json", "data\\AppleEmployees.json",
-    #               "data\\FacebookEmployees.json", "data\\GoogleEmployees.json", "data\\IbmEmployees.json",
-    #               "data\\MicrosoftEmployees.json", "data\\NvidiaEmployees.json", "data\\OracleEmployees.json",
-    #               "data\\SalesforceEmployees.json", "data\\TeslaEmployees.json", "data\\TwitterEmployees.json",
-    #               "data\\UberEmployees.json"]
-    files_path = ["C:\\Users\\opalp\\Documents\\opalpeltzman\\4thYearSemesterA\\final project\\Talent.AI\\dataTool"
-                  "\\data\\AdobeEmployees.json"]
-    fields_list = ["id", "full_name", "gender", "birth_year", "birth_date", "industry", "job_title", "job_title_role",
-                   "job_title_sub_role", "job_title_levels", "interests", "skills", "experience", "education"]
-    clean_data = 'C:\\Users\\opalp\\Documents\\opalpeltzman\\4thYearSemesterA\\final project\\Talent.AI\\dataTool' \
-                 '\\clean_data'
-    CleanData(files_path, fields_list, clean_data).save_clean_employee_data()
+
+    PROJECT_ROOT = "/Users/guyshenkar/Documents/private/final project/Talent.AI/"
+    paths = []
+
+    for path in os.listdir(f"{PROJECT_ROOT}/dataTool/data"):
+        paths.append(os.path.join(f"{PROJECT_ROOT}/dataTool/data", path))
+
+    x = CleanData(paths)
+    x.save(f"{PROJECT_ROOT}/dataTool/clean_data")
