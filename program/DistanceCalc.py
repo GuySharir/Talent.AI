@@ -18,7 +18,7 @@ class Distance:
         - attr_type, a dictionary contains the attribute name and the distance result for numerical data
 
 
-        """
+    """
     def __init__(self, instance_a: dict, instance_b: dict):
         self.attr_type = {}
         self.attr_dist_result = {}
@@ -61,8 +61,9 @@ class Distance:
 
 if __name__ == '__main__':
     inst_a = {
-        "id": "jvFnvkvv81SjJgqtv6arBA_0000",
         "full_name": "malcolm jones",
+        "first_name": "malcolm",
+        "last_name": "jones",
         "gender": "male",
         "birth_year": 1968,
         "birth_date": "1968-11-29",
@@ -73,6 +74,9 @@ if __name__ == '__main__':
         "job_title_levels": [
             "senior"
         ],
+        "job_company_id": "adobe",
+        "job_company_name": "adobe",
+        "job_start_date": "2013-01",
         "interests": [
             "getting back in touch",
             "lotus notes",
@@ -142,211 +146,96 @@ if __name__ == '__main__':
         ],
         "experience": [
             {
-                "company": {
-                    "name": "tidaltv.com",
-                    "size": None,
-                    "id": None,
-                    "founded": None,
-                    "industry": None,
-                    "location": None,
-                    "linkedin_url": None,
-                    "linkedin_id": None,
-                    "facebook_url": None,
-                    "twitter_url": None,
-                    "website": None
-                },
-                "location_names": [],
+                "company_name": "tidaltv.com",
+                "company_size": None,
+                "company_id": None,
+                "company_founded": None,
+                "company_industry": None,
                 "end_date": "2009-01-01",
                 "start_date": "2008-08-01",
-                "title": {
-                    "name": "developer",
-                    "role": "engineering",
-                    "sub_role": None,
-                    "levels": []
-                },
-                "is_primary": False
+                "current_job": False,
+                "company_location_name": None,
+                "company_location_country": None,
+                "company_location_continent": None,
+                "title_name": "developer",
+                "title_role": "engineering",
+                "title_levels": []
             },
             {
-                "company": {
-                    "name": "adobe",
-                    "size": "10001+",
-                    "id": "adobe",
-                    "founded": 1982,
-                    "industry": "computer software",
-                    "location": {
-                        "name": "san jose, california, united states",
-                        "locality": "san jose",
-                        "region": "california",
-                        "metro": "san jose, california",
-                        "country": "united states",
-                        "continent": "north america",
-                        "street_address": "345 park avenue",
-                        "address_line_2": None,
-                        "postal_code": "95110",
-                        "geo": "37.33,-121.89"
-                    },
-                    "linkedin_url": "linkedin.com/company/adobe",
-                    "linkedin_id": "1480",
-                    "facebook_url": None,
-                    "twitter_url": "twitter.com/adobe",
-                    "website": "adobe.com"
-                },
-                "location_names": [
-                    "new york, new york, united states"
-                ],
+                "company_name": "adobe",
+                "company_size": "10001+",
+                "company_id": "adobe",
+                "company_founded": 1982,
+                "company_industry": "computer software",
                 "end_date": None,
                 "start_date": "2013-01",
-                "title": {
-                    "name": "senior devops engineer",
-                    "role": "engineering",
-                    "sub_role": "devops",
-                    "levels": [
-                        "senior"
-                    ]
-                },
-                "is_primary": True
+                "current_job": True,
+                "company_location_name": "san jose, california, united states",
+                "company_location_country": "united states",
+                "company_location_continent": "north america",
+                "title_name": "senior devops engineer",
+                "title_role": "engineering",
+                "title_levels": [
+                    "senior"
+                ]
             },
             {
-                "company": {
-                    "name": "m-cubed information systems, inc.",
-                    "size": "51-200",
-                    "id": "m-cubed-information-systems-inc-",
-                    "founded": 1985,
-                    "industry": "information technology and services",
-                    "location": {
-                        "name": "silver spring, maryland, united states",
-                        "locality": "silver spring",
-                        "region": "maryland",
-                        "metro": "district of columbia",
-                        "country": "united states",
-                        "continent": "north america",
-                        "street_address": "8630 fenton street",
-                        "address_line_2": "suite 925",
-                        "postal_code": "20910",
-                        "geo": "38.99,-77.02"
-                    },
-                    "linkedin_url": "linkedin.com/company/m-cubed-information-systems-inc-",
-                    "linkedin_id": "3094308",
-                    "facebook_url": None,
-                    "twitter_url": "twitter.com/mcubedinfo",
-                    "website": "mcubedinfo.com"
-                },
-                "location_names": [],
+                "company_name": "m-cubed information systems, inc.",
+                "company_size": "51-200",
+                "company_id": "m-cubed-information-systems-inc-",
+                "company_founded": 1985,
+                "company_industry": "information technology and services",
                 "end_date": "2008-07",
                 "start_date": "1998-06",
-                "title": {
-                    "name": "data security administrator and webmaster",
-                    "role": None,
-                    "sub_role": None,
-                    "levels": []
-                },
-                "is_primary": False
+                "current_job": False,
+                "company_location_name": "silver spring, maryland, united states",
+                "company_location_country": "united states",
+                "company_location_continent": "north america",
+                "title_name": "data security administrator and webmaster",
+                "title_role": None,
+                "title_levels": []
             },
             {
-                "company": {
-                    "name": "behance",
-                    "size": "51-200",
-                    "id": "behance-inc-",
-                    "founded": 2006,
-                    "industry": "internet",
-                    "location": {
-                        "name": "new york, new york, united states",
-                        "locality": "new york",
-                        "region": "new york",
-                        "metro": "new york, new york",
-                        "country": "united states",
-                        "continent": "north america",
-                        "street_address": "532 broadway",
-                        "address_line_2": None,
-                        "postal_code": "10012",
-                        "geo": "40.71,-74.00"
-                    },
-                    "linkedin_url": "linkedin.com/company/behance-inc-",
-                    "linkedin_id": "151575",
-                    "facebook_url": None,
-                    "twitter_url": "twitter.com/behance",
-                    "website": "behance.com"
-                },
-                "location_names": [
-                    "new york, new york, united states"
-                ],
+                "company_name": "behance",
+                "company_size": "51-200",
+                "company_id": "behance-inc-",
+                "company_founded": 2006,
+                "company_industry": "internet",
                 "end_date": "2016-11-13",
                 "start_date": "2011-07-01",
-                "title": {
-                    "name": "web developer",
-                    "role": "engineering",
-                    "sub_role": "web",
-                    "levels": []
-                },
-                "is_primary": False
+                "current_job": False,
+                "company_location_name": "new york, new york, united states",
+                "company_location_country": "united states",
+                "company_location_continent": "north america",
+                "title_name": "web developer",
+                "title_role": "engineering",
+                "title_levels": []
             }
         ],
         "education": [
             {
-                "school": {
-                    "name": "morgan state university",
-                    "type": "post-secondary institution",
-                    "id": "14HZK6wL6MpMUnJsZ3jYPQ_0",
-                    "location": {
-                        "name": "baltimore, maryland, united states",
-                        "locality": "baltimore",
-                        "region": "maryland",
-                        "country": "united states",
-                        "continent": "north america"
-                    },
-                    "linkedin_url": "linkedin.com/school/morgan-state-university",
-                    "facebook_url": "facebook.com/morganstateu",
-                    "twitter_url": "twitter.com/morganstateu",
-                    "linkedin_id": "18554",
-                    "website": "morgan.edu",
-                    "domain": "morgan.edu"
-                },
-                "degrees": [],
-                "start_date": None,
+                "school_name": "morgan state university",
+                "school_type": "post-secondary institution",
                 "end_date": "1991",
-                "majors": [],
-                "minors": [],
-                "gpa": None
-            },
-            {
-                "school": {
-                    "name": "abraham clark high school",
-                    "type": "secondary school",
-                    "id": None,
-                    "location": None,
-                    "linkedin_url": None,
-                    "facebook_url": None,
-                    "twitter_url": None,
-                    "linkedin_id": None,
-                    "website": None,
-                    "domain": None
-                },
-                "degrees": [],
                 "start_date": None,
-                "end_date": "1986",
+                "gpa": None,
+                "degrees": [],
                 "majors": [],
-                "minors": [],
-                "gpa": None
+                "minors": []
             },
             {
-                "school": {
-                    "name": "university of virginia",
-                    "type": "post-secondary institution",
-                    "id": "-nZnOe5p6uHptwUwx7fL8w_0",
-                    "location": {
-                        "name": "charlottesville, virginia, united states",
-                        "locality": "charlottesville",
-                        "region": "virginia",
-                        "country": "united states",
-                        "continent": "north america"
-                    },
-                    "linkedin_url": "linkedin.com/school/university-of-virginia",
-                    "facebook_url": "facebook.com/universityofvirginia",
-                    "twitter_url": "twitter.com/uva",
-                    "linkedin_id": "19604",
-                    "website": "virginia.edu",
-                    "domain": "virginia.edu"
-                },
+                "school_name": "abraham clark high school",
+                "school_type": "secondary school",
+                "end_date": "1986",
+                "start_date": None,
+                "gpa": None,
+                "degrees": [],
+                "majors": [],
+                "minors": []
+            },
+            {
+                "school_name": "university of virginia",
+                "school_type": "post-secondary institution",
                 "end_date": "2008",
                 "start_date": "2004",
                 "gpa": None,
@@ -362,329 +251,280 @@ if __name__ == '__main__':
         ]
     }
     inst_b = {
-        "id": "xai9X--SNxN80tkF9o6sng_0000",
-        "full_name": "willi gamboa",
+        "full_name": "kyle warneck",
+        "first_name": "kyle",
+        "last_name": "warneck",
         "gender": "male",
-        "birth_year": None,
+        "birth_year": 1983,
         "birth_date": None,
         "industry": "internet",
-        "job_title": "senior software developer",
+        "job_title": "senior software engineer, ad cloud developer productivity team",
         "job_title_role": "engineering",
-        "job_title_sub_role": "software",
+        "job_title_sub_role": "devops",
         "job_title_levels": [
             "senior"
         ],
+        "job_company_id": "adobe",
+        "job_company_name": "adobe",
+        "job_start_date": "2020-06",
         "interests": [
-            "education"
+            "saas",
+            "social services",
+            "community technology network",
+            "politics",
+            "education",
+            "big data",
+            "volunteer computer instructor",
+            "pomona college",
+            "analytics",
+            "poverty alleviation",
+            "science and technology",
+            "bridging online and offline",
+            "alumni admissions volunteer"
         ],
         "skills": [
+            "product management",
+            "market research",
+            "public speaking",
+            "data analysis",
+            "analytics",
             "javascript",
-            "user experience",
             "css",
-            "ajax",
-            "web development",
-            "node.js",
-            "git",
-            "jquery",
-            "scrum",
+            "survey research",
+            "project management",
+            "leadership",
             "html",
-            "agile methodologies",
-            "mysql",
-            "selenium",
-            "seo"
+            "survey design",
+            "account management",
+            "scrum",
+            "jquery",
+            "management",
+            "user experience",
+            "salesforce.com",
+            "marketing strategy",
+            "marketing research",
+            "marketing",
+            "node.js",
+            "product development",
+            "backbone.js",
+            "mongodb",
+            "surveys",
+            "python",
+            "coffeescript",
+            "powerpoint",
+            "microsoft excel",
+            "excel",
+            "computer instruction",
+            "angularjs",
+            "tdd"
         ],
         "experience": [
             {
-                "company": {
-                    "name": "new york province of the society of jesus",
-                    "size": None,
-                    "id": None,
-                    "founded": None,
-                    "industry": None,
-                    "location": None,
-                    "linkedin_url": None,
-                    "linkedin_id": None,
-                    "facebook_url": None,
-                    "twitter_url": None,
-                    "website": None
-                },
-                "location_names": [],
-                "end_date": "2005-04",
-                "start_date": "2002-11",
-                "title": {
-                    "name": "it specialist and webmaster",
-                    "role": "engineering",
-                    "sub_role": "information_technology",
-                    "levels": []
-                },
-                "is_primary": False
-            },
-            {
-                "company": {
-                    "name": "intuitive products international corporation",
-                    "size": None,
-                    "id": None,
-                    "founded": None,
-                    "industry": None,
-                    "location": None,
-                    "linkedin_url": None,
-                    "linkedin_id": None,
-                    "facebook_url": None,
-                    "twitter_url": None,
-                    "website": None
-                },
-                "location_names": [],
-                "end_date": "2001-09",
-                "start_date": "2000-03",
-                "title": {
-                    "name": "application developer",
-                    "role": "engineering",
-                    "sub_role": None,
-                    "levels": []
-                },
-                "is_primary": False
-            },
-            {
-                "company": {
-                    "name": "time magazine",
-                    "size": "501-1000",
-                    "id": "time-magazine",
-                    "founded": None,
-                    "industry": "publishing",
-                    "location": {
-                        "name": "united states",
-                        "locality": None,
-                        "region": None,
-                        "metro": None,
-                        "country": "united states",
-                        "continent": "north america",
-                        "street_address": None,
-                        "address_line_2": None,
-                        "postal_code": None,
-                        "geo": None
-                    },
-                    "linkedin_url": "linkedin.com/company/time-magazine",
-                    "linkedin_id": "1748",
-                    "facebook_url": "facebook.com/time",
-                    "twitter_url": None,
-                    "website": None
-                },
-                "location_names": [],
-                "end_date": "2011-01",
-                "start_date": "2006-06",
-                "title": {
-                    "name": "senior front end web developer",
-                    "role": "engineering",
-                    "sub_role": "web",
-                    "levels": [
-                        "senior"
-                    ]
-                },
-                "is_primary": False
-            },
-            {
-                "company": {
-                    "name": "demdex, inc",
-                    "size": "1-10",
-                    "id": "demdex-inc",
-                    "founded": None,
-                    "industry": None,
-                    "location": None,
-                    "linkedin_url": "linkedin.com/company/demdex-inc",
-                    "linkedin_id": None,
-                    "facebook_url": None,
-                    "twitter_url": None,
-                    "website": None
-                },
-                "location_names": [],
-                "end_date": "2011-02",
-                "start_date": "2011-01",
-                "title": {
-                    "name": "front end engineer",
-                    "role": "engineering",
-                    "sub_role": "web",
-                    "levels": []
-                },
-                "is_primary": False
-            },
-            {
-                "company": {
-                    "name": "td",
-                    "size": "10001+",
-                    "id": "td",
-                    "founded": 2007,
-                    "industry": "banking",
-                    "location": {
-                        "name": "toronto, ontario, canada",
-                        "locality": "toronto",
-                        "region": "ontario",
-                        "metro": None,
-                        "country": "canada",
-                        "continent": "north america",
-                        "street_address": None,
-                        "address_line_2": None,
-                        "postal_code": "m5k 1a2",
-                        "geo": "43.70,-79.41"
-                    },
-                    "linkedin_url": "linkedin.com/company/td",
-                    "linkedin_id": "2775",
-                    "facebook_url": None,
-                    "twitter_url": "twitter.com/td_canada",
-                    "website": "td.com"
-                },
-                "location_names": [],
-                "end_date": "2005-09",
-                "start_date": "2005-04",
-                "title": {
-                    "name": "web development consultant",
-                    "role": "engineering",
-                    "sub_role": "web",
-                    "levels": []
-                },
-                "is_primary": False
-            },
-            {
-                "company": {
-                    "name": "adp",
-                    "size": "10001+",
-                    "id": "adp",
-                    "founded": 1949,
-                    "industry": "human resources",
-                    "location": {
-                        "name": "roseland, new jersey, united states",
-                        "locality": "roseland",
-                        "region": "new jersey",
-                        "metro": "new york, new york",
-                        "country": "united states",
-                        "continent": "north america",
-                        "street_address": "1 adp boulevard",
-                        "address_line_2": None,
-                        "postal_code": "07068",
-                        "geo": "40.82,-74.29"
-                    },
-                    "linkedin_url": "linkedin.com/company/adp",
-                    "linkedin_id": "1463",
-                    "facebook_url": "facebook.com/automaticdataprocessing",
-                    "twitter_url": None,
-                    "website": "adp.com"
-                },
-                "location_names": [],
-                "end_date": "2000-03",
-                "start_date": "1998-06",
-                "title": {
-                    "name": "data processing analyst",
-                    "role": None,
-                    "sub_role": None,
-                    "levels": []
-                },
-                "is_primary": False
-            },
-            {
-                "company": {
-                    "name": "standard & poor's",
-                    "size": "10001+",
-                    "id": "spglobalratings",
-                    "founded": None,
-                    "industry": "capital markets",
-                    "location": {
-                        "name": "new york, new york, united states",
-                        "locality": "new york",
-                        "region": "new york",
-                        "metro": "new york, new york",
-                        "country": "united states",
-                        "continent": "north america",
-                        "street_address": "55 water street",
-                        "address_line_2": None,
-                        "postal_code": "10041",
-                        "geo": "40.71,-74.00"
-                    },
-                    "linkedin_url": "linkedin.com/company/spglobalratings",
-                    "linkedin_id": "3062",
-                    "facebook_url": None,
-                    "twitter_url": None,
-                    "website": "standardandpoors.com"
-                },
-                "location_names": [],
-                "end_date": "2006-05",
-                "start_date": "2005-09",
-                "title": {
-                    "name": "front end web development consultant",
-                    "role": "engineering",
-                    "sub_role": "web",
-                    "levels": []
-                },
-                "is_primary": False
-            },
-            {
-                "company": {
-                    "name": "adobe",
-                    "size": "10001+",
-                    "id": "adobe",
-                    "founded": 1982,
-                    "industry": "computer software",
-                    "location": {
-                        "name": "san jose, california, united states",
-                        "locality": "san jose",
-                        "region": "california",
-                        "metro": "san jose, california",
-                        "country": "united states",
-                        "continent": "north america",
-                        "street_address": "345 park avenue",
-                        "address_line_2": None,
-                        "postal_code": "95110",
-                        "geo": "37.33,-121.89"
-                    },
-                    "linkedin_url": "linkedin.com/company/adobe",
-                    "linkedin_id": "1480",
-                    "facebook_url": None,
-                    "twitter_url": "twitter.com/adobe",
-                    "website": "adobe.com"
-                },
-                "location_names": [
-                    "new york, new york, united states"
-                ],
+                "company_name": "adobe",
+                "company_size": "10001+",
+                "company_id": "adobe",
+                "company_founded": 1982,
+                "company_industry": "computer software",
                 "end_date": None,
-                "start_date": "2011-02",
-                "title": {
-                    "name": "senior software developer",
-                    "role": "engineering",
-                    "sub_role": "software",
-                    "levels": [
-                        "senior"
-                    ]
-                },
-                "is_primary": True
+                "start_date": "2020-06",
+                "current_job": True,
+                "company_location_name": "san jose, california, united states",
+                "company_location_country": "united states",
+                "company_location_continent": "north america",
+                "title_name": "senior software engineer, ad cloud developer productivity team",
+                "title_role": "engineering",
+                "title_levels": [
+                    "senior"
+                ]
+            },
+            {
+                "company_name": "product plus reclamebureau",
+                "company_size": "11-50",
+                "company_id": "product-plus-reclamebureau",
+                "company_founded": 1984,
+                "company_industry": "marketing and advertising",
+                "end_date": "2007-04",
+                "start_date": "2005-06",
+                "current_job": False,
+                "company_location_name": "netherlands",
+                "company_location_country": "netherlands",
+                "company_location_continent": "europe",
+                "title_name": "account manager - purchasing and sales",
+                "title_role": "finance",
+                "title_levels": [
+                    "manager"
+                ]
+            },
+            {
+                "company_name": "markettools",
+                "company_size": "201-500",
+                "company_id": "markettools-inc.",
+                "company_founded": 1997,
+                "company_industry": "market research",
+                "end_date": "2010-05",
+                "start_date": "2008-08",
+                "current_job": False,
+                "company_location_name": "san francisco, california, united states",
+                "company_location_country": "united states",
+                "company_location_continent": "north america",
+                "title_name": "sample analyst, online surveys",
+                "title_role": None,
+                "title_levels": []
+            },
+            {
+                "company_name": "surveymonkey",
+                "company_size": "501-1000",
+                "company_id": "surveymonkey",
+                "company_founded": 1999,
+                "company_industry": "internet",
+                "end_date": "2013-06",
+                "start_date": "2012-01",
+                "current_job": False,
+                "company_location_name": "san mateo, california, united states",
+                "company_location_country": "united states",
+                "company_location_continent": "north america",
+                "title_name": "product manager, zoompanel",
+                "title_role": "operations",
+                "title_levels": [
+                    "manager"
+                ]
+            },
+            {
+                "company_name": "john edwards for president",
+                "company_size": "51-200",
+                "company_id": "john-edwards-for-president",
+                "company_founded": None,
+                "company_industry": "political organization",
+                "end_date": "2008-01",
+                "start_date": "2007-05",
+                "current_job": False,
+                "company_location_name": "united states",
+                "company_location_country": "united states",
+                "company_location_continent": "north america",
+                "title_name": "field organizer - iowa caucus",
+                "title_role": None,
+                "title_levels": []
+            },
+            {
+                "company_name": "markettools",
+                "company_size": "201-500",
+                "company_id": "markettools-inc.",
+                "company_founded": 1997,
+                "company_industry": "market research",
+                "end_date": "2011-06",
+                "start_date": "2010-05",
+                "current_job": False,
+                "company_location_name": "san francisco, california, united states",
+                "company_location_country": "united states",
+                "company_location_continent": "north america",
+                "title_name": "account manager, sample sales",
+                "title_role": "sales",
+                "title_levels": [
+                    "manager"
+                ]
+            },
+            {
+                "company_name": "markettools",
+                "company_size": "201-500",
+                "company_id": "markettools-inc.",
+                "company_founded": 1997,
+                "company_industry": "market research",
+                "end_date": "2012-01",
+                "start_date": "2011-07",
+                "current_job": False,
+                "company_location_name": "san francisco, california, united states",
+                "company_location_country": "united states",
+                "company_location_continent": "north america",
+                "title_name": "assoc product manager and assoc panel manager - zoompanel",
+                "title_role": "operations",
+                "title_levels": [
+                    "manager"
+                ]
+            },
+            {
+                "company_name": "adobe",
+                "company_size": "10001+",
+                "company_id": "adobe",
+                "company_founded": 1982,
+                "company_industry": "computer software",
+                "end_date": "2020-06",
+                "start_date": "2017-01",
+                "current_job": False,
+                "company_location_name": "san jose, california, united states",
+                "company_location_country": "united states",
+                "company_location_continent": "north america",
+                "title_name": "lead frontend engineer, ad cloud tv",
+                "title_role": "engineering",
+                "title_levels": [
+                    "manager"
+                ]
+            },
+            {
+                "company_name": "tubemogul, inc.",
+                "company_size": "501-1000",
+                "company_id": "tubemogul-inc-",
+                "company_founded": 2006,
+                "company_industry": "marketing and advertising",
+                "end_date": "2017-01",
+                "start_date": "2015-10",
+                "current_job": False,
+                "company_location_name": "emeryville, california, united states",
+                "company_location_country": "united states",
+                "company_location_continent": "north america",
+                "title_name": "software engineer, web",
+                "title_role": "engineering",
+                "title_levels": []
+            },
+            {
+                "company_name": "good eggs",
+                "company_size": "201-500",
+                "company_id": "good-eggs",
+                "company_founded": 2011,
+                "company_industry": "food production",
+                "end_date": "2015-08",
+                "start_date": "2014-04",
+                "current_job": False,
+                "company_location_name": "san francisco, california, united states",
+                "company_location_country": "united states",
+                "company_location_continent": "north america",
+                "title_name": "software engineer",
+                "title_role": "engineering",
+                "title_levels": []
             }
         ],
         "education": [
             {
-                "school": {
-                    "name": "cornell university",
-                    "type": "post-secondary institution",
-                    "id": "4pGVlL6TZtjQib7zhfksEQ_0",
-                    "location": {
-                        "name": "ithaca, new york, united states",
-                        "locality": "ithaca",
-                        "region": "new york",
-                        "country": "united states",
-                        "continent": "north america"
-                    },
-                    "linkedin_url": "linkedin.com/school/cornell-university",
-                    "facebook_url": "facebook.com/cornell",
-                    "twitter_url": "twitter.com/cornell",
-                    "linkedin_id": "18946",
-                    "website": "cornell.edu",
-                    "domain": "cornell.edu"
-                },
-                "end_date": "1998",
-                "start_date": "1992",
+                "school_name": "pomona college",
+                "school_type": "post-secondary institution",
+                "end_date": "2014",
+                "start_date": None,
+                "gpa": None,
+                "degrees": [],
+                "majors": [],
+                "minors": []
+            },
+            {
+                "school_name": "bellarmine college preparatory",
+                "school_type": "post-secondary institution",
+                "end_date": "2001",
+                "start_date": "1997",
+                "gpa": None,
+                "degrees": [],
+                "majors": [],
+                "minors": []
+            },
+            {
+                "school_name": "pomona college",
+                "school_type": "post-secondary institution",
+                "end_date": "2005",
+                "start_date": "2001",
                 "gpa": None,
                 "degrees": [
                     "bachelors",
-                    "bachelor of science"
+                    "bachelor of arts"
                 ],
                 "majors": [
-                    "industrial engineering"
+                    "sociology"
                 ],
                 "minors": []
             }

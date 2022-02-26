@@ -2,7 +2,7 @@ import os
 import pandas as pd
 
 
-class Attribute:
+class DomainAndFrequency:
     """
         This class (Attribute) is responsible to calculate the frequency fo each possible value for
         the given categorical attribute and the attribute domain size
@@ -10,72 +10,108 @@ class Attribute:
         - self.domain_size, domain size of a given attribute (the number of possible values for the given attribute)
         - self.value_frequency, the frequency of a possible value in the given attribute
         - self.attr_values, list of the possible values in the given attribute
+        - self.attr_values_dict, dict of lists of the possible values in a given attribute in case of nested attribute
         - self.val_type, indicates whether the attribute value is str, list or nested
 
         the return value is the frequency for each value and the attribute domain size
     """
-    def __init__(self, attr, val_type):
+    def __init__(self, attr, val_type, data_frame):
+        self.df = data_frame
         self.attr = attr
         self.val_type = val_type
         self.domain_size = None
         self.attr_values = []
+        self.attr_values_dict = {}
         self.value_frequency = {}
 
     @staticmethod
+    def iteration(values_list: list, freq_dict: dict, val) -> tuple:
+        if type(val) == list:
+            for item in val:
+                if item not in values_list:
+                    values_list.append(item)
+
+                if item not in freq_dict.keys():
+                    freq_dict[item] = 1
+                else:
+                    freq_dict[item] += 1
+        else:
+            if val not in values_list:
+                values_list.append(val)
+
+            if val not in freq_dict.keys():
+                freq_dict[val] = 1
+            else:
+                freq_dict[val] += 1
+
+        return values_list, freq_dict
+
+    def str_values(self):
+        for _, row in self.df.iterrows():
+            self.attr_values, self.value_frequency = \
+                self.iteration(self.attr_values, self.value_frequency, row[self.attr])
+        self.domain_size = len(self.attr_values)
+
+    def list_values(self):
+        for _, row in self.df.iterrows():
+            for value in row[self.attr]:
+                self.attr_values, self.value_frequency = \
+                    self.iteration(self.attr_values, self.value_frequency, value)
+            self.domain_size = len(self.attr_values)
+
+    def nested_values(self):
+
+        # attr_list = {'company_name': ['adobe', 'linkedin', ....], size: [], ...}
+        # attr_freq = {'company_name': {'adobe': 6, 'linkedin': 2}}
+        attr_list = {}
+        attr_freq = {}
+
+        for _, row in self.df.iterrows():
+            # print(f'adobe df {row[self.attr]}')
+            for value in row[self.attr]:
+                # print(f'value {value}')
+                for key, val in value.items():
+                    # print(f'key - {key}, val - {val}')
+                    if key not in attr_freq.keys():
+                        result = self.iteration([], {}, val)
+                    else:
+                        result = self.iteration(attr_list[key], attr_freq[key], val)
+                    attr_list[key] = result[0]
+                    attr_freq[key] = result[1]
+
+        self.domain_size = {}
+        self.value_frequency = attr_freq
+        self.attr_values_dict = attr_list
+        self.domain_size = {attr: len(self.attr_values_dict[attr]) for attr in self.attr_values_dict.keys()}
+
+    def calc_domain_and_frequency(self):
+        if self.val_type == str:
+            self.str_values()
+        elif self.val_type == list:
+            self.list_values()
+        elif self.val_type == dict:
+            self.nested_values()
+
+        print(f'val frequency {self.value_frequency}')
+        print(f'attribute values {self.attr_values}')
+        print(f'attribute values dict {self.attr_values_dict}')
+        print(f'domain size {self.domain_size}')
+
+        return self.value_frequency, self.domain_size
+
+
+if __name__ == '__main__':
     def read_employee_data():
         data_path = os.path.abspath(os.path.
                                     join(os.path.dirname(__file__), '..', 'dataTool\\clean_data')).replace('/', '\\')
         print(f'data path', data_path)
         adobe = os.path.join(data_path, 'AdobeEmployees.json')
+        # adobe = os.path.join(data_path, 'Demo.json')
         df = pd.read_json(adobe)
         return df
 
-    def str_values(self, df):
-        for _, row in df.iterrows():
-            print(f'adobe df {row[self.attr]}')
-            if row[self.attr] not in self.attr_values:
-                self.attr_values.append(row[self.attr])
 
-            if row[self.attr] not in self.value_frequency.keys():
-                self.value_frequency[row[self.attr]] = 1
-            else:
-                self.value_frequency[row[self.attr]] += 1
-        print(f'val frequency {self.value_frequency}')
-        print(f'attribute values {self.attr_values}')
-
-        self.domain_size = len(self.attr_values)
-        print(f'domain size {self.domain_size}')
-
-    def list_values(self, df):
-        for _, row in df.iterrows():
-            print(f'adobe df {row[self.attr]}')
-            for value in row[self.attr]:
-                if value not in self.attr_values:
-                    self.attr_values.append(value)
-
-                if value not in self.value_frequency.keys():
-                    self.value_frequency[value] = 1
-                else:
-                    self.value_frequency[value] += 1
-        print(f'val frequency {self.value_frequency}')
-        print(f'attribute values {self.attr_values}')
-
-        self.domain_size = len(self.attr_values)
-        print(f'domain size {self.domain_size}')
-
-    def nested_values(self, df):
-        pass
-
-    def calc_domain_and_frequency(self):
-        df = self.read_employee_data()
-        if self.val_type == str:
-            self.str_values(df)
-        elif self.val_type == list:
-            self.list_values(df)
-        elif self.val_type == dict:
-            pass
-        return self.value_frequency, self.domain_size
-
-
-if __name__ == '__main__':
-    Attribute('interests', list).calc_domain_and_frequency()
+    data_frame = read_employee_data()
+    DomainAndFrequency('experience', dict, data_frame).calc_domain_and_frequency()
+    # DomainAndFrequency('skills', list).calc_domain_and_frequency()
+    # DomainAndFrequency('gender', str).calc_domain_and_frequency()
