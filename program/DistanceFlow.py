@@ -4,7 +4,7 @@ import pandas as pd
 import numpy as np
 from pydoc import locate
 from algorithems.domain_size_frequencies import DomainAndFrequency
-from algorithems.DistanceCalc import Distance
+from algorithems.DistCateFunctions import DistanceCateFunctions
 
 
 class DistanceFlow:
@@ -17,12 +17,16 @@ class DistanceFlow:
         calculate distance matrix for each data set in the DB
 
         - self.df, represents all employees data from json files
+
         - self.domain_per_attribute, for each attribute in the data represent its domain size
-        (the number of possible values)
+            (the number of possible values)
+
         - self.freq_per_attribute, for each attributes' value in the data represent its frequency
+
         - self.attr_types, represent attributes types
             {name: <str>, experience: dict, ..}
-        - self.attr_types_include_nested, represent nested attributes types
+
+        - self.nested_attr_types, represent nested attributes types
             {experience:{company_name: <str>, company_size: <float>, ...}}
     """
     def __init__(self, calc_domain_freq=False, calc_attr_type=False):
@@ -142,16 +146,25 @@ class DistanceFlow:
         with open(attribute_nested_type_path, 'w') as fp:
             json.dump(self.nested_attr_types, fp)
 
+    def calc_distance_matrix(self):
+        pass
+
     def run_distance_flow(self):
-        self.read_attr_types()
         self.read_json_employees()
         if self.calc_attr_type:
             self.calc_attributes_type()
         if self.calc_domain_freq:
             self.calc_domain_and_frequency()
+        else:
+            self.read_attr_types()
+            self.read_attr_domain()
+            self.read_attr_freq()
 
-        Distance(self.df.iloc[0], self.df.iloc[1], self.attr_types).calc_distance()
+        DistanceCateFunctions(self.df.iloc[0], self.df.iloc[1], self.attr_types, self.nested_attr_types,
+                              self.freq_per_attribute, self.domain_per_attribute).calc_distance()
 
 
 if __name__ == '__main__':
-    DistanceFlow(False, False).run_distance_flow()
+    attr_type = True
+    domain_and_freq = False
+    DistanceFlow(domain_and_freq, attr_type).run_distance_flow()
