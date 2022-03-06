@@ -70,7 +70,7 @@ class DistanceCateFunctions:
             val2 = 'null'
 
         min_freq = min(value_frequency.items(), key=lambda x: x[1])[1]
-        # print(f'min frequency {min_freq}')
+        print(f'min frequency {min_freq}')
         val1_frequency = value_frequency.get(val1)
         val2_frequency = value_frequency.get(val2)
         max_freq = max(val1_frequency, val2_frequency)
@@ -101,17 +101,33 @@ class DistanceCateFunctions:
             return 1
 
     @staticmethod
-    def calc_num_distance_q13(val1, val2) -> dict:
+    def calc_num_distance_q13(val1, val2) -> float:
+        print(f'numeric {val1} , {val2}')
         if not val1 or not val2:
             return 0
         else:
             return (val1 - val2) ** 2
 
+    @staticmethod
+    def dist_for_lists(list1, list2) -> float:
+        union = list(set(list1 + list2))
+        intersection = list(set.intersection(set(list1), set(list2)))
+
+        union_len = len(union)
+        intersection_len = len(intersection)
+        print(f'list1 {list1}\nlist2 {list2}')
+        print(f'union {union}\ninter {intersection}\nunion len {union_len}\ninter len {intersection_len}')
+
+        if union_len == 0:
+            return 0
+
+        return intersection_len / union_len
+
     def q11(self):
         for attr, val in self.instance_a.items():
             val_type = locate(self.attr_types[attr].split("'")[1])
 
-            if locate(self.attr_types[attr].split("'")[1]) == str:
+            if val_type == str:
                 print("####################################################################################")
                 print(val_type)
                 print(f'attr {attr}')
@@ -125,13 +141,19 @@ class DistanceCateFunctions:
                 print(f'q10 result {q10result}\nq12 result {q12result}')
                 self.categorical_sum += (q10result * q12result)
 
-            elif locate(self.attr_types[attr].split("'")[1]) == float or \
-                    locate(self.attr_types[attr].split("'")[1]) == int:
+            elif val_type == float or val_type == int:
                 q13result = self.calc_num_distance_q13(val, self.instance_b[attr])
                 print("####################################################################################")
                 print(val_type)
                 print(f'q13 result {q13result}\n')
                 self.numerical_sum += q13result
+
+            elif val_type == list:
+                list_dist_result = self.dist_for_lists(val, self.instance_b[attr])
+                self.categorical_sum += list_dist_result
+                print("####################################################################################")
+                print(val_type)
+                print(f'list dist result {list_dist_result}\n')
 
         print(f'categorical sum result {self.categorical_sum}')
         print(f'numerical sum result {self.numerical_sum}')
@@ -152,7 +174,8 @@ class DistanceCateFunctions:
         print(f'instance b - {self.instance_b}')
 
         self.q11()
-        print(f'total distance result {self.q14()}')
+        # print(f'total distance result {self.q14()}')
+        return self.q14()
 
 
 if __name__ == '__main__':

@@ -49,7 +49,7 @@ class DistanceFlow:
         # data_path = os.path.abspath(os.path.
         #                             join(os.path.dirname(__file__), '..', 'dataTool\\clean_data')).replace('/', '\\')
         print(f'data path', data_path)
-        adobe = os.path.join(data_path, 'AdobeEmployees.json')
+        adobe = os.path.join(data_path, 'AppleEmployees.json')
         with open(adobe) as f:
             self.df = pd.read_json(f)
 
@@ -160,11 +160,23 @@ class DistanceFlow:
             self.read_attr_domain()
             self.read_attr_freq()
 
-        DistanceCateFunctions(self.df.iloc[0], self.df.iloc[1], self.attr_types, self.nested_attr_types,
-                              self.freq_per_attribute, self.domain_per_attribute).calc_distance()
+        self.res = []
+        for i in range(0, len(self.df)):
+            self.res.append(DistanceCateFunctions(self.df.iloc[0], self.df.iloc[i], self.attr_types, self.nested_attr_types,
+                            self.freq_per_attribute, self.domain_per_attribute).calc_distance())
+        # self.res.append(DistanceCateFunctions(self.df.iloc[1], self.df.iloc[5], self.attr_types, self.nested_attr_types,
+        #                 self.freq_per_attribute, self.domain_per_attribute).calc_distance())
 
 
 if __name__ == '__main__':
-    attr_type = True
+    attr_type = False
     domain_and_freq = False
-    DistanceFlow(domain_and_freq, attr_type).run_distance_flow()
+    x = DistanceFlow(domain_and_freq, attr_type)
+    x.run_distance_flow()
+
+    print(f'sum{sum(x.res)}')
+    print(f'unique{len(np.unique((x.res)))}')
+    print(f'res{x.res}')
+    print(f'res{min(x.res)}')
+    print(f'res{max(x.res)}')
+
