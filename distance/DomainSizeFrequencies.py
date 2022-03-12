@@ -36,7 +36,6 @@ class DomainAndFrequency:
                 else:
                     freq_dict[item] += 1
         else:
-            print(f'val {val}')
             if not val:
                 val = 'null'
             if val not in values_list:
