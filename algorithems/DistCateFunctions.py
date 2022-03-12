@@ -72,6 +72,7 @@ class DistanceCateFunctions:
         print(f'min frequency {min_freq}')
         val1_frequency = value_frequency.get(val1)
         val2_frequency = value_frequency.get(val2)
+        print(f'v1 freq {val1_frequency} v2 freq {val2_frequency}')
         max_freq = max(val1_frequency, val2_frequency)
         dist = (abs(val1_frequency - val2_frequency) + min_freq) / max_freq
 
