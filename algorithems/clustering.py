@@ -1,7 +1,9 @@
 # import libraries
 
 # For plotting
+import math
 import random
+import json
 
 import matplotlib.pyplot as plt
 import numpy
@@ -18,52 +20,81 @@ import pandas as pd
 from math import sqrt, log, exp, pi
 from random import uniform
 
-x = np.linspace(0, 1, 100)  # to plot the data
+# x = np.linspace(0, 1, 100)  # to plot the data
 
-# sns.displot(data, bins=20, kde=False);
+
+#
+# tmp = []
+# max_val = 0
+# min_val = 10000
+#
+# for key in res.keys():
+#     total = sum(res[key])
+#     tmp.append(res[key])
+#
+#     if total > max_val:
+#         max_val = total
+#     if total < min_val:
+#         min_val = total
+# print(f"sum: {key} - {total}")
+# print(f"max: {key} - {max(res[key])}")
+# print(f"min: {key} - {min(res[key])}")
+# print(f"unique: {key} - {len(np.unique(res[key]))}\n")
+
+# pd.set_option('display.max_rows', 500)
+# pd.set_option('display.max_columns', 500)
+# pd.set_option('display.width', 100)
+
+# y = pd.read_csv('../program/foo.csv')
+# print(y.describe(include='all'))
+
+# data = []
+# for val in tmp:
+#     data.append((val - min_val) / (max_val - min_val))
+
+# sns.displot(res["george lo"], bins=100, kde=False);
+# # # sns.displot(res.values(), bins=100, kde=False);
+# # # sns.kdeplot(tmp)
 # plt.show()
 
-SIZE = 1000
-data = numpy.zeros((SIZE, SIZE))
+from sklearn.mixture import GaussianMixture
 
-random_seed = 17
-np.random.seed(random_seed)
+data = None
 
-r = []
-
-for i in range(SIZE):
-    for j in range(i + 1, SIZE):
-        tmp = np.random.rand(1)
-        data[i][j] = tmp
-        data[j][i] = tmp
-
-# data = pd.DataFrame(data)
-
-# data = pd.DataFrame(data=np.random.rand(10, 2), columns=["x", "y"])
-# data = np.random.rand(5, 5)
-sns.distplot([sum(x) for x in data], kde=False, bins=100)
-
+data = np.load('../program/full_matrix.npy')
 # print(data)
-# sns.scatterplot(data=data,)
-plt.show()
 
-for row in data:
-    print(sum(row))
+# print(len(np.unique(data)))
 
-# from sklearn.mixture import GaussianMixture
-#
-# gmm = GaussianMixture(n_components=5, tol=0.000001)
-# gmm.fit(
-#     np.expand_dims(data, 1))  # Parameters: array-like, shape (n_samples, n_features), 1 dimension dataset so 1 feature
-# Gaussian_nr = 1
+train = data[0:60]
+test = data[61:-1]
+
+# sns.displot(data, bins=100)
+# sns.heatmap(data)
+# sns.scatterplot(data=data, )
+# plt.show()
+
+for i in range(1, 10):
+    gmm = GaussianMixture(n_components=i, tol=0.00000001, max_iter=500)
+    gmm.fit(train)  # Parameters: array-like, shape (n_samples, n_features), 1 dimension dataset so 1 feature
+
+    print(f"\nnow running example with {i} gaussians\n")
+    print(gmm.aic(test))
+    print(gmm.bic(test))
+    print(gmm.predict(test))
+    print("**************************************")
+
+# print(gmm.means_)
+
 # # print('Input Gaussian {:}: μ = {:.2}, σ = {:.2}'.format("1", Mean1, Standard_dev1))
 # # print('Input Gaussian {:}: μ = {:.2}, σ = {:.2}'.format("2", Mean2, Standard_dev2))
+# Gaussian_nr = 1
 # for mu, sd, p in zip(gmm.means_.flatten(), np.sqrt(gmm.covariances_.flatten()), gmm.weights_):
 #     print('Gaussian {:}: μ = {:.2}, σ = {:.2}, weight = {:.2}'.format(Gaussian_nr, mu, sd, p))
 #     g_s = stats.norm(mu, sd).pdf(x) * p
 #     plt.plot(x, g_s, label=f'gaussian {Gaussian_nr} sklearn');
 #     Gaussian_nr += 1
-#
+# #
 # sns.distplot(data, bins=20, kde=False, norm_hist=True)
 # gmm_sum = np.exp(
 #     [gmm.score_samples(e.reshape(-1, 1)) for e in x])  # gmm gives log probability, hence the exp() function
