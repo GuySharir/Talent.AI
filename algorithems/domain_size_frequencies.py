@@ -36,6 +36,9 @@ class DomainAndFrequency:
                 else:
                     freq_dict[item] += 1
         else:
+            print(f'val {val}')
+            if not val:
+                val = 'null'
             if val not in values_list:
                 values_list.append(val)
 
@@ -112,6 +115,7 @@ if __name__ == '__main__':
 
 
     data = read_employee_data()
-    DomainAndFrequency('experience', dict, data).calc_domain_and_frequency()
+    freq, size = DomainAndFrequency('experience', dict, data).calc_domain_and_frequency()
+    print(freq, size)
     # DomainAndFrequency('skills', list).calc_domain_and_frequency()
     # DomainAndFrequency('gender', str).calc_domain_and_frequency()
