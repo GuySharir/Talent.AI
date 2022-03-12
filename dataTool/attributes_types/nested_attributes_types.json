@@ -1,0 +1,28 @@
+{
+  "experience": {
+    "company_name": "<class 'str'>",
+    "company_size": "<class 'str'>",
+    "company_id": "<class 'str'>",
+    "company_founded": "<class 'int'>",
+    "company_industry": "<class 'str'>",
+    "end_date": "<class 'str'>",
+    "start_date": "<class 'str'>",
+    "current_job": "<class 'bool'>",
+    "company_location_name": "<class 'str'>",
+    "company_location_country": "<class 'str'>",
+    "company_location_continent": "<class 'str'>",
+    "title_name": "<class 'str'>",
+    "title_role": "<class 'str'>",
+    "title_levels": "<class 'list'>"
+  },
+  "education": {
+    "school_name": "<class 'str'>",
+    "school_type": "<class 'str'>",
+    "end_date": "<class 'str'>",
+    "start_date": "<class 'str'>",
+    "gpa": "<class 'float'>",
+    "degrees": "<class 'list'>",
+    "majors": "<class 'list'>",
+    "minors": "<class 'list'>"
+  }
+}

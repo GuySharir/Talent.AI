@@ -51,7 +51,6 @@ class DistanceCateFunctions:
         self.instance_a = {attr: instance_a[inx] for inx, attr in enumerate(self.attr_types.keys())}
         self.instance_b = {attr: instance_b[inx] for inx, attr in enumerate(self.attr_types.keys())}
 
-        self.attr_dist_result = {}
         self.categorical_sum = 0
         self.numerical_sum = 0
 
@@ -154,6 +153,9 @@ class DistanceCateFunctions:
                 print("####################################################################################")
                 print(val_type)
                 print(f'list dist result {list_dist_result}\n')
+
+            elif val_type == dict:
+                pass
 
         print(f'categorical sum result {self.categorical_sum}')
         print(f'numerical sum result {self.numerical_sum}')
