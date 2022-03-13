@@ -17,6 +17,7 @@ class NestedDistance:
     def education_dist(self):
         print(f"degrees values {self.freq_per_attribute['degrees']}")
         print(f"majors values {self.freq_per_attribute['majors']}")
+        print(f"unique values from major {set(self.freq_per_attribute['majors'])}")
         degree_levels = ['bachelors', 'masters', 'doctorates', 'associates']
         major = ['computer science', 'software engineering', 'engineering', 'philosophy', 'electronics', 'marketing',
                  'music', 'business', 'electrical engineering', 'information systems', 'general education',
