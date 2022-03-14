@@ -7,4 +7,6 @@ class ListDistMethod(Enum):
 
 
 class NestedDistMethod(Enum):
-    temp = 1
+    all_items = 1
+    only_correlate_attributes = 2
+    all_items_when_correlate_attributes = 3

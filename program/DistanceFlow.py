@@ -34,7 +34,7 @@ class DistanceFlow:
     """
     def __init__(self, calc_domain_freq=False, calc_attr_type=False,
                  lists_dist_method: ListDistMethod = ListDistMethod.intersection,
-                 nested_dist_method: NestedDistMethod = NestedDistMethod.temp):
+                 nested_dist_method: NestedDistMethod = NestedDistMethod.all_items):
 
         self.df = None
         self.calc_domain_freq = calc_domain_freq
@@ -218,7 +218,7 @@ def main():
     # domain_and_freq = True
     domain_and_freq = False
 
-    dist_obj = DistanceFlow(domain_and_freq, attr_type, ListDistMethod.intersection, NestedDistMethod.temp)
+    dist_obj = DistanceFlow(domain_and_freq, attr_type, ListDistMethod.intersection, NestedDistMethod.all_items)
     dist_obj.run_distance_flow()
 
     if dist_obj.res:
