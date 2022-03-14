@@ -92,11 +92,11 @@ class DistanceNumStr:
 
         print("################################# New Attribute ########################################")
         print(f'attribute- {attribute}')
-        print(f'valur type- {val_type}')
+        print(f'value type- {val_type}')
         print(f'instanceA value - {val1}')
         print(f'instanceB value - {val2}')
-        print(f'frequencies dictionary {value_frequency}')
-        print(f'domain size {domain_size}')
+        # print(f'frequencies dictionary {value_frequency}')
+        # print(f'domain size {domain_size}')
 
         if val_type == str:
             str_data = StrDistanceData(val_type=val_type, val1=val1, val2=val2, value_frequency=value_frequency,

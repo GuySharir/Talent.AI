@@ -1,9 +1,9 @@
 import math
 from pydoc import locate
-from distance.ListsDistance import ListsDistance
+
+from distance.DistanceData import NestedDistanceData
 from distance.NestedDistance import NestedDistance
-from distance.DistEnum import ListDistMethod
-from distance.DistEnum import NestedDistMethod
+from distance.DistEnum import ListDistMethod, NestedDistMethod
 from distance.DistanceFunctions import DistanceNumStr
 
 
@@ -77,10 +77,17 @@ class DistanceFunctionality:
                 self.categorical_sum += result
 
             elif val_type == dict:
-                nested_dist_obj = NestedDistance(freq_per_attribute=self.freq_per_attribute[attr], attribute=attr,
-                                                 nested_obj1=val, nested_obj2=self.instance_b[attr],
-                                                 nested_dist_method=self.nested_dist_method)
-                nested_dist_obj.calc_dist()
+                nested_data = NestedDistanceData(val_type=val_type, obj1=val, obj2=self.instance_b[attr],
+                                                 value_frequency=self.freq_per_attribute[attr],
+                                                 domain_size=self.domain_per_attribute[attr],
+                                                 attribute=attr, instance_a=self.instance_a, instance_b=self.instance_b,
+                                                 lists_dist_method=self.lists_dist_method,
+                                                 nested_dist_method=self.nested_dist_method,
+                                                 nested_attr_types=self.nested_attr_types)
+                nested_dist_obj = NestedDistance(nested_data)
+                result = nested_dist_obj.calc_dist()
+                self.categorical_sum += result
+
 
         print(f'categorical sum result {self.categorical_sum}')
         print(f'numerical sum result {self.numerical_sum}')

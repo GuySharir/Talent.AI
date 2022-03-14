@@ -1,5 +1,20 @@
 from dataclasses import dataclass
-from distance.DistEnum import ListDistMethod
+from distance.DistEnum import ListDistMethod, NestedDistMethod
+
+
+@dataclass
+class NestedDistanceData:
+    val_type: object
+    obj1: dict
+    obj2: dict
+    value_frequency: dict
+    domain_size: dict
+    attribute: str
+    instance_a: dict
+    instance_b: dict
+    lists_dist_method: ListDistMethod
+    nested_dist_method: NestedDistMethod
+    nested_attr_types: dict
 
 
 @dataclass
