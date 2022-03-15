@@ -7,6 +7,10 @@ from algorithems.domain_size_frequencies import DomainAndFrequency
 from algorithems.DistCateFunctions import DistanceCateFunctions
 
 
+def my_print(*args):
+    pass
+
+
 class DistanceFlow:
     """
         This class (DistanceFlow) is responsible for the distance calculation flow
@@ -49,8 +53,8 @@ class DistanceFlow:
         data_path = self.set_path('dataTool/clean_data')
         # data_path = os.path.abspath(os.path.
         #                             join(os.path.dirname(__file__), '..', 'dataTool/clean_data')).replace('/', '/')
-        print(f'data path', data_path)
-        adobe = os.path.join(data_path, 'AppleEmployees.json')
+        my_print(f'data path', data_path)
+        adobe = os.path.join(data_path, 'AmazonEmployees.json')
         with open(adobe) as f:
             self.df = pd.read_json(f)
 
@@ -83,14 +87,14 @@ class DistanceFlow:
 
         for attr, val_type in self.attr_types.items():
             val_type = locate(val_type.split("'")[1])
-            print(f'attribute {attr}')
+            my_print(f'attribute {attr}')
             value_frequency, domain_size = \
                 DomainAndFrequency(attr=attr, val_type=val_type, data_frame=self.df).calc_domain_and_frequency()
 
             self.domain_per_attribute.update({attr: domain_size})
             self.freq_per_attribute.update({attr: value_frequency})
-        print(f'domain per attribute {self.domain_per_attribute}')
-        print(f'freq per attribute {self.freq_per_attribute}')
+        my_print(f'domain per attribute {self.domain_per_attribute}')
+        my_print(f'freq per attribute {self.freq_per_attribute}')
 
         domain_size_path = self.set_path('dataTool/domain_size')
         # domain_size_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'dataTool/domain_size'))\
@@ -130,12 +134,12 @@ class DistanceFlow:
             elif data_type == np.float64:
                 data_type = float
             if data_type not in types:
-                print(f'Error! unpredicted value type')
+                my_print(f'Error! unpredicted value type')
 
             self.attr_types[attr] = str(data_type)
 
         self.calc_nested_attribute_type()
-        print(f'all attributes type- {self.attr_types}')
+        my_print(f'all attributes type- {self.attr_types}')
 
         path = self.set_path('dataTool/attributes_types')
         attribute_type_path = os.path.abspath(os.path.join(path, 'attributes_types.json'))
@@ -161,19 +165,44 @@ class DistanceFlow:
             self.read_attr_domain()
             self.read_attr_freq()
 
-        # self.res = []
+        # self.res = np.zeros((84, 2))
         # for i in range(0, len(self.df)):
-        #     self.res.append(
-        #         DistanceCateFunctions(self.df.iloc[0], self.df.iloc[i], self.attr_types, self.nested_attr_types,
-        #                               self.freq_per_attribute, self.domain_per_attribute).calc_distance())
+        #     self.res[i][0] = DistanceCateFunctions(self.df.iloc[0], self.df.iloc[i], self.attr_types,
+        #                                            self.nested_attr_types,
+        #                                            self.freq_per_attribute,
+        #                                            self.domain_per_attribute).calc_distance()
+        #
+        #     self.res[i][1] = DistanceCateFunctions(self.df.iloc[1], self.df.iloc[i], self.attr_types,
+        #                                            self.nested_attr_types,
+        #                                            self.freq_per_attribute,
+        #                                            self.domain_per_attribute).calc_distance()
+        # self.res.append(
+        #     DistanceCateFunctions(self.df.iloc[0], self.df.iloc[i], self.attr_types, self.nested_attr_types,
+        #                           self.freq_per_attribute, self.domain_per_attribute).calc_distance())
+        #
+        # self.res.append(
+        #     DistanceCateFunctions(self.df.iloc[1], self.df.iloc[i], self.attr_types, self.nested_attr_types,
+        #                           self.freq_per_attribute, self.domain_per_attribute).calc_distance())
 
-        self.res = np.zeros((84, 84))
+        self.companies = {}
+        size = len(self.df)
+        self.res = np.zeros(size, size + 1)
         for i in range(0, len(self.df)):
-            for j in range(0, len(self.df)):
-                self.res[i][j] = DistanceCateFunctions(self.df.iloc[0], self.df.iloc[i], self.attr_types,
+            company = self.df.iloc[i]['job_company_id']
+            if company not in self.companies:
+                self.companies[company] = [i]
+            else:
+                self.companies[company].append(i)
+
+            for j in range(i + 1, len(self.df)):
+                self.res[i][j] = DistanceCateFunctions(self.df.iloc[i], self.df.iloc[j], self.attr_types,
                                                        self.nested_attr_types,
                                                        self.freq_per_attribute,
                                                        self.domain_per_attribute).calc_distance()
+
+                self.res[j][i] = self.res[i][j]
+
+            self.res[i][-1] = company
 
 
 if __name__ == '__main__':
@@ -182,10 +211,10 @@ if __name__ == '__main__':
     x = DistanceFlow(domain_and_freq, attr_type)
     x.run_distance_flow()
 
-    # print(f'sum{sum(x.res)}')
-    # print(f'unique{len(np.unique((x.res)))}')
-    # print(f'res{x.res}')
-    # print(f'res{min(x.res)}')
-    # print(f'res{max(x.res)}')
+    print(x.res)
+    print("\n\n\n")
+    print(x.companies)
 
-    np.save("full_matrix.npy", x.res)
+    np.save("../dataTool/clean_data/dataSet/facebook.npy", x.res)
+
+# combined3 = amazon,apple,facebook,google,microsoft
