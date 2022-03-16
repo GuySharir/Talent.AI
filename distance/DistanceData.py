@@ -3,6 +3,18 @@ from distance.DistEnum import ListDistMethod, NestedDistMethod
 
 
 @dataclass
+class DistanceFunctionalityData:
+    instance_a: dict
+    instance_b: dict
+    attr_types: dict
+    nested_attr_types: dict
+    freq_per_attribute: dict
+    domain_per_attribute: dict
+    lists_dist_method: ListDistMethod
+    nested_dist_method: NestedDistMethod
+
+
+@dataclass
 class NestedDistanceData:
     val_type: object
     obj1: dict
