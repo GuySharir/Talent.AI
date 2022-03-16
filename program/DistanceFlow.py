@@ -6,6 +6,7 @@ from pydoc import locate
 from datetime import datetime
 from distance.DistEnum import ListDistMethod
 from distance.DistEnum import NestedDistMethod
+from distance.DistanceData import DistanceFunctionalityData
 from distance.DomainSizeFrequencies import DomainAndFrequency
 from distance.DistanceFunctionality import DistanceFunctionality
 
@@ -193,19 +194,23 @@ class DistanceFlow:
 
         self.res = []
         # for i in range(0, len(self.df)):
-        #     self.res.append(DistanceFunctionality(instance_a=self.df.iloc[0], instance_b=self.df.iloc[i],
-        #                                           attr_type=self.attr_types,
-        #                                           nested_attr_types=self.nested_attr_types,
-        #                                           freq_per_attribute=self.freq_per_attribute,
-        #                                           domain_per_attribute=self.domain_per_attribute,
-        #                                           lists_dist_method=self.lists_dist_method,
-        #                                           nested_dist_method=self.nested_dist_method).calc_distance())
-        self.res.append(DistanceFunctionality(instance_a=self.df.iloc[1], instance_b=self.df.iloc[5],
-                                              attr_type=self.attr_types, nested_attr_types=self.nested_attr_types,
-                                              freq_per_attribute=self.freq_per_attribute,
-                                              domain_per_attribute=self.domain_per_attribute,
-                                              lists_dist_method=self.lists_dist_method,
-                                              nested_dist_method=self.nested_dist_method).calc_distance())
+        #     distance_obj = DistanceFunctionalityData(instance_a=self.df.iloc[0], instance_b=self.df.iloc[i],
+        #                                              attr_types=self.attr_types,
+        #                                              nested_attr_types=self.nested_attr_types,
+        #                                              freq_per_attribute=self.freq_per_attribute,
+        #                                              domain_per_attribute=self.domain_per_attribute,
+        #                                              lists_dist_method=self.lists_dist_method,
+        #                                              nested_dist_method=self.nested_dist_method)
+        #     self.res.append(DistanceFunctionality().calc_distance(distance_obj))
+        instance_a = {attr: self.df.iloc[1][inx] for inx, attr in enumerate(self.attr_types.keys())}
+        instance_b = {attr: self.df.iloc[5][inx] for inx, attr in enumerate(self.attr_types.keys())}
+        distance_obj = DistanceFunctionalityData(instance_a=instance_a, instance_b=instance_b,
+                                                 attr_types=self.attr_types, nested_attr_types=self.nested_attr_types,
+                                                 freq_per_attribute=self.freq_per_attribute,
+                                                 domain_per_attribute=self.domain_per_attribute,
+                                                 lists_dist_method=self.lists_dist_method,
+                                                 nested_dist_method=self.nested_dist_method)
+        self.res.append(DistanceFunctionality().calc_distance(data=distance_obj))
 
 
 def main():
@@ -222,11 +227,11 @@ def main():
     dist_obj.run_distance_flow()
 
     if dist_obj.res:
-        print(f'sum{sum(dist_obj.res)}')
-        print(f'unique{len(np.unique(dist_obj.res))}')
-        print(f'res{dist_obj.res}')
-        print(f'res{min(dist_obj.res)}')
-        print(f'res{max(dist_obj.res)}')
+        print(f'sum- {sum(dist_obj.res)}')
+        print(f'unique val- {len(np.unique(dist_obj.res))}')
+        print(f'distance res- {dist_obj.res}')
+        print(f'min val res- {min(dist_obj.res)}')
+        print(f'max val res- {max(dist_obj.res)}')
 
     print(f'end time {datetime.now().strftime("%H:%M:%S")}')
 

@@ -107,7 +107,7 @@ class DistanceNumStr:
             q12result = str_obj.q12()
             print(f'q10 result {q10result}')
             print(f'q12 result {q12result}')
-            return q10result * q12result
+            return (q10result * q12result) ** 2
 
         elif val_type == float or val_type == int:
             num_data = NumDistanceData(val_type=val_type, val1=val1, val2=val2, value_frequency=value_frequency,
