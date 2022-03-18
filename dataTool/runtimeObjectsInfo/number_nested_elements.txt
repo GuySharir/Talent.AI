@@ -1,0 +1,18 @@
+experience
+max nested elements 8
+ min nested elements 6
+education
+max nested elements 7
+ min nested elements 2
+experience
+max nested elements 8
+min nested elements 6
+education
+max nested elements 7
+min nested elements 2
+experience
+max nested elements 8
+min nested elements 6
+education
+max nested elements 7
+min nested elements 2
