@@ -1,0 +1,2 @@
+lists: {'job_title_levels': {'min': 0, 'max': 3}, 'interests': {'min': 1, 'max': 195}, 'skills': {'min': 2, 'max': 248}, 'experience:title_levels': {'min': 0, 'max': 3}, 'education:degrees': {'min': 0, 'max': 6}, 'education:majors': {'min': 0, 'max': 8}, 'education:minors': {'min': 0, 'max': 3}}
+nested: {'experience': {'min': 2, 'max': 24}, 'education': {'min': 1, 'max': 13}}
