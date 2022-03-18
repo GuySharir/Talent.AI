@@ -161,7 +161,7 @@ class DistanceFunctionality:
 
     def q14(self) -> float:
         print(f'total distance sum {math.sqrt(self.categorical_sum + self.numerical_sum)}')
-        return math.sqrt(self.categorical_sum + self.numerical_sum)
+        return math.sqrt(self.categorical_sum + self.numerical_sum + self.nested_sum)
 
     def calc_distance(self, data: DistanceFunctionalityData) -> float:
 
