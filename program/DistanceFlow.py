@@ -12,7 +12,7 @@ from distance.DistanceFunctionality import DistanceFunctionality
 
 
 def my_print(*args):
-    pass
+    print(*args)
 
 
 class DistanceFlow:
@@ -64,21 +64,21 @@ class DistanceFlow:
         data_path = self.set_path('dataTool/clean_data')
         # data_path = os.path.abspath(os.path.
         #                             join(os.path.dirname(__file__), '..', 'dataTool\\clean_data')).replace('/', '\\')
-        print(f'data path', data_path)
+        my_print(f'data path', data_path)
 
         all_files = [os.path.join(data_path, 'AppleEmployees.json'),
-                     os.path.join(data_path, 'AmazonEmployees.json'),
-                     os.path.join(data_path, 'AdobeEmployees.json'),
+                     # os.path.join(data_path, 'AmazonEmployees.json'),
+                     # os.path.join(data_path, 'AdobeEmployees.json'),
                      os.path.join(data_path, 'FacebookEmployees.json'),
-                     os.path.join(data_path, 'TwitterEmployees.json'),
-                     os.path.join(data_path, 'TeslaEmployees.json'),
-                     os.path.join(data_path, 'GoogleEmployees.json'),
-                     os.path.join(data_path, 'IbmEmployees.json'),
-                     os.path.join(data_path, 'MicrosoftEmployees.json'),
-                     os.path.join(data_path, 'NvidiaEmployees.json'),
-                     os.path.join(data_path, 'OracleEmployees.json'),
-                     os.path.join(data_path, 'SalesforceEmployees.json'),
-                     os.path.join(data_path, 'UberEmployees.json')
+                     # os.path.join(data_path, 'TwitterEmployees.json'),
+                     # os.path.join(data_path, 'TeslaEmployees.json'),
+                     # os.path.join(data_path, 'GoogleEmployees.json'),
+                     # os.path.join(data_path, 'IbmEmployees.json'),
+                     # os.path.join(data_path, 'MicrosoftEmployees.json'),
+                     # os.path.join(data_path, 'NvidiaEmployees.json'),
+                     # os.path.join(data_path, 'OracleEmployees.json'),
+                     # os.path.join(data_path, 'SalesforceEmployees.json'),
+                     # os.path.join(data_path, 'UberEmployees.json')
                      ]
         # all_files = [os.path.join(data_path, 'TwitterEmployees.json'),
         #              os.path.join(data_path, 'TeslaEmployees.json')]
@@ -89,7 +89,8 @@ class DistanceFlow:
                 li.append(df)
 
         self.df = pd.concat(li, axis=0, ignore_index=True)
-        print(self.df)
+        self.df = self.df.sample(n=30)
+        my_print(self.df)
 
     def read_attr_domain(self):
         domain_size_path = self.set_path('dataTool/domain_size')
@@ -198,24 +199,27 @@ class DistanceFlow:
         return {attr: obj[inx] for inx, attr in enumerate(self.attr_types.keys())}
 
     def dis_for_clustering(self, instance_a: list, instance_b: list) -> list:
-        if instance_a and instance_b:
-            if self.calc_domain_freq:
-                self.calc_domain_and_frequency()
-            else:
-                self.read_attr_types()
-                self.read_attr_domain()
-                self.read_attr_freq()
-            instance_a = self.list_to_instance(obj=instance_a)
-            instance_b = self.list_to_instance(obj=instance_b)
-            distance_obj = DistanceFunctionalityData(instance_a=instance_a, instance_b=instance_b,
-                                                     attr_types=self.attr_types, nested_attr_types=self.nested_attr_types,
-                                                     freq_per_attribute=self.freq_per_attribute,
-                                                     domain_per_attribute=self.domain_per_attribute,
-                                                     lists_dist_method=self.lists_dist_method,
-                                                     nested_dist_method=self.nested_dist_method)
-            self.res.append(DistanceFunctionality(
-            ).calc_distance(data=distance_obj))
-            return self.res
+        # if instance_a and instance_b:
+        if self.calc_domain_freq:
+            self.calc_domain_and_frequency()
+        else:
+            self.read_attr_types()
+            self.read_attr_domain()
+            self.read_attr_freq()
+
+        instance_a = self.list_to_instance(obj=instance_a)
+        instance_b = self.list_to_instance(obj=instance_b)
+        print(f"{instance_a['full_name']} VS {instance_b['full_name']}")
+        distance_obj = DistanceFunctionalityData(instance_a=instance_a, instance_b=instance_b,
+                                                 attr_types=self.attr_types,
+                                                 nested_attr_types=self.nested_attr_types,
+                                                 freq_per_attribute=self.freq_per_attribute,
+                                                 domain_per_attribute=self.domain_per_attribute,
+                                                 lists_dist_method=self.lists_dist_method,
+                                                 nested_dist_method=self.nested_dist_method)
+        self.res.append(DistanceFunctionality(
+        ).calc_distance(data=distance_obj))
+        return self.res
 
     def run_distance_flow(self, loop=False) -> list:
         self.read_json_employees()
@@ -228,19 +232,24 @@ class DistanceFlow:
             self.read_attr_domain()
             self.read_attr_freq()
 
+        # self.res = np.zeros((len(self.df), len(self.df)))
+
         if loop:
-            instance_a = self.df_row_to_instance(0)
             for i in range(0, len(self.df)):
-                instance_b = self.df_row_to_instance(i)
-                distance_data_obj = DistanceFunctionalityData(instance_a=instance_a, instance_b=instance_b,
-                                                              attr_types=self.attr_types,
-                                                              nested_attr_types=self.nested_attr_types,
-                                                              freq_per_attribute=self.freq_per_attribute,
-                                                              domain_per_attribute=self.domain_per_attribute,
-                                                              lists_dist_method=self.lists_dist_method,
-                                                              nested_dist_method=self.nested_dist_method)
-                self.res.append(DistanceFunctionality(
-                ).calc_distance(distance_data_obj))
+                for j in range(i, len(self.df)):
+                    instance_a = self.df_row_to_instance(i)
+                    instance_b = self.df_row_to_instance(j)
+                    print(f"in loop: {instance_a['full_name']} VS {instance_b['full_name']}")
+                    distance_data_obj = DistanceFunctionalityData(instance_a=instance_a, instance_b=instance_b,
+                                                                  attr_types=self.attr_types,
+                                                                  nested_attr_types=self.nested_attr_types,
+                                                                  freq_per_attribute=self.freq_per_attribute,
+                                                                  domain_per_attribute=self.domain_per_attribute,
+                                                                  lists_dist_method=self.lists_dist_method,
+                                                                  nested_dist_method=self.nested_dist_method)
+
+                    self.res[i][j] = self.res[j][i] = DistanceFunctionality() \
+                        .calc_distance(distance_data_obj)
         else:
             instance_a = self.df_row_to_instance(1)
             instance_b = self.df_row_to_instance(5)
@@ -253,14 +262,15 @@ class DistanceFlow:
                                                           nested_dist_method=self.nested_dist_method)
             self.res.append(DistanceFunctionality(
             ).calc_distance(data=distance_data_obj))
+
         return self.res
 
 
 def main(dist_for_clustering=False, instance_a: list = None, instance_b: list = None):
-    print(f'start time {datetime.now().strftime("%H:%M:%S")}')
+    my_print(f'start time {datetime.now().strftime("%H:%M:%S")}')
     # choose to calculate domain and frequencies -> domain_and_freq = True means calculate
     # domain_and_freq = True
-    domain_and_freq = False
+    domain_and_freq = True
 
     # choose to calculate attributes types -> attr_type = True means calculate
     # attr_type = True
@@ -275,14 +285,13 @@ def main(dist_for_clustering=False, instance_a: list = None, instance_b: list = 
     else:
         res = dist_obj.run_distance_flow()
 
-    if res:
-        print(f'sum- {sum(res)}')
-        print(f'unique val- {len(np.unique(res))}')
-        print(f'distance res- {res}')
-        print(f'min val res- {min(res)}')
-        print(f'max val res- {max(res)}')
+    my_print(f'sum- {sum(res)}')
+    my_print(f'unique val- {len(np.unique(res))}')
+    my_print(f'distance res- {res}')
+    my_print(f'min val res- {min(res)}')
+    my_print(f'max val res- {max(res)}')
 
-    print(f'end time {datetime.now().strftime("%H:%M:%S")}')
+    my_print(f'end time {datetime.now().strftime("%H:%M:%S")}')
 
 
 if __name__ == '__main__':
@@ -293,5 +302,3 @@ if __name__ == '__main__':
 
     main()
 
-
-# combined3 = amazon,apple,facebook,google,microsoft

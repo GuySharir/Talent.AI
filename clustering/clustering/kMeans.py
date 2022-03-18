@@ -78,6 +78,7 @@ class Kmeans:
 
     def find_closest_cluster(self, entry):
         distances = []
+        print(entry)
         for centroid in self.centroids:
             if np.all(self.data.iloc[centroid] == entry):
                 return None
@@ -98,20 +99,18 @@ class Kmeans:
     def fit(self):
         self.models = []
         self.initialize_centroids()
-        for i in range(self.max_iter):
-            # self.initialize_centroids()
+        # for i in range(self.max_iter):
+        for idx, entry in self.data.iterrows():
+            centroid_idx = self.find_closest_cluster(entry)
+            if centroid_idx is not None:
+                self.add_to_cluster(centroid_idx, idx)
+                new_centroids = self.calc_centroids()
 
-            for idx, entry in self.data.iterrows():
-                centroid_idx = self.find_closest_cluster(entry)
-                if centroid_idx is not None:
-                    self.add_to_cluster(centroid_idx, idx)
-                    new_centroids = self.calc_centroids()
+                # self.centroids = self.compute_centroids(X, self.labels)
+                # if np.all(new_centroids == self.centroids):
+                #     break
 
-                    # self.centroids = self.compute_centroids(X, self.labels)
-                    # if np.all(new_centroids == self.centroids):
-                    #     break
-
-            self.models.append((self.centroids, self.clusters))
+        self.models.append((self.centroids, self.clusters))
 
     def predict(self, entry):
         return self.centroids[self.find_closest_cluster(entry)]

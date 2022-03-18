@@ -11,6 +11,10 @@ from distance.DistanceFunctions import DistanceNumStr
 from sklearn.preprocessing import StandardScaler
 
 
+def my_print(message):
+    pass
+
+
 class NestedDistance:
     def __init__(self, nested_distance_data: NestedDistanceData):
         self.nested_distance_data = nested_distance_data
@@ -18,14 +22,14 @@ class NestedDistance:
         self.max_num_nested_elements = 0
 
     def recursive_obj_dist(self) -> float:
-        # print(f'attribute-  {self.nested_distance_data.attribute}')
-        # print(f'obj1- {self.nested_distance_data.obj1}')
-        # print(f'obj2- {self.nested_distance_data.obj2}')
+        # my_print(f'attribute-  {self.nested_distance_data.attribute}')
+        # my_print(f'obj1- {self.nested_distance_data.obj1}')
+        # my_print(f'obj2- {self.nested_distance_data.obj2}')
 
         obj2_num_of_items = len(self.nested_distance_data.obj2)
         obj1_num_of_items = len(self.nested_distance_data.obj1)
-        print(f'number of items in object2- {obj2_num_of_items}')
-        print(f'number of items in object1- {obj1_num_of_items}')
+        my_print(f'number of items in object2- {obj2_num_of_items}')
+        my_print(f'number of items in object1- {obj1_num_of_items}')
 
         # for checking the max and min distance matrix size
         self.min_num_nested_elements = min(self.min_num_nested_elements, min(obj2_num_of_items, obj1_num_of_items))
@@ -38,7 +42,9 @@ class NestedDistance:
 
             for inx2 in range(obj2_num_of_items):
                 val2 = self.nested_distance_data.obj2[inx2]
-                dist_data = DistanceFunctionalityData(instance_a=val1, instance_b=val2, attr_types=self.nested_distance_data.nested_attr_types[self.nested_distance_data.attribute],
+                dist_data = DistanceFunctionalityData(instance_a=val1, instance_b=val2,
+                                                      attr_types=self.nested_distance_data.nested_attr_types[
+                                                          self.nested_distance_data.attribute],
                                                       nested_attr_types={},
                                                       freq_per_attribute=self.nested_distance_data.value_frequency,
                                                       domain_per_attribute=self.nested_distance_data.domain_size,
@@ -46,14 +52,14 @@ class NestedDistance:
                                                       nested_dist_method=self.nested_distance_data.nested_dist_method)
                 distance = DistanceFunctionality().calc_distance(data=dist_data)
                 row.append(distance)
-            print(row)
+            my_print(row)
             matrix_scores = np.append(matrix_scores, np.array([row]), axis=0)
-        print(f'matrix_scores before standardize- {matrix_scores}')
+        my_print(f'matrix_scores before standardize- {matrix_scores}')
         # matrix_scores = StandardScaler().fit_transform(matrix_scores)
         pca = PCA(n_components=1)
         matrix_scores_pca = pca.fit_transform(matrix_scores)
-        print(f'matrix_scores_pca- {matrix_scores_pca}')
-        print(f'matrix_scores sum- {matrix_scores_pca.sum()}')
+        my_print(f'matrix_scores_pca- {matrix_scores_pca}')
+        my_print(f'matrix_scores sum- {matrix_scores_pca.sum()}')
         return abs(matrix_scores.sum())
 
     def education_dist(self) -> float:
@@ -65,8 +71,8 @@ class NestedDistance:
             return self.recursive_obj_dist()
 
     def write_objects_size_to_file(self):
-        path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', f'dataTool\\runtimeObjectsInfo')) \
-                  .replace('/', '\\')
+        path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', f'dataTool/runtimeObjectsInfo')) \
+            .replace('/', '/')
         num_nested_elements = os.path.abspath(os.path.join(path, 'number_nested_elements.txt'))
         with open(num_nested_elements, 'a') as f:
             f.write(f'{self.nested_distance_data.attribute}\nmax nested elements {self.max_num_nested_elements}\n'
@@ -155,20 +161,20 @@ class DistanceFunctionality:
                 result = nested_dist_obj.calc_dist()
                 self.nested_sum += result
 
-        print(f'nested sum result {self.nested_sum}')
-        print(f'categorical sum result {self.categorical_sum}')
-        print(f'numerical sum result {self.numerical_sum}')
+        my_print(f'nested sum result {self.nested_sum}')
+        my_print(f'categorical sum result {self.categorical_sum}')
+        my_print(f'numerical sum result {self.numerical_sum}')
 
     def q14(self) -> float:
-        print(f'total distance sum {math.sqrt(self.categorical_sum + self.numerical_sum)}')
+        my_print(f'total distance sum {math.sqrt(self.categorical_sum + self.numerical_sum)}')
         return math.sqrt(self.categorical_sum + self.numerical_sum + self.nested_sum)
 
     def calc_distance(self, data: DistanceFunctionalityData) -> float:
 
-        print(f'attr types {data.attr_types}')
-        print(f'nested attr types {data.nested_attr_types}')
-        print(f'instance a - {data.instance_a}')
-        print(f'instance b - {data.instance_b}')
+        my_print(f'attr types {data.attr_types}')
+        my_print(f'nested attr types {data.nested_attr_types}')
+        my_print(f'instance a - {data.instance_a}')
+        my_print(f'instance b - {data.instance_b}')
 
         self.q11(data)
 
@@ -177,4 +183,3 @@ class DistanceFunctionality:
 
 if __name__ == '__main__':
     pass
-

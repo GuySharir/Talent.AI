@@ -3,6 +3,10 @@ from distance.DistEnum import ListDistMethod
 from distance.ListsDistance import ListsDistance
 
 
+def my_print(message):
+    pass
+
+
 class DistanceStrFunctions:
     """
         - q2, calculate the categorical distance of two attribute values regarding the domain size that is obtained
@@ -37,7 +41,7 @@ class DistanceStrFunctions:
             self.str_distance_data.val2 = 'null'
 
         min_freq = min(self.str_distance_data.value_frequency.items(), key=lambda x: x[1])[1]
-        print(f'q3; min frequency {min_freq}')
+        my_print(f'q3; min frequency {min_freq}')
         val1_frequency = self.str_distance_data.value_frequency.get(self.str_distance_data.val1)
         val2_frequency = self.str_distance_data.value_frequency.get(self.str_distance_data.val2)
         max_freq = max(val1_frequency, val2_frequency)
@@ -46,8 +50,8 @@ class DistanceStrFunctions:
         return dist
 
     def q10(self) -> float:
-        print(f'equation q2 return value - {self.q2()}')
-        print(f'equation q3 return value - {self.q3()}')
+        my_print(f'equation q2 return value - {self.q2()}')
+        my_print(f'equation q3 return value - {self.q3()}')
         q3result = self.q3()
         q2result = self.q2()
 
@@ -73,11 +77,12 @@ class DistanceCatFunctions:
     """
         - calc_num_distance_q13,
     """
+
     def __init__(self, num_distance_data: NumDistanceData):
         self.num_distance_data = num_distance_data
 
     def calc_num_distance_q13(self) -> float:
-        print(f'numeric val1- {self.num_distance_data.val1} , val2- {self.num_distance_data.val2}')
+        my_print(f'numeric val1- {self.num_distance_data.val1} , val2- {self.num_distance_data.val2}')
         if not self.num_distance_data.val1 or not self.num_distance_data.val2:
             return 0
         else:
@@ -90,14 +95,14 @@ class DistanceNumStr:
                           instance_a: dict = None, instance_b: dict = None,
                           lists_dist_method: ListDistMethod = None) -> float:
 
-        # print("################################# New Attribute ########################################")
-        # print(f'attribute- {attribute}')
-        # print(f'value type- {val_type}')
-        # print(f'instanceA value - {val1}')
-        # print(f'instanceB value - {val2}')
+        # my_print("################################# New Attribute ########################################")
+        # my_print(f'attribute- {attribute}')
+        # my_print(f'value type- {val_type}')
+        # my_print(f'instanceA value - {val1}')
+        # my_print(f'instanceB value - {val2}')
 
-        # print(f'frequencies dictionary {value_frequency}')
-        # print(f'domain size {domain_size}')
+        # my_print(f'frequencies dictionary {value_frequency}')
+        # my_print(f'domain size {domain_size}')
 
         if val_type == str:
             str_data = StrDistanceData(val_type=val_type, val1=val1, val2=val2, value_frequency=value_frequency,
@@ -106,8 +111,8 @@ class DistanceNumStr:
             str_obj = DistanceStrFunctions(str_distance_data=str_data)
             q10result = str_obj.q10()
             q12result = str_obj.q12()
-            print(f'q10 result {q10result}')
-            print(f'q12 result {q12result}')
+            my_print(f'q10 result {q10result}')
+            my_print(f'q12 result {q12result}')
             return (q10result * q12result) ** 2
 
         elif val_type == float or val_type == int:
@@ -115,7 +120,7 @@ class DistanceNumStr:
                                        domain_size=domain_size, attribute=attribute)
             num_obj = DistanceCatFunctions(num_distance_data=num_data)
             q13result = num_obj.calc_num_distance_q13()
-            print(f'q13 result {q13result}')
+            my_print(f'q13 result {q13result}')
             return q13result
 
         elif val_type == list:
@@ -124,11 +129,9 @@ class DistanceNumStr:
                                          lists_dist_method=lists_dist_method)
             list_dist_obj = ListsDistance(list_data)
             list_dist_result = list_dist_obj.calc_dist()
-            print(f'list distance result {list_dist_result}')
+            my_print(f'list distance result {list_dist_result}')
             return list_dist_result
 
 
 if __name__ == '__main__':
     pass
-
-

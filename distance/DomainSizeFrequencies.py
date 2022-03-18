@@ -2,6 +2,10 @@ import os
 import pandas as pd
 
 
+def my_print(message):
+    pass
+
+
 class DomainAndFrequency:
     """
         This class (Attribute) is responsible to calculate the frequency fo each possible value for
@@ -15,6 +19,7 @@ class DomainAndFrequency:
 
         the return value is the frequency for each value and the attribute domain size
     """
+
     def __init__(self, attr, val_type, data_frame):
         self.df = data_frame
         self.attr = attr
@@ -69,11 +74,11 @@ class DomainAndFrequency:
         attr_freq = {}
 
         for _, row in self.df.iterrows():
-            # print(f'adobe df {row[self.attr]}')
+            # my_print(f'adobe df {row[self.attr]}')
             for value in row[self.attr]:
-                # print(f'value {value}')
+                # my_print(f'value {value}')
                 for key, val in value.items():
-                    # print(f'key - {key}, val - {val}')
+                    # my_print(f'key - {key}, val - {val}')
                     if key not in attr_freq.keys():
                         result = self.iteration([], {}, val)
                     else:
@@ -94,10 +99,10 @@ class DomainAndFrequency:
         elif self.val_type == dict:
             self.nested_values()
 
-        # print(f'val frequency {self.value_frequency}')
-        # print(f'attribute values {self.attr_values}')
-        # print(f'attribute values dict {self.attr_values_dict}')
-        # print(f'domain size {self.domain_size}')
+        # my_print(f'val frequency {self.value_frequency}')
+        # my_print(f'attribute values {self.attr_values}')
+        # my_print(f'attribute values dict {self.attr_values_dict}')
+        # my_print(f'domain size {self.domain_size}')
 
         return self.value_frequency, self.domain_size
 
@@ -106,7 +111,7 @@ if __name__ == '__main__':
     def read_employee_data():
         data_path = os.path.abspath(os.path.
                                     join(os.path.dirname(__file__), '..', 'dataTool\\clean_data')).replace('/', '\\')
-        print(f'data path', data_path)
+        my_print(f'data path', data_path)
         adobe = os.path.join(data_path, 'AdobeEmployees.json')
         # adobe = os.path.join(data_path, 'Demo.json')
         df = pd.read_json(adobe)
@@ -115,6 +120,6 @@ if __name__ == '__main__':
 
     data = read_employee_data()
     freq, size = DomainAndFrequency('experience', dict, data).calc_domain_and_frequency()
-    print(freq, size)
+    my_print(freq, size)
     # DomainAndFrequency('skills', list).calc_domain_and_frequency()
     # DomainAndFrequency('gender', str).calc_domain_and_frequency()
