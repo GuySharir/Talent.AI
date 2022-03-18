@@ -14,8 +14,6 @@ from sklearn.preprocessing import StandardScaler
 class NestedDistance:
     def __init__(self, nested_distance_data: NestedDistanceData):
         self.nested_distance_data = nested_distance_data
-        self.min_num_nested_elements = 10000
-        self.max_num_nested_elements = 0
 
     def recursive_obj_dist(self) -> float:
         # print(f'attribute-  {self.nested_distance_data.attribute}')
@@ -26,10 +24,6 @@ class NestedDistance:
         obj1_num_of_items = len(self.nested_distance_data.obj1)
         print(f'number of items in object2- {obj2_num_of_items}')
         print(f'number of items in object1- {obj1_num_of_items}')
-
-        # for checking the max and min distance matrix size
-        self.min_num_nested_elements = min(self.min_num_nested_elements, min(obj2_num_of_items, obj1_num_of_items))
-        self.max_num_nested_elements = max(self.max_num_nested_elements, max(obj2_num_of_items, obj1_num_of_items))
 
         matrix_scores = np.empty((0, obj2_num_of_items), float)
         for inx1 in range(obj1_num_of_items):
@@ -64,23 +58,12 @@ class NestedDistance:
         if self.nested_distance_data.nested_dist_method == NestedDistMethod.all_items:
             return self.recursive_obj_dist()
 
-    def write_objects_size_to_file(self):
-        path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', f'dataTool\\runtimeObjectsInfo')) \
-                  .replace('/', '\\')
-        num_nested_elements = os.path.abspath(os.path.join(path, 'number_nested_elements.txt'))
-        with open(num_nested_elements, 'a') as f:
-            f.write(f'{self.nested_distance_data.attribute}\nmax nested elements {self.max_num_nested_elements}\n'
-                    f'min nested elements {self.min_num_nested_elements}\n')
-
     def calc_dist(self) -> float:
         if self.nested_distance_data.attribute == 'education':
-            result = self.education_dist()
-            self.write_objects_size_to_file()
-            return result
+            return self.education_dist()
+
         elif self.nested_distance_data.attribute == 'experience':
-            result = self.experience_dist()
-            self.write_objects_size_to_file()
-            return result
+            return self.experience_dist()
 
 
 class DistanceFunctionality:
