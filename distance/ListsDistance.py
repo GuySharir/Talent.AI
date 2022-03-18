@@ -1,3 +1,5 @@
+import os
+
 from distance.DistEnum import ListDistMethod
 from distance.DistanceData import ListDistanceData
 
@@ -9,12 +11,6 @@ def my_print(message):
 class ListsDistance:
     def __init__(self, list_distance_data: ListDistanceData):
         self.list_distance_data = list_distance_data
-
-    def calc_dist(self) -> float:
-        if self.list_distance_data.lists_dist_method == ListDistMethod.intersection:
-            return self.intersection()
-        elif self.list_distance_data.lists_dist_method == ListDistMethod.inner_product:
-            return self.inner_product()
 
     def intersection(self) -> float:
         union = list(set(self.list_distance_data.list1 + self.list_distance_data.list2))
@@ -32,3 +28,14 @@ class ListsDistance:
 
     def inner_product(self) -> float:
         pass
+
+    def freq_order_lists(self) -> float:
+        return 0
+
+    def calc_dist(self) -> float:
+        if self.list_distance_data.lists_dist_method == ListDistMethod.intersection:
+            return self.intersection()
+        elif self.list_distance_data.lists_dist_method == ListDistMethod.inner_product:
+            return self.inner_product()
+        elif self.list_distance_data.lists_dist_method == ListDistMethod.freq_order_lists:
+            return self.freq_order_lists()

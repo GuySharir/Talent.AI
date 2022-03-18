@@ -9,6 +9,7 @@ from distance.DistEnum import NestedDistMethod
 from distance.DistanceData import DistanceFunctionalityData
 from distance.DomainSizeFrequencies import DomainAndFrequency
 from distance.DistanceFunctionality import DistanceFunctionality
+from distance.LengthPerAttr import LengthAttr
 
 
 def my_print(*args):
@@ -239,7 +240,8 @@ class DistanceFlow:
                 for j in range(i, len(self.df)):
                     instance_a = self.df_row_to_instance(i)
                     instance_b = self.df_row_to_instance(j)
-                    print(f"in loop: {instance_a['full_name']} VS {instance_b['full_name']}")
+                    print(
+                        f"in loop: {instance_a['full_name']} VS {instance_b['full_name']}")
                     distance_data_obj = DistanceFunctionalityData(instance_a=instance_a, instance_b=instance_b,
                                                                   attr_types=self.attr_types,
                                                                   nested_attr_types=self.nested_attr_types,
@@ -262,8 +264,38 @@ class DistanceFlow:
                                                           nested_dist_method=self.nested_dist_method)
             self.res.append(DistanceFunctionality(
             ).calc_distance(data=distance_data_obj))
+        # if loop:
+        #     instance_a = self.df_row_to_instance(0)
+        #     for i in range(0, len(self.df)):
+        #         instance_b = self.df_row_to_instance(i)
+        #         distance_data_obj = DistanceFunctionalityData(instance_a=instance_a, instance_b=instance_b,
+        #                                                       attr_types=self.attr_types,
+        #                                                       nested_attr_types=self.nested_attr_types,
+        #                                                       freq_per_attribute=self.freq_per_attribute,
+        #                                                       domain_per_attribute=self.domain_per_attribute,
+        #                                                       lists_dist_method=self.lists_dist_method,
+        #                                                       nested_dist_method=self.nested_dist_method)
+        #         self.res.append(DistanceFunctionality().calc_distance(distance_data_obj))
+        # else:
+        #     instance_a = self.df_row_to_instance(1)
+        #     instance_b = self.df_row_to_instance(5)
+        #     distance_data_obj = DistanceFunctionalityData(instance_a=instance_a, instance_b=instance_b,
+        #                                                   attr_types=self.attr_types,
+        #                                                   nested_attr_types=self.nested_attr_types,
+        #                                                   freq_per_attribute=self.freq_per_attribute,
+        #                                                   domain_per_attribute=self.domain_per_attribute,
+        #                                                   lists_dist_method=self.lists_dist_method,
+        #                                                   nested_dist_method=self.nested_dist_method)
+        #     self.res.append(DistanceFunctionality().calc_distance(data=distance_data_obj))
+
+        # temp for checking lists length
+        self.length_check()
 
         return self.res
+
+    def length_check(self):
+        LengthAttr(df=self.df, attr_types=self.attr_types,
+                   nested_attr_types=self.nested_attr_types).length_check_per_attr()
 
 
 def main(dist_for_clustering=False, instance_a: list = None, instance_b: list = None):
@@ -276,7 +308,7 @@ def main(dist_for_clustering=False, instance_a: list = None, instance_b: list = 
     # attr_type = True
     attr_type = False
     dist_obj = DistanceFlow(calc_domain_freq=domain_and_freq, calc_attr_type=attr_type,
-                            lists_dist_method=ListDistMethod.intersection,
+                            lists_dist_method=ListDistMethod.freq_order_lists,
                             nested_dist_method=NestedDistMethod.all_items)
 
     if dist_for_clustering:
@@ -301,4 +333,3 @@ if __name__ == '__main__':
     # instance_b =
 
     main()
-
