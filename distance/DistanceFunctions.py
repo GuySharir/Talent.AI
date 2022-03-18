@@ -90,11 +90,12 @@ class DistanceNumStr:
                           instance_a: dict = None, instance_b: dict = None,
                           lists_dist_method: ListDistMethod = None) -> float:
 
-        print("################################# New Attribute ########################################")
-        print(f'attribute- {attribute}')
-        print(f'value type- {val_type}')
-        print(f'instanceA value - {val1}')
-        print(f'instanceB value - {val2}')
+        # print("################################# New Attribute ########################################")
+        # print(f'attribute- {attribute}')
+        # print(f'value type- {val_type}')
+        # print(f'instanceA value - {val1}')
+        # print(f'instanceB value - {val2}')
+
         # print(f'frequencies dictionary {value_frequency}')
         # print(f'domain size {domain_size}')
 
