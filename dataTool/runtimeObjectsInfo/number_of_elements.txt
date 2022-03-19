@@ -1,2 +1,2 @@
-lists: {'job_title_levels': {'min': 0, 'max': 3}, 'interests': {'min': 1, 'max': 195}, 'skills': {'min': 2, 'max': 248}, 'experience:title_levels': {'min': 0, 'max': 3}, 'education:degrees': {'min': 0, 'max': 6}, 'education:majors': {'min': 0, 'max': 8}, 'education:minors': {'min': 0, 'max': 3}}
-nested: {'experience': {'min': 2, 'max': 24}, 'education': {'min': 1, 'max': 13}}
+lists: {'job_title_levels': {'min': 0, 'max': 3, 'median': 1}, 'interests': {'min': 1, 'max': 195, 'median': 7}, 'skills': {'min': 2, 'max': 248, 'median': 27}, 'experience:title_levels': {'min': 0, 'max': 3, 'median': 0.0}, 'education:degrees': {'min': 0, 'max': 6, 'median': 1.0}, 'education:majors': {'min': 0, 'max': 8, 'median': 1.0}, 'education:minors': {'min': 0, 'max': 3, 'median': 0.0}}
+nested: {'experience': {'min': 2, 'max': 24, 'median': 7}, 'education': {'min': 1, 'max': 13, 'median': 3}}

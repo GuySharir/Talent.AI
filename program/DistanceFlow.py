@@ -216,32 +216,32 @@ class DistanceFlow:
             self.read_attr_domain()
             self.read_attr_freq()
 
-        # if loop:
-        #     instance_a = self.df_row_to_instance(0)
-        #     for i in range(0, len(self.df)):
-        #         instance_b = self.df_row_to_instance(i)
-        #         distance_data_obj = DistanceFunctionalityData(instance_a=instance_a, instance_b=instance_b,
-        #                                                       attr_types=self.attr_types,
-        #                                                       nested_attr_types=self.nested_attr_types,
-        #                                                       freq_per_attribute=self.freq_per_attribute,
-        #                                                       domain_per_attribute=self.domain_per_attribute,
-        #                                                       lists_dist_method=self.lists_dist_method,
-        #                                                       nested_dist_method=self.nested_dist_method)
-        #         self.res.append(DistanceFunctionality().calc_distance(distance_data_obj))
-        # else:
-        #     instance_a = self.df_row_to_instance(1)
-        #     instance_b = self.df_row_to_instance(5)
-        #     distance_data_obj = DistanceFunctionalityData(instance_a=instance_a, instance_b=instance_b,
-        #                                                   attr_types=self.attr_types,
-        #                                                   nested_attr_types=self.nested_attr_types,
-        #                                                   freq_per_attribute=self.freq_per_attribute,
-        #                                                   domain_per_attribute=self.domain_per_attribute,
-        #                                                   lists_dist_method=self.lists_dist_method,
-        #                                                   nested_dist_method=self.nested_dist_method)
-        #     self.res.append(DistanceFunctionality().calc_distance(data=distance_data_obj))
+        if loop:
+            instance_a = self.df_row_to_instance(0)
+            for i in range(0, len(self.df)):
+                instance_b = self.df_row_to_instance(i)
+                distance_data_obj = DistanceFunctionalityData(instance_a=instance_a, instance_b=instance_b,
+                                                              attr_types=self.attr_types,
+                                                              nested_attr_types=self.nested_attr_types,
+                                                              freq_per_attribute=self.freq_per_attribute,
+                                                              domain_per_attribute=self.domain_per_attribute,
+                                                              lists_dist_method=self.lists_dist_method,
+                                                              nested_dist_method=self.nested_dist_method)
+                self.res.append(DistanceFunctionality().calc_distance(distance_data_obj))
+        else:
+            instance_a = self.df_row_to_instance(1)
+            instance_b = self.df_row_to_instance(5)
+            distance_data_obj = DistanceFunctionalityData(instance_a=instance_a, instance_b=instance_b,
+                                                          attr_types=self.attr_types,
+                                                          nested_attr_types=self.nested_attr_types,
+                                                          freq_per_attribute=self.freq_per_attribute,
+                                                          domain_per_attribute=self.domain_per_attribute,
+                                                          lists_dist_method=self.lists_dist_method,
+                                                          nested_dist_method=self.nested_dist_method)
+            self.res.append(DistanceFunctionality().calc_distance(data=distance_data_obj))
 
         # temp for checking lists length
-        self.length_check()
+        # self.length_check()
 
         return self.res
 
@@ -260,13 +260,13 @@ def main(dist_for_clustering=False, instance_a: list = None, instance_b: list = 
     # attr_type = True
     attr_type = False
     dist_obj = DistanceFlow(calc_domain_freq=domain_and_freq, calc_attr_type=attr_type,
-                            lists_dist_method=ListDistMethod.freq_order_lists,
+                            lists_dist_method=ListDistMethod.freq_list_all,
                             nested_dist_method=NestedDistMethod.all_items)
 
     if dist_for_clustering:
         res = dist_obj.dis_for_clustering(instance_a=instance_a, instance_b=instance_b)
     else:
-        res = dist_obj.run_distance_flow()
+        res = dist_obj.run_distance_flow(loop=False)
 
     if res:
         print(f'sum- {sum(res)}')

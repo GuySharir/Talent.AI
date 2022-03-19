@@ -1,5 +1,8 @@
 import os
 from pydoc import locate
+import matplotlib.pyplot as plt
+import statistics
+import numpy as np
 
 
 class LengthAttr:
@@ -48,11 +51,17 @@ class LengthAttr:
         print(f'lists length {self.lis_lengths_per_attr}')
         print(f'nested length {self.nested_lengths_per_attr}')
 
-        self.lis_lengths_per_attr_min_max = {key: {'min': min(val), 'max': max(val)} for key, val in self.lis_lengths_per_attr.items()}
-        self.nested_lengths_per_attr_min_max = {key: {'min': min(val), 'max': max(val)} for key, val in self.nested_lengths_per_attr.items()}
+        self.lis_lengths_per_attr_min_max = {key: {'min': min(val), 'max': max(val), 'median': statistics.median(val)} for key, val in self.lis_lengths_per_attr.items()}
+        self.nested_lengths_per_attr_min_max = {key: {'min': min(val), 'max': max(val), 'median': statistics.median(val)} for key, val in self.nested_lengths_per_attr.items()}
 
         path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', f'dataTool\\runtimeObjectsInfo')).replace('/', '\\')
         length_path = os.path.abspath(os.path.join(path, 'number_of_elements.txt'))
 
         with open(length_path, 'w') as f:
             f.write(f'lists: {self.lis_lengths_per_attr_min_max}\nnested: {self.nested_lengths_per_attr_min_max}')
+
+        for key, val in self.lis_lengths_per_attr.items():
+            plt.title(key)
+            bins = np.unique(val)
+            plt.hist(val, bins=bins)
+            plt.show()

@@ -5,6 +5,7 @@ class ListDistMethod(Enum):
     intersection = 1
     inner_product = 2
     freq_order_lists = 3
+    freq_list_all = 4
 
 
 class NestedDistMethod(Enum):

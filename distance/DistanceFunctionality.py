@@ -5,9 +5,10 @@ import numpy as np
 from pydoc import locate
 from sklearn.decomposition import PCA
 
-from distance.DistanceData import NestedDistanceData, DistanceFunctionalityData
+from distance.DistanceData import ListDistanceData, NestedDistanceData, DistanceFunctionalityData
 from distance.DistEnum import ListDistMethod, NestedDistMethod
 from distance.DistanceFunctions import DistanceNumStr
+from distance.ListsDistance import ListsDistance
 from sklearn.preprocessing import StandardScaler
 
 
@@ -97,7 +98,6 @@ class DistanceFunctionality:
         self.nested_sum = 0
 
     def q11(self, data: DistanceFunctionalityData):
-
         for attr, val in data.instance_a.items():
             val_type = locate(data.attr_types[attr].split("'")[1])
             dist_obj = DistanceNumStr()
@@ -117,12 +117,20 @@ class DistanceFunctionality:
                 self.numerical_sum += result
 
             elif val_type == list:
-                result = dist_obj.distance_per_type(val_type=val_type, val1=val,
-                                                    val2=data.instance_b[attr],
-                                                    value_frequency=data.freq_per_attribute[attr],
-                                                    domain_size=data.domain_per_attribute[attr], attribute=attr,
-                                                    instance_a=None, instance_b=None,
-                                                    lists_dist_method=data.lists_dist_method)
+                # result = dist_obj.distance_per_type(val_type=val_type, val1=val,
+                #                                     val2=data.instance_b[attr],
+                #                                     value_frequency=data.freq_per_attribute[attr],
+                #                                     domain_size=data.domain_per_attribute[attr], attribute=attr,
+                #                                     instance_a=None, instance_b=None,
+                #                                     lists_dist_method=data.lists_dist_method)
+                list_data = ListDistanceData(val_type=val_type, list1=val, list2=data.instance_b[attr],
+                                             value_frequency=data.freq_per_attribute[attr],
+                                             domain_size=data.domain_per_attribute[attr], attribute=attr,
+                                             lists_dist_method=data.lists_dist_method)
+                list_dist_obj = ListsDistance(list_data)
+                result = list_dist_obj.calc_dist()
+                print(f'list distance result {result}')
+
                 self.categorical_sum += result
 
             elif val_type == dict:
@@ -153,8 +161,13 @@ class DistanceFunctionality:
         print(f'instance a - {data.instance_a}')
         print(f'instance b - {data.instance_b}')
 
-        self.q11(data)
+        # remove from comments when we add id for each object
+        # equal = data.instance_a['id'] == data.instance_b['id']
+        # print(f'the same: {equal}')
+        # if equal:
+        #     return 0
 
+        self.q11(data)
         return self.q14()
 
 

@@ -1,6 +1,7 @@
-from distance.DistanceData import ListDistanceData, NumDistanceData, StrDistanceData
+# from distance.DistanceData import ListDistanceData, NumDistanceData, StrDistanceData
+from distance.DistanceData import NumDistanceData, StrDistanceData
 from distance.DistEnum import ListDistMethod
-from distance.ListsDistance import ListsDistance
+# from distance.ListsDistance import ListsDistance
 
 
 class DistanceStrFunctions:
@@ -118,14 +119,14 @@ class DistanceNumStr:
             print(f'q13 result {q13result}')
             return q13result
 
-        elif val_type == list:
-            list_data = ListDistanceData(val_type=val_type, list1=val1, list2=val2, value_frequency=value_frequency,
-                                         domain_size=domain_size, attribute=attribute,
-                                         lists_dist_method=lists_dist_method)
-            list_dist_obj = ListsDistance(list_data)
-            list_dist_result = list_dist_obj.calc_dist()
-            print(f'list distance result {list_dist_result}')
-            return list_dist_result
+        # elif val_type == list:
+        #     list_data = ListDistanceData(val_type=val_type, list1=val1, list2=val2, value_frequency=value_frequency,
+        #                                  domain_size=domain_size, attribute=attribute,
+        #                                  lists_dist_method=lists_dist_method)
+        #     list_dist_obj = ListsDistance(list_data)
+        #     list_dist_result = list_dist_obj.calc_dist()
+        #     print(f'list distance result {list_dist_result}')
+        #     return list_dist_result
 
 
 if __name__ == '__main__':
