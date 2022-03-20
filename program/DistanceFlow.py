@@ -260,7 +260,7 @@ def main(dist_for_clustering=False, instance_a: list = None, instance_b: list = 
     # attr_type = True
     attr_type = False
     dist_obj = DistanceFlow(calc_domain_freq=domain_and_freq, calc_attr_type=attr_type,
-                            lists_dist_method=ListDistMethod.freq_list_all,
+                            lists_dist_method=ListDistMethod.freq_order_lists,
                             nested_dist_method=NestedDistMethod.all_items)
 
     if dist_for_clustering:
