@@ -48,7 +48,7 @@ class NestedDistance:
         pca = PCA(n_components=1)
         matrix_scores_pca = pca.fit_transform(matrix_scores)
         print(f'matrix_scores_pca- {matrix_scores_pca}')
-        print(f'matrix_scores sum- {matrix_scores_pca.sum()}')
+        print(f'matrix_scores sum abs- {abs(matrix_scores_pca.sum())}')
         return abs(matrix_scores.sum())
 
     def education_dist(self) -> float:
@@ -101,6 +101,8 @@ class DistanceFunctionality:
         for attr, val in data.instance_a.items():
             val_type = locate(data.attr_types[attr].split("'")[1])
             dist_obj = DistanceNumStr()
+            print("################################# New Attribute ########################################")
+            print(f'attribute- {attr}')
             if val_type == str:
                 result = dist_obj.distance_per_type(val_type=val_type, val1=val, val2=data.instance_b[attr],
                                                     value_frequency=data.freq_per_attribute[attr],

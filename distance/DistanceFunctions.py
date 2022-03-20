@@ -41,7 +41,10 @@ class DistanceStrFunctions:
         print(f'q3; min frequency {min_freq}')
         val1_frequency = self.str_distance_data.value_frequency.get(self.str_distance_data.val1)
         val2_frequency = self.str_distance_data.value_frequency.get(self.str_distance_data.val2)
+        print(f'q3; val1 frequency {val1_frequency}')
+        print(f'q3; val2 frequency {val2_frequency}')
         max_freq = max(val1_frequency, val2_frequency)
+        print(f'q3; max frequency {max_freq}')
         dist = (abs(val1_frequency - val2_frequency) + min_freq) / max_freq
 
         return dist
@@ -107,8 +110,8 @@ class DistanceNumStr:
             str_obj = DistanceStrFunctions(str_distance_data=str_data)
             q10result = str_obj.q10()
             q12result = str_obj.q12()
-            print(f'q10 result {q10result}')
-            print(f'q12 result {q12result}')
+            # print(f'q10 result {q10result}')
+            # print(f'q12 result {q12result}')
             return (q10result * q12result) ** 2
 
         elif val_type == float or val_type == int:
