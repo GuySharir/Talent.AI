@@ -5,6 +5,7 @@ import numpy as np
 from pydoc import locate
 from sklearn.decomposition import PCA
 
+from dataTool.runtimeObjectsInfo.ListLengthData import NESTED_LENGTH_PER_ATTR
 from distance.DistanceData import ListDistanceData, NestedDistanceData, DistanceFunctionalityData
 from distance.DistEnum import ListDistMethod, NestedDistMethod
 from distance.DistanceFunctions import DistanceNumStr
@@ -52,19 +53,24 @@ class NestedDistance:
         return abs(matrix_scores.sum())
 
     def education_dist(self) -> float:
-        if self.nested_distance_data.nested_dist_method == NestedDistMethod.all_items:
-            return self.recursive_obj_dist()
+        pass
 
     def experience_dist(self) -> float:
-        if self.nested_distance_data.nested_dist_method == NestedDistMethod.all_items:
-            return self.recursive_obj_dist()
+        pass
 
     def calc_dist(self) -> float:
-        if self.nested_distance_data.attribute == 'education':
-            return self.education_dist()
-
-        elif self.nested_distance_data.attribute == 'experience':
-            return self.experience_dist()
+        if self.nested_distance_data.nested_dist_method == NestedDistMethod.all_items:
+            return self.recursive_obj_dist()
+        elif self.nested_distance_data.nested_dist_method == NestedDistMethod.fixed_length:
+            length = NESTED_LENGTH_PER_ATTR[self.nested_distance_data.attribute]
+            self.nested_distance_data.obj2 = self.nested_distance_data.obj2[:length]
+            self.nested_distance_data.obj1 = self.nested_distance_data.obj1[:length]
+            return self.recursive_obj_dist()
+        elif self.nested_distance_data.nested_dist_method == NestedDistMethod.only_correlate_attributes:
+            if self.nested_distance_data.attribute == 'education':
+                self.education_dist()
+            elif self.nested_distance_data.attribute == 'experience':
+                self.experience_dist()
 
 
 class DistanceFunctionality:

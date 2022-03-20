@@ -12,3 +12,4 @@ class NestedDistMethod(Enum):
     all_items = 1
     only_correlate_attributes = 2
     all_items_when_correlate_attributes = 3
+    fixed_length = 4
