@@ -49,9 +49,6 @@ class Kmeans:
             cluster.clear()
 
     def calc_centroids(self):
-        # add caching for distance calcs
-        # in order to reduce complexity
-
         new_centroids = []
         idx = 0
 
@@ -67,33 +64,49 @@ class Kmeans:
                                 self.data.iloc[cluster[i]],
                                 self.data.iloc[cluster[j]]))
 
-                    scores = []
-                    for i in range(len(distances)):
-                        scores.append(sum(distances[i]))
+                    self.dp[idx] = distances
+                else:
+                    distances = self.dp[idx]
+                    distances.append([])
+                    for i in range(len(cluster)):
+                        dist = self.distance_calc.dis_for_clustering(
+                            self.data.iloc[cluster[i]],
+                            self.data.iloc[cluster[-1]])
 
-                    new_centroids.append(np.argmin(scores))
+                        distances[i].append(dist)
+                        distances[-1].append(dist)
+
+                scores = []
+                for i in range(len(distances)):
+                    scores.append(sum(distances[i]))
+
+                new_centroids.append(cluster[np.argmin(scores)])
+
             idx += 1
 
-        return new_centroids
+        print(f"old: {self.centroids}, new: {new_centroids}")
+        self.centroids = new_centroids
 
-    def find_closest_cluster(self, entry):
+    def find_closest_cluster(self, entry, idx):
         distances = []
-        print(entry)
-        for centroid in self.centroids:
-            if np.all(self.data.iloc[centroid] == entry):
-                return None
 
+        print(f"now working with: {idx}")
+        if idx in self.centroids:
+            return None
+
+        for centroid in self.centroids:
             distances.append(self.distance_calc.dis_for_clustering(entry, self.data.iloc[centroid]))
 
-        return np.argmin(distances)
+        return self.centroids[np.argmin(distances)]
 
     def add_to_cluster(self, centroid_idx, entry):
-
         for cluster in self.clusters:
             if centroid_idx in cluster:
+                # print(f"SUCCESS- adding {entry}, to cluster: {cluster}")
                 cluster.append(entry)
                 break
 
+        print(self.centroids)
         print(self.clusters)
 
     def fit(self):
@@ -101,10 +114,13 @@ class Kmeans:
         self.initialize_centroids()
         # for i in range(self.max_iter):
         for idx, entry in self.data.iterrows():
-            centroid_idx = self.find_closest_cluster(entry)
+            # print(f"now working on: {idx}")
+            centroid_idx = self.find_closest_cluster(entry, idx)
+            # print(centroid_idx)
             if centroid_idx is not None:
                 self.add_to_cluster(centroid_idx, idx)
-                new_centroids = self.calc_centroids()
+                self.calc_centroids()
+                # self.centroids = new_centroids
 
                 # self.centroids = self.compute_centroids(X, self.labels)
                 # if np.all(new_centroids == self.centroids):
@@ -117,8 +133,6 @@ class Kmeans:
 
 
 x = Kmeans('../../dataTool/clean_data/dataSet/test.json', 4, 10)
-
 x.fit()
-
 for model in x.models:
     my_print(model)
