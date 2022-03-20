@@ -5,14 +5,12 @@ import numpy as np
 from pydoc import locate
 from sklearn.decomposition import PCA
 
-from distance.DistanceData import NestedDistanceData, DistanceFunctionalityData
+from dataTool.runtimeObjectsInfo.ListLengthData import NESTED_LENGTH_PER_ATTR
+from distance.DistanceData import ListDistanceData, NestedDistanceData, DistanceFunctionalityData
 from distance.DistEnum import ListDistMethod, NestedDistMethod
 from distance.DistanceFunctions import DistanceNumStr
+from distance.ListsDistance import ListsDistance
 from sklearn.preprocessing import StandardScaler
-
-
-def my_print(message):
-    pass
 
 
 class NestedDistance:
@@ -20,14 +18,14 @@ class NestedDistance:
         self.nested_distance_data = nested_distance_data
 
     def recursive_obj_dist(self) -> float:
-        # my_print(f'attribute-  {self.nested_distance_data.attribute}')
-        # my_print(f'obj1- {self.nested_distance_data.obj1}')
-        # my_print(f'obj2- {self.nested_distance_data.obj2}')
+        # print(f'attribute-  {self.nested_distance_data.attribute}')
+        # print(f'obj1- {self.nested_distance_data.obj1}')
+        # print(f'obj2- {self.nested_distance_data.obj2}')
 
         obj2_num_of_items = len(self.nested_distance_data.obj2)
         obj1_num_of_items = len(self.nested_distance_data.obj1)
-        my_print(f'number of items in object2- {obj2_num_of_items}')
-        my_print(f'number of items in object1- {obj1_num_of_items}')
+        print(f'number of items in object2- {obj2_num_of_items}')
+        print(f'number of items in object1- {obj1_num_of_items}')
 
         matrix_scores = np.empty((0, obj2_num_of_items), float)
         for inx1 in range(obj1_num_of_items):
@@ -36,9 +34,7 @@ class NestedDistance:
 
             for inx2 in range(obj2_num_of_items):
                 val2 = self.nested_distance_data.obj2[inx2]
-                dist_data = DistanceFunctionalityData(instance_a=val1, instance_b=val2,
-                                                      attr_types=self.nested_distance_data.nested_attr_types[
-                                                          self.nested_distance_data.attribute],
+                dist_data = DistanceFunctionalityData(instance_a=val1, instance_b=val2, attr_types=self.nested_distance_data.nested_attr_types[self.nested_distance_data.attribute],
                                                       nested_attr_types={},
                                                       freq_per_attribute=self.nested_distance_data.value_frequency,
                                                       domain_per_attribute=self.nested_distance_data.domain_size,
@@ -46,30 +42,35 @@ class NestedDistance:
                                                       nested_dist_method=self.nested_distance_data.nested_dist_method)
                 distance = DistanceFunctionality().calc_distance(data=dist_data)
                 row.append(distance)
-            my_print(row)
+            print(row)
             matrix_scores = np.append(matrix_scores, np.array([row]), axis=0)
-        my_print(f'matrix_scores before standardize- {matrix_scores}')
+        print(f'matrix_scores before standardize- {matrix_scores}')
         # matrix_scores = StandardScaler().fit_transform(matrix_scores)
         pca = PCA(n_components=1)
         matrix_scores_pca = pca.fit_transform(matrix_scores)
-        my_print(f'matrix_scores_pca- {matrix_scores_pca}')
-        my_print(f'matrix_scores sum- {matrix_scores_pca.sum()}')
+        print(f'matrix_scores_pca- {matrix_scores_pca}')
+        print(f'matrix_scores sum abs- {abs(matrix_scores_pca.sum())}')
         return abs(matrix_scores.sum())
 
     def education_dist(self) -> float:
-        if self.nested_distance_data.nested_dist_method == NestedDistMethod.all_items:
-            return self.recursive_obj_dist()
+        pass
 
     def experience_dist(self) -> float:
-        if self.nested_distance_data.nested_dist_method == NestedDistMethod.all_items:
-            return self.recursive_obj_dist()
+        pass
 
     def calc_dist(self) -> float:
-        if self.nested_distance_data.attribute == 'education':
-            return self.education_dist()
-
-        elif self.nested_distance_data.attribute == 'experience':
-            return self.experience_dist()
+        if self.nested_distance_data.nested_dist_method == NestedDistMethod.all_items:
+            return self.recursive_obj_dist()
+        elif self.nested_distance_data.nested_dist_method == NestedDistMethod.fixed_length:
+            length = NESTED_LENGTH_PER_ATTR[self.nested_distance_data.attribute]
+            self.nested_distance_data.obj2 = self.nested_distance_data.obj2[:length]
+            self.nested_distance_data.obj1 = self.nested_distance_data.obj1[:length]
+            return self.recursive_obj_dist()
+        elif self.nested_distance_data.nested_dist_method == NestedDistMethod.only_correlate_attributes:
+            if self.nested_distance_data.attribute == 'education':
+                self.education_dist()
+            elif self.nested_distance_data.attribute == 'experience':
+                self.experience_dist()
 
 
 class DistanceFunctionality:
@@ -103,10 +104,11 @@ class DistanceFunctionality:
         self.nested_sum = 0
 
     def q11(self, data: DistanceFunctionalityData):
-
         for attr, val in data.instance_a.items():
             val_type = locate(data.attr_types[attr].split("'")[1])
             dist_obj = DistanceNumStr()
+            print("################################# New Attribute ########################################")
+            print(f'attribute- {attr}')
             if val_type == str:
                 result = dist_obj.distance_per_type(val_type=val_type, val1=val, val2=data.instance_b[attr],
                                                     value_frequency=data.freq_per_attribute[attr],
@@ -123,12 +125,20 @@ class DistanceFunctionality:
                 self.numerical_sum += result
 
             elif val_type == list:
-                result = dist_obj.distance_per_type(val_type=val_type, val1=val,
-                                                    val2=data.instance_b[attr],
-                                                    value_frequency=data.freq_per_attribute[attr],
-                                                    domain_size=data.domain_per_attribute[attr], attribute=attr,
-                                                    instance_a=None, instance_b=None,
-                                                    lists_dist_method=data.lists_dist_method)
+                # result = dist_obj.distance_per_type(val_type=val_type, val1=val,
+                #                                     val2=data.instance_b[attr],
+                #                                     value_frequency=data.freq_per_attribute[attr],
+                #                                     domain_size=data.domain_per_attribute[attr], attribute=attr,
+                #                                     instance_a=None, instance_b=None,
+                #                                     lists_dist_method=data.lists_dist_method)
+                list_data = ListDistanceData(val_type=val_type, list1=val, list2=data.instance_b[attr],
+                                             value_frequency=data.freq_per_attribute[attr],
+                                             domain_size=data.domain_per_attribute[attr], attribute=attr,
+                                             lists_dist_method=data.lists_dist_method)
+                list_dist_obj = ListsDistance(list_data)
+                result = list_dist_obj.calc_dist()
+                print(f'list distance result {result}')
+
                 self.categorical_sum += result
 
             elif val_type == dict:
@@ -140,31 +150,35 @@ class DistanceFunctionality:
                                                  nested_dist_method=data.nested_dist_method,
                                                  nested_attr_types=data.nested_attr_types)
 
-                nested_dist_obj = NestedDistance(
-                    nested_distance_data=nested_data)
+                nested_dist_obj = NestedDistance(nested_distance_data=nested_data)
                 result = nested_dist_obj.calc_dist()
                 self.nested_sum += result
 
-        my_print(f'nested sum result {self.nested_sum}')
-        my_print(f'categorical sum result {self.categorical_sum}')
-        my_print(f'numerical sum result {self.numerical_sum}')
+        print(f'nested sum result {self.nested_sum}')
+        print(f'categorical sum result {self.categorical_sum}')
+        print(f'numerical sum result {self.numerical_sum}')
 
     def q14(self) -> float:
-        my_print(
-            f'total distance sum {math.sqrt(self.categorical_sum + self.numerical_sum)}')
+        print(f'total distance sum {math.sqrt(self.categorical_sum + self.numerical_sum)}')
         return math.sqrt(self.categorical_sum + self.numerical_sum + self.nested_sum)
 
     def calc_distance(self, data: DistanceFunctionalityData) -> float:
 
-        my_print(f'attr types {data.attr_types}')
-        my_print(f'nested attr types {data.nested_attr_types}')
-        my_print(f'instance a - {data.instance_a}')
-        my_print(f'instance b - {data.instance_b}')
+        print(f'attr types {data.attr_types}')
+        print(f'nested attr types {data.nested_attr_types}')
+        print(f'instance a - {data.instance_a}')
+        print(f'instance b - {data.instance_b}')
+
+        # remove from comments when we add id for each object
+        # equal = data.instance_a['id'] == data.instance_b['id']
+        # print(f'the same: {equal}')
+        # if equal:
+        #     return 0
 
         self.q11(data)
-
         return self.q14()
 
 
 if __name__ == '__main__':
     pass
+
