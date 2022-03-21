@@ -219,7 +219,7 @@ class DistanceFlow:
 
     def candidate_dist_for_companies(self, candidate_full_name: str) -> dict:
         url = "http://localhost:3003/graphql"
-        clusters_centers_full_name = ["kyle warneck", "trevor mccauley"]
+        clusters_centers_full_name = ["adam blaine", "joshua rahm", "yanjun huang", "rami awad", "jeff crilly", ]
         candidate_instance = {}
         centroids_instances = {}
 
@@ -444,4 +444,4 @@ if __name__ == '__main__':
     # instance_b =
 
     main(candidate_dist_for_companies=True, dist_for_clustering=False, instance_a=None,
-         instance_b=None, candidate_full_name="malcolm jones")
+         instance_b=None, candidate_full_name="trevor mccauley")
