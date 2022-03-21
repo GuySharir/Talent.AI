@@ -1,19 +1,18 @@
-import itertools
 import math
-import matplotlib.pyplot as plt
-import seaborn as sns
+import os
+import sys
+
 import numpy as np
 import pandas as pd
 from collections import defaultdict
-import sklearn.cluster
 from sklearn.decomposition import PCA
 from sklearn.preprocessing import MinMaxScaler, normalize, StandardScaler
-from sklearn.metrics import silhouette_samples, silhouette_score
 from sklearn.cluster import KMeans
-import matplotlib.pyplot as plt
 from sklearn.utils import shuffle
-import matplotlib.cm as cm
-from termcolor import colored
+import argparse
+
+sys.path.insert(0, os.path.abspath(os.path.abspath(os.getcwd())))
+from program.DistanceFlow import DistanceFlow
 
 
 # def my_kmeans(n_clusters):
@@ -92,8 +91,7 @@ class MyKmeans:
         self.centers = kmeans.cluster_centers_
         self.real_centers = self.find_real_centers()
         self.percents, self.names = self.calc_clusters_company_percent()
-
-        print(self.percents)
+        self.dist_calc: DistanceFlow = DistanceFlow()
 
     def reduce_dimension(self) -> pd.DataFrame:
         pca = PCA(n_components=2)
@@ -119,8 +117,7 @@ class MyKmeans:
             mms = MinMaxScaler()
             return mms.fit_transform(self.data)
 
-        print(
-            f"option: {scaler_type} is not recognized. returning original df")
+        print(f"option: {scaler_type} is not recognized. returning original df")
         return self.data
 
     def split_data_train_test(self, train_percent: float = 0.8):
@@ -193,8 +190,7 @@ class MyKmeans:
             if not found:
                 hits[-1] += 1
 
-        hits = {k: v for k, v in sorted(
-            hits.items(), reverse=True, key=lambda item: item[1])}
+        hits = {k: v for k, v in sorted(hits.items(), reverse=True, key=lambda item: item[1])}
 
         for key in hits:
             print(f"{hits[key] / size * 100}% matched the {key} option")
@@ -225,8 +221,7 @@ class MyKmeans:
         for i in range(self.n_clusters):
             dataframes[i] = groups[groups['cluster'] == i]
 
-        real_centers = pd.DataFrame(
-            columns=['name', 'p1', 'p2', 'center_1', 'center_2'])
+        real_centers = pd.DataFrame(columns=['name', 'p1', 'p2', 'center_1', 'center_2'])
 
         for i in range(self.n_clusters):
             closest = ('', 1000000, 0, 0)
@@ -239,8 +234,7 @@ class MyKmeans:
                 dist = math.sqrt(first + second)
 
                 if dist <= closest[1]:
-                    closest = (row['name'], dist, row['p1'],
-                               row['p2'], center[0], center[1])
+                    closest = (row['name'], dist, row['p1'], row['p2'], center[0], center[1])
 
             real_centers = real_centers.append(
                 {'name': closest[0], 'p1': closest[2], 'cluster': i,
