@@ -142,7 +142,7 @@ for n_clusters in range_n_clusters:
     ax2.set_ylabel("Feature space for the 2nd feature")
 
     plt.suptitle(
-        "Silhouette analysis for KMeans clustering on sample data with n_clusters = %d"
+        "Silhouette analysis for KMeans clustering2 on sample data with n_clusters = %d"
         % n_clusters,
         fontsize=14,
         fontweight="bold",
