@@ -11,6 +11,7 @@ from sklearn.cluster import KMeans
 from sklearn.utils import shuffle
 import argparse
 
+sys.path.insert(0, os.path.abspath(os.path.abspath(os.getcwd())))
 from program.DistanceFlow import DistanceFlow
 
 
@@ -246,11 +247,10 @@ class MyKmeans:
 
 
 if __name__ == '__main__':
-    print(os.getcwd())
     parser = argparse.ArgumentParser(description='Process some integers.')
     parser.add_argument('--cand', type=str, nargs='*', help='an integer for the accumulator')
     args = parser.parse_args().cand
 
     # print(args)
 
-    x = MyKmeans(5, 'five.npy', 'fiveOrderCompany.npy')
+    x = MyKmeans(5, 'clustering/five.npy', 'clustering/fiveOrderCompany.npy')

@@ -4,8 +4,11 @@ import pandas as pd
 import numpy as np
 from pydoc import locate
 from datetime import datetime
+import sys
 
 import requests
+
+sys.path.insert(0, os.path.abspath(os.path.abspath(os.getcwd())))
 
 from distance.DistEnum import ListDistMethod
 from distance.DistEnum import NestedDistMethod
