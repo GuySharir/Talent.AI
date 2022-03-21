@@ -185,11 +185,13 @@ def find_k_silhouette(data: pd.DataFrame, range_start: int, range_end: int, full
         plt.show()
 
 
-def load_data(path) -> pd.DataFrame:
+def load_data(path, mix=False) -> pd.DataFrame:
     raw_df = np.load(path)
     raw_df = pd.DataFrame(raw_df)
-    # return shuffle(raw_df)
-    return raw_df
+    if mix:
+        return shuffle(raw_df)
+    else:
+        return raw_df
 
 
 def normalize_data(data) -> pd.DataFrame:
@@ -209,103 +211,16 @@ def scale_data(data: pd.DataFrame, scalerType: str) -> pd.DataFrame:
     return data
 
 
-def my_kmeans(n_clusters):
-    data = load_data('five.npy')
-    order = np.load('fiveOrderCompany.npy')
-    order = pd.DataFrame(order)
-    order.rename(columns={0: "name", 1: "company"}, inplace=True)
-
-    data = scale_data(data, "minmax")
-    # data = scale_data(data, "standard")
-    data = normalize_data(data)
-    # data = reduce_dimension(data)
-    data = pd.concat([data, order], axis=1)
-
-    data = shuffle(data)
-
-    train = data.iloc[0:380]
-    test = data.iloc[381:-1]
-
-    train = train.drop(['name', 'company'], axis=1)
-
-    test_x = test.copy().drop(['name', 'company'], axis=1)
-    test_y = test.copy().drop(['p1', 'p2'], axis=1)
-
-    clusters = [[] for _ in range(n_clusters)]
-
-    kmeans = KMeans(n_clusters=n_clusters).fit(train)
-    labels = kmeans.labels_
-
-    for i, label in enumerate(labels):
-        clusters[label].append(order.iloc[i][1])
-
-    names = {}
-
-    for i, cluster in enumerate(clusters):
-        partition = {}
-        for label in cluster:
-            if label not in partition:
-                partition[label] = 1
-            else:
-                partition[label] += 1
-        print(f"\ncluster number {i}")
-        size = len(cluster)
-
-        max_key = ''
-        max_val = -1
-
-        for key in partition:
-            print(f"{key}: {partition[key] / size}")
-            if partition[key] / size > max_val:
-                max_val = partition[key] / size
-                max_key = key
-
-        names[i] = max_key
-
-        print('\n')
-
-    print(names)
-    print("************************************")
-
-    predictions = kmeans.predict(test_x)
-
-    mem = {}
-
-    good = 0
-    bad = 0
-
-    for i, pred in enumerate(predictions):
-        if pred in names:
-            if test_y.iloc[i]['company'] == names[pred]:
-                good += 1
-            else:
-                bad += 1
-
-    print(f"correct: {good}, incorrect: {bad}")
-    #     if pred not in mem:
-    #         mem[pred] = {}
-    #
-    #     if test_y.iloc[i]['company'] not in mem[pred]:
-    #         mem[pred][test_y.iloc[i]['company']] = 1
-    #     else:
-    #         mem[pred][test_y.iloc[i]['company']] += 1
-    #
-    # for key in mem:
-    #     print(f"label: {key}")
-    #     print(mem[key])
-
-
 if __name__ == '__main__':
     # data = load_data('five.npy')
     # # data = scale_data(data, "minmax")
     # data = scale_data(data, "standard")
     # data = normalize_data(data)
-    # # data = reduce_dimension(data)
     #
     # find_k_elbow(data, 2, 11)
     # find_k_silhouette(data, 2, 11, True)
 
-    my_kmeans(5)
+    # my_kmeans(5)
 
     # order = np.load('fiveOrderCompany.npy')
     # order = pd.DataFrame(order)
@@ -313,3 +228,5 @@ if __name__ == '__main__':
     # order.rename(columns={0: "name", 1: "company"}, inplace=True)
     #
     # print(order)
+
+    pass

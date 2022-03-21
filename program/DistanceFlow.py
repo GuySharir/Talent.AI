@@ -34,9 +34,10 @@ class DistanceFlow:
         - self.nested_attr_types, represent nested attributes types
             {experience:{company_name: <str>, company_size: <float>, ...}}
     """
+
     def __init__(self, calc_domain_freq=False, calc_attr_type=False,
-                 lists_dist_method: ListDistMethod = ListDistMethod.intersection,
-                 nested_dist_method: NestedDistMethod = NestedDistMethod.all_items):
+                 lists_dist_method: ListDistMethod = ListDistMethod.freq_order_lists,
+                 nested_dist_method: NestedDistMethod = NestedDistMethod.fixed_length):
 
         self.res = []
         self.df = None
@@ -53,13 +54,13 @@ class DistanceFlow:
     @staticmethod
     def set_path(name):
         path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', f'{name}')) \
-            .replace('/', '\\')
+            .replace('/', '/')
         return path
 
     def read_json_employees(self):
-        data_path = self.set_path('dataTool\\clean_data')
+        data_path = self.set_path('dataTool/clean_data')
         # data_path = os.path.abspath(os.path.
-        #                             join(os.path.dirname(__file__), '..', 'dataTool\\clean_data')).replace('/', '\\')
+        #                             join(os.path.dirname(__file__), '..', 'dataTool/clean_data')).replace('/', '/')
         print(f'data path', data_path)
 
         all_files = [os.path.join(data_path, 'AppleEmployees.json'),
@@ -85,22 +86,22 @@ class DistanceFlow:
                 li.append(df)
 
         self.df = pd.concat(li, axis=0, ignore_index=True)
-        print(self.df)
+        # self.df = self.df.sample(n=30)
 
     def read_attr_domain(self):
-        domain_size_path = self.set_path('dataTool\\domain_size')
+        domain_size_path = self.set_path('dataTool/domain_size')
         domain_path = os.path.abspath(os.path.join(domain_size_path, 'attributes_domain_size.json'))
         with open(domain_path) as fp:
             self.domain_per_attribute = json.load(fp)
 
     def read_attr_freq(self):
-        freq_path = self.set_path('dataTool\\frequencies')
+        freq_path = self.set_path('dataTool/frequencies')
         frequencies_path = os.path.abspath(os.path.join(freq_path, 'attributes_frequency.json'))
         with open(frequencies_path) as fp:
             self.freq_per_attribute = json.load(fp)
 
     def read_attr_types(self):
-        path = self.set_path('dataTool\\attributes_types')
+        path = self.set_path('dataTool/attributes_types')
         attribute_type_path = os.path.abspath(os.path.join(path, 'attributes_types.json'))
         attribute_nested_type_path = os.path.abspath(os.path.join(path,
                                                                   'nested_attributes_types.json'))
@@ -117,7 +118,7 @@ class DistanceFlow:
         for attr, val_type in self.attr_types.items():
             val_type = locate(val_type.split("'")[1])
             print(f'attribute {attr}')
-            value_frequency, domain_size =\
+            value_frequency, domain_size = \
                 DomainAndFrequency(attr=attr, val_type=val_type, data_frame=self.df).calc_domain_and_frequency()
 
             self.domain_per_attribute.update({attr: domain_size})
@@ -125,16 +126,16 @@ class DistanceFlow:
         print(f'domain per attribute {self.domain_per_attribute}')
         print(f'freq per attribute {self.freq_per_attribute}')
 
-        domain_size_path = self.set_path('dataTool\\domain_size')
-        # domain_size_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'dataTool\\domain_size'))\
-        #     .replace('/', '\\')
+        domain_size_path = self.set_path('dataTool/domain_size')
+        # domain_size_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'dataTool/domain_size'))\
+        #     .replace('/', '/')
         domain_path = os.path.abspath(os.path.join(domain_size_path, 'attributes_domain_size.json'))
         with open(domain_path, 'w') as fp:
             json.dump(self.domain_per_attribute, fp)
 
-        freq_path = self.set_path('dataTool\\frequencies')
-        # freq_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'dataTool\\frequencies'))\
-        #     .replace('/', '\\')
+        freq_path = self.set_path('dataTool/frequencies')
+        # freq_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'dataTool/frequencies'))\
+        #     .replace('/', '/')
         frequencies_path = os.path.abspath(os.path.join(freq_path, 'attributes_frequency.json'))
         with open(frequencies_path, 'w') as fp:
             json.dump(self.freq_per_attribute, fp)
@@ -170,7 +171,7 @@ class DistanceFlow:
         self.calc_nested_attribute_type()
         print(f'all attributes type- {self.attr_types}')
 
-        path = self.set_path('dataTool\\attributes_types')
+        path = self.set_path('dataTool/attributes_types')
         attribute_type_path = os.path.abspath(os.path.join(path, 'attributes_types.json'))
         attribute_nested_type_path = os.path.abspath(os.path.join(path,
                                                                   'nested_attributes_types.json'))
@@ -197,7 +198,8 @@ class DistanceFlow:
             instance_a = self.list_to_instance(obj=instance_a)
             instance_b = self.list_to_instance(obj=instance_b)
             distance_obj = DistanceFunctionalityData(instance_a=instance_a, instance_b=instance_b,
-                                                     attr_types=self.attr_types, nested_attr_types=self.nested_attr_types,
+                                                     attr_types=self.attr_types,
+                                                     nested_attr_types=self.nested_attr_types,
                                                      freq_per_attribute=self.freq_per_attribute,
                                                      domain_per_attribute=self.domain_per_attribute,
                                                      lists_dist_method=self.lists_dist_method,
@@ -216,18 +218,24 @@ class DistanceFlow:
             self.read_attr_domain()
             self.read_attr_freq()
 
+        self.res = np.zeros((len(self.df), len(self.df)))
+
         if loop:
-            instance_a = self.df_row_to_instance(0)
+
             for i in range(0, len(self.df)):
-                instance_b = self.df_row_to_instance(i)
-                distance_data_obj = DistanceFunctionalityData(instance_a=instance_a, instance_b=instance_b,
-                                                              attr_types=self.attr_types,
-                                                              nested_attr_types=self.nested_attr_types,
-                                                              freq_per_attribute=self.freq_per_attribute,
-                                                              domain_per_attribute=self.domain_per_attribute,
-                                                              lists_dist_method=self.lists_dist_method,
-                                                              nested_dist_method=self.nested_dist_method)
-                self.res.append(DistanceFunctionality().calc_distance(distance_data_obj))
+                instance_a = self.df_row_to_instance(i)
+                for j in range(i, len(self.df)):
+                    instance_b = self.df_row_to_instance(j)
+                    distance_data_obj = DistanceFunctionalityData(instance_a=instance_a, instance_b=instance_b,
+                                                                  attr_types=self.attr_types,
+                                                                  nested_attr_types=self.nested_attr_types,
+                                                                  freq_per_attribute=self.freq_per_attribute,
+                                                                  domain_per_attribute=self.domain_per_attribute,
+                                                                  lists_dist_method=self.lists_dist_method,
+                                                                  nested_dist_method=self.nested_dist_method)
+
+                    self.res[i][j] = self.res[j][i] = DistanceFunctionality().calc_distance(distance_data_obj)
+                    # self.res.append(DistanceFunctionality().calc_distance(distance_data_obj))
         else:
             instance_a = self.df_row_to_instance(1)
             instance_b = self.df_row_to_instance(5)
@@ -251,10 +259,11 @@ class DistanceFlow:
 
 
 def main(dist_for_clustering=False, instance_a: list = None, instance_b: list = None):
+    start = datetime.now().strftime("%H:%M:%S")
     print(f'start time {datetime.now().strftime("%H:%M:%S")}')
     # choose to calculate domain and frequencies -> domain_and_freq = True means calculate
     # domain_and_freq = True
-    domain_and_freq = False
+    domain_and_freq = True
 
     # choose to calculate attributes types -> attr_type = True means calculate
     # attr_type = True
@@ -266,15 +275,18 @@ def main(dist_for_clustering=False, instance_a: list = None, instance_b: list = 
     if dist_for_clustering:
         res = dist_obj.dis_for_clustering(instance_a=instance_a, instance_b=instance_b)
     else:
-        res = dist_obj.run_distance_flow(loop=False)
+        res = dist_obj.run_distance_flow(loop=True)
 
-    if res:
-        print(f'sum- {sum(res)}')
-        print(f'unique val- {len(np.unique(res))}')
-        print(f'distance res- {res}')
-        print(f'min val res- {min(res)}')
-        print(f'max val res- {max(res)}')
+    np.save('all.npy', dist_obj.res)
 
+    # if res:
+    #     print(f'sum- {sum(res)}')
+    #     print(f'unique val- {len(np.unique(res))}')
+    #     print(f'distance res- {res}')
+    #     print(f'min val res- {min(res)}')
+    #     print(f'max val res- {max(res)}')
+
+    print(f'start time {start}')
     print(f'end time {datetime.now().strftime("%H:%M:%S")}')
 
 
@@ -285,6 +297,3 @@ if __name__ == '__main__':
     # instance_b =
 
     main()
-
-
-
