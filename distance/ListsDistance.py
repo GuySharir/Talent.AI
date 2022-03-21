@@ -4,6 +4,10 @@ from distance.DistanceFunctions import DistanceNumStr
 from dataTool.runtimeObjectsInfo.ListLengthData import LIST_LENGTH_PER_ATTR
 
 
+def my_print(message):
+    pass
+
+
 class ListsDistance:
     def __init__(self, list_distance_data: ListDistanceData):
         self.list_distance_data = list_distance_data
@@ -14,8 +18,8 @@ class ListsDistance:
 
         union_len = len(union)
         intersection_len = len(intersection)
-        print(f'list1 {self.list_distance_data.list1}\nlist2 {self.list_distance_data.list2}')
-        print(f'union {union}\ninter {intersection}\nunion len {union_len}\ninter len {intersection_len}')
+        my_print(f'list1 {self.list_distance_data.list1}\nlist2 {self.list_distance_data.list2}')
+        my_print(f'union {union}\ninter {intersection}\nunion len {union_len}\ninter len {intersection_len}')
 
         if union_len == 0:
             return 0

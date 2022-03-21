@@ -43,7 +43,7 @@ def print_list_distances(dict):
     for key in dict.keys():
         for key2 in dict[key]:
             print('{:<s} -> {:<25s} = {:<8f}'.format(key,
-                  key2, dict[key][key2]))
+                                                     key2, dict[key][key2]))
 
 
 def print_all(distances):
@@ -92,9 +92,9 @@ class DistCalculation:
                  'profiles', 'version_status']
 
     list_attributes = ['interests', 'phone_numbers', 'skills', 'location_names',
-                       'personal_emails',  'countries',  'job_title_levels', 'regions']
+                       'personal_emails', 'countries', 'job_title_levels', 'regions']
 
-    list_object_attributes = ['emails',  'profiles',
+    list_object_attributes = ['emails', 'profiles',
                               'education', 'street_addresses', 'experience', "version_status"]
 
     def __init__(self):
@@ -115,7 +115,7 @@ class DistCalculation:
         self.calc_frequencies()
 
     def calc_distance_by_instance(self, new_instance):
-        """calc the distance between two attributes based on eq3 of mixed data clustering algo """
+        """calc the distance between two attributes based on eq3 of mixed data clustering2 algo """
         pass
 
     def helper(self, minimum, val1, val2):
@@ -160,7 +160,7 @@ class DistCalculation:
                 else:
                     frequencies[item] += 1
 
-        return frequencies,  total_amount
+        return frequencies, total_amount
 
     def calc_frequencies(self):
         """
@@ -205,7 +205,7 @@ class DistCalculation:
         return True
 
     def eq3(self, attribute, val1, val2):
-        """calc the distance between two attributes based on eq3 of mixed data clustering algo """
+        """calc the distance between two attributes based on eq3 of mixed data clustering2 algo """
         if not self.valid_input(val1, val2, True):
             return 1
 
@@ -236,7 +236,7 @@ class DistCalculation:
                 continue
 
             sum += (self.eq10(attribute,
-                    inst1[attribute], inst2[attribute], self.df[attribute].nunique())) ** 2
+                              inst1[attribute], inst2[attribute], self.df[attribute].nunique())) ** 2
 
         log(sum)
         return sum
@@ -271,7 +271,6 @@ class DistCalculation:
 
 
 if __name__ == '__main__':
-
     start = time.time()
 
     x = DistCalculation()

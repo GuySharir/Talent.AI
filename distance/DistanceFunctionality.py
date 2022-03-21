@@ -34,7 +34,9 @@ class NestedDistance:
 
             for inx2 in range(obj2_num_of_items):
                 val2 = self.nested_distance_data.obj2[inx2]
-                dist_data = DistanceFunctionalityData(instance_a=val1, instance_b=val2, attr_types=self.nested_distance_data.nested_attr_types[self.nested_distance_data.attribute],
+                dist_data = DistanceFunctionalityData(instance_a=val1, instance_b=val2,
+                                                      attr_types=self.nested_distance_data.nested_attr_types[
+                                                          self.nested_distance_data.attribute],
                                                       nested_attr_types={},
                                                       freq_per_attribute=self.nested_distance_data.value_frequency,
                                                       domain_per_attribute=self.nested_distance_data.domain_size,
@@ -76,7 +78,7 @@ class NestedDistance:
 class DistanceFunctionality:
     """
         This class (DistanceFunctions) contains all categorical distance calculation equations based on
-        "An incremental mixed data clustering method using a new distance measure"
+        "An incremental mixed data clustering2 method using a new distance measure"
         article. (published on 6 may 2014)
         - self.domain_size, domain size of a given attribute (the number of possible values for the given attribute)
         - self.value_frequency, the frequency of a possible value in the given attribute
@@ -181,4 +183,3 @@ class DistanceFunctionality:
 
 if __name__ == '__main__':
     pass
-
