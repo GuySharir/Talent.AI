@@ -193,6 +193,10 @@ class DistanceFlow:
         return {attr: obj[inx] for inx, attr in enumerate(self.attr_types.keys())}
 
     def dis_for_clustering(self, instance_a: list, instance_b: list) -> list:
+        """
+        recieve two instances
+        return single dist score
+        """
         if instance_a and instance_b:
             if self.calc_domain_freq:
                 self.read_json_employees()
@@ -263,21 +267,19 @@ class DistanceFlow:
                 }"""
 
         variables = {"getCandidatesInputFullName": {
-                        "candidateFullName": f'{candidate_full_name}'
-                     }}
+            "candidateFullName": f'{candidate_full_name}'
+        }}
 
         res = {}
-        if self.calc_domain_freq:
-            self.read_json_employees()
-            self.calc_domain_and_frequency()
-        else:
-            self.read_attr_types()
-            self.read_attr_domain()
-            self.read_attr_freq()
+
+        self.read_attr_types()
+        self.read_attr_domain()
+        self.read_attr_freq()
 
         if candidate_full_name:
             response = requests.post(url, json={'query': query, 'variables': variables})
 
+            # TODO - deal with 400/500
             if response.status_code == 200:
                 candidate_instance = response.json()['data']['getCandidatesByFullName']
                 print(f'candidate instance- {candidate_instance}')
@@ -292,7 +294,8 @@ class DistanceFlow:
                 centroids_instances[name] = response.json()['data']['getCandidatesByFullName']
                 print(f'centroids instances- {centroids_instances}')
 
-                distance_obj = DistanceFunctionalityData(instance_a=candidate_instance, instance_b=centroids_instances[name],
+                distance_obj = DistanceFunctionalityData(instance_a=candidate_instance,
+                                                         instance_b=centroids_instances[name],
                                                          attr_types=self.attr_types,
                                                          nested_attr_types=self.nested_attr_types,
                                                          freq_per_attribute=self.freq_per_attribute,
