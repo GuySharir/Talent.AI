@@ -4,11 +4,8 @@ import pandas as pd
 import numpy as np
 from pydoc import locate
 from datetime import datetime
-import sys
 
 import requests
-
-sys.path.insert(0, os.path.abspath(os.path.abspath(os.getcwd())))
 
 from distance.DistEnum import ListDistMethod
 from distance.DistEnum import NestedDistMethod
@@ -422,44 +419,45 @@ class DistanceFlow:
         LengthAttr(df=self.df, attr_types=self.attr_types,
                    nested_attr_types=self.nested_attr_types).length_check_per_attr()
 
-# def main(candidate_dist_for_companies=False, dist_for_clustering=False,
-#          instance_a: list = None, instance_b: list = None, candidate_full_name: str = None):
-#     print(f'start time {datetime.now().strftime("%H:%M:%S")}')
-#     # choose to calculate domain and frequencies -> domain_and_freq = True means calculate
-#     # domain_and_freq = True
-#     domain_and_freq = False
-#
-#     # choose to calculate attributes types -> attr_type = True means calculate
-#     # attr_type = True
-#     attr_type = False
-#     dist_obj = DistanceFlow(calc_domain_freq=domain_and_freq, calc_attr_type=attr_type,
-#                             lists_dist_method=ListDistMethod.freq_order_lists,
-#                             nested_dist_method=NestedDistMethod.fixed_length)
-#
-#     if dist_for_clustering:
-#         res = dist_obj.dis_for_clustering(
-#             instance_a=instance_a, instance_b=instance_b)
-#     elif candidate_dist_for_companies:
-#         res = dist_obj.candidate_dist_for_companies(
-#             candidate_full_name=candidate_full_name)
-#     else:
-#         res = dist_obj.run_distance_flow(loop=True)
-#
-#     # if res:
-#     #     print(f'sum- {sum(res)}')
-#     #     print(f'unique val- {len(np.unique(res))}')
-#     #     print(f'distance res- {res}')
-#     #     print(f'min val res- {min(res)}')
-#     #     print(f'max val res- {max(res)}')
-#
-#     print(f'end time {datetime.now().strftime("%H:%M:%S")}')
-#
-#
-# if __name__ == '__main__':
-#     # choose dist_for_clustering
-#     # dist_for_clustering = True
-#     # instance_a =
-#     # instance_b =
-#
-#     main(candidate_dist_for_companies=True, dist_for_clustering=False, instance_a=None,
-#          instance_b=None, candidate_full_name="trevor mccauley")
+
+def main(candidate_dist_for_companies=False, dist_for_clustering=False,
+         instance_a: list = None, instance_b: list = None, candidate_full_name: str = None):
+    print(f'start time {datetime.now().strftime("%H:%M:%S")}')
+    # choose to calculate domain and frequencies -> domain_and_freq = True means calculate
+    # domain_and_freq = True
+    domain_and_freq = False
+
+    # choose to calculate attributes types -> attr_type = True means calculate
+    # attr_type = True
+    attr_type = False
+    dist_obj = DistanceFlow(calc_domain_freq=domain_and_freq, calc_attr_type=attr_type,
+                            lists_dist_method=ListDistMethod.freq_order_lists,
+                            nested_dist_method=NestedDistMethod.fixed_length)
+
+    if dist_for_clustering:
+        res = dist_obj.dis_for_clustering(
+            instance_a=instance_a, instance_b=instance_b)
+    elif candidate_dist_for_companies:
+        res = dist_obj.candidate_dist_for_companies(
+            candidate_full_name=candidate_full_name)
+    else:
+        res = dist_obj.run_distance_flow(loop=True)
+
+    # if res:
+    #     print(f'sum- {sum(res)}')
+    #     print(f'unique val- {len(np.unique(res))}')
+    #     print(f'distance res- {res}')
+    #     print(f'min val res- {min(res)}')
+    #     print(f'max val res- {max(res)}')
+
+    print(f'end time {datetime.now().strftime("%H:%M:%S")}')
+
+
+if __name__ == '__main__':
+    # choose dist_for_clustering
+    # dist_for_clustering = True
+    # instance_a =
+    # instance_b =
+
+    main(candidate_dist_for_companies=True, dist_for_clustering=False, instance_a=None,
+         instance_b=None, candidate_full_name="trevor mccauley")

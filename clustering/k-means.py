@@ -1,18 +1,19 @@
+import itertools
 import math
-import os
-import sys
-
+import matplotlib.pyplot as plt
+import seaborn as sns
 import numpy as np
 import pandas as pd
 from collections import defaultdict
+import sklearn.cluster
 from sklearn.decomposition import PCA
 from sklearn.preprocessing import MinMaxScaler, normalize, StandardScaler
+from sklearn.metrics import silhouette_samples, silhouette_score
 from sklearn.cluster import KMeans
+import matplotlib.pyplot as plt
 from sklearn.utils import shuffle
-import argparse
-
-sys.path.insert(0, os.path.abspath(os.path.abspath(os.getcwd())))
-from program.DistanceFlow import DistanceFlow
+import matplotlib.cm as cm
+from termcolor import colored
 
 
 # def my_kmeans(n_clusters):
@@ -91,7 +92,8 @@ class MyKmeans:
         self.centers = kmeans.cluster_centers_
         self.real_centers = self.find_real_centers()
         self.percents, self.names = self.calc_clusters_company_percent()
-        self.dist_calc: DistanceFlow = DistanceFlow()
+
+        print(self.percents)
 
     def reduce_dimension(self) -> pd.DataFrame:
         pca = PCA(n_components=2)
@@ -247,10 +249,4 @@ class MyKmeans:
 
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='Process some integers.')
-    parser.add_argument('--cand', type=str, nargs='*', help='an integer for the accumulator')
-    args = parser.parse_args().cand
-
-    # print(args)
-
-    x = MyKmeans(5, 'clustering/five.npy', 'clustering/fiveOrderCompany.npy')
+    x = MyKmeans(5, 'five.npy', 'fiveOrderCompany.npy')
