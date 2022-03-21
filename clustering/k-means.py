@@ -242,15 +242,31 @@ class MyKmeans:
 
         return real_centers.copy().drop(['p1', 'p2', 'center_1', 'center_2'], axis=1)
 
-    def get_cluster_for_candidate(self):
-        pass
+    def get_cluster_for_candidate(self, user):
+
+        clusters = self.dist_calc.candidate_dist_for_companies(user)
+
+        max_ = 0
+        label = ''
+
+        for key in clusters:
+            if clusters[key] > max_:
+                max_ = clusters[key]
+                label = key
+
+        print(self.percents[label], flush=True)
 
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Process some integers.')
-    parser.add_argument('--cand', type=str, nargs='*', help='an integer for the accumulator')
-    args = parser.parse_args().cand
+    parser.add_argument('--cand', type=str, nargs='*')
+    parser.add_argument('--func', type=str, nargs='*')
+    args = parser.parse_args()
 
-    # print(args)
+    func = args.func
+    user_ = args.cand
 
     x = MyKmeans(5, 'clustering/five.npy', 'clustering/fiveOrderCompany.npy')
+
+    if func == "candidate":
+        x.get_cluster_for_candidate(user_)
