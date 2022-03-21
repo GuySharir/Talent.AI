@@ -119,7 +119,8 @@ class MyKmeans:
             mms = MinMaxScaler()
             return mms.fit_transform(self.data)
 
-        print(f"option: {scaler_type} is not recognized. returning original df")
+        print(
+            f"option: {scaler_type} is not recognized. returning original df")
         return self.data
 
     def split_data_train_test(self, train_percent: float = 0.8):
@@ -192,7 +193,8 @@ class MyKmeans:
             if not found:
                 hits[-1] += 1
 
-        hits = {k: v for k, v in sorted(hits.items(), reverse=True, key=lambda item: item[1])}
+        hits = {k: v for k, v in sorted(
+            hits.items(), reverse=True, key=lambda item: item[1])}
 
         for key in hits:
             print(f"{hits[key] / size * 100}% matched the {key} option")
@@ -223,7 +225,8 @@ class MyKmeans:
         for i in range(self.n_clusters):
             dataframes[i] = groups[groups['cluster'] == i]
 
-        real_centers = pd.DataFrame(columns=['name', 'p1', 'p2', 'center_1', 'center_2'])
+        real_centers = pd.DataFrame(
+            columns=['name', 'p1', 'p2', 'center_1', 'center_2'])
 
         for i in range(self.n_clusters):
             closest = ('', 1000000, 0, 0)
@@ -236,7 +239,8 @@ class MyKmeans:
                 dist = math.sqrt(first + second)
 
                 if dist <= closest[1]:
-                    closest = (row['name'], dist, row['p1'], row['p2'], center[0], center[1])
+                    closest = (row['name'], dist, row['p1'],
+                               row['p2'], center[0], center[1])
 
             real_centers = real_centers.append(
                 {'name': closest[0], 'p1': closest[2], 'cluster': i,
@@ -244,9 +248,31 @@ class MyKmeans:
 
         return real_centers.copy().drop(['p1', 'p2', 'center_1', 'center_2'], axis=1)
 
-    def get_cluster_for_candidate(self):
-        pass
+    def get_cluster_for_candidate(self, user):
+
+        clusters = self.dist_calc.candidate_dist_for_companies(user)
+
+        max_ = 0
+        label = ''
+
+        for key in clusters:
+            if clusters[key] > max_:
+                max_ = clusters[key]
+                label = key
+
+        print(self.percents[label], flush=True)
 
 
 if __name__ == '__main__':
-    x = MyKmeans(5, 'five.npy', 'fiveOrderCompany.npy')
+    parser = argparse.ArgumentParser(description='Process some integers.')
+    parser.add_argument('--cand', type=str, nargs='*')
+    parser.add_argument('--func', type=str, nargs='*')
+    args = parser.parse_args()
+
+    func = args.func
+    user_ = args.cand
+
+    x = MyKmeans(5, 'clustering/five.npy', 'clustering/fiveOrderCompany.npy')
+
+    if func == "candidate":
+        x.get_cluster_for_candidate(user_)
