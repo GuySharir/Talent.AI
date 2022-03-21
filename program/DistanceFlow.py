@@ -425,7 +425,7 @@ def main(candidate_dist_for_companies=False, dist_for_clustering=False,
     print(f'start time {datetime.now().strftime("%H:%M:%S")}')
     # choose to calculate domain and frequencies -> domain_and_freq = True means calculate
     # domain_and_freq = True
-    domain_and_freq = True
+    domain_and_freq = False
 
     # choose to calculate attributes types -> attr_type = True means calculate
     # attr_type = True
