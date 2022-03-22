@@ -1,3 +1,10 @@
+from threading import Thread
+from distance.LengthPerAttr import LengthAttr
+from distance.DistanceFunctionality import DistanceFunctionality
+from distance.DomainSizeFrequencies import DomainAndFrequency
+from distance.DistanceData import DistanceFunctionalityData
+from distance.DistEnum import NestedDistMethod
+from distance.DistEnum import ListDistMethod
 import os
 import json
 import pandas as pd
@@ -7,16 +14,15 @@ from datetime import datetime
 import sys
 
 import requests
+import sys
 
 sys.path.insert(0, os.path.abspath(os.path.abspath(os.getcwd())))
 
-from distance.DistEnum import ListDistMethod
-from distance.DistEnum import NestedDistMethod
-from distance.DistanceData import DistanceFunctionalityData
-from distance.DomainSizeFrequencies import DomainAndFrequency
-from distance.DistanceFunctionality import DistanceFunctionality
-from distance.LengthPerAttr import LengthAttr
-from threading import Thread
+sys.path.insert(0, os.path.abspath(os.path.abspath(os.getcwd())))
+
+
+def my_print(*args):
+    pass
 
 
 class DistanceFlow:
@@ -68,7 +74,7 @@ class DistanceFlow:
         data_path = self.set_path('dataTool/clean_data')
         # data_path = os.path.abspath(os.path.
         #                             join(os.path.dirname(__file__), '..', 'dataTool/clean_data')).replace('/', '/')
-        print(f'data path', data_path)
+        my_print(f'data path', data_path)
 
         # all_files = [os.path.join(data_path, 'AppleEmployees.json'),
         #              os.path.join(data_path, 'AmazonEmployees.json'),
@@ -127,15 +133,15 @@ class DistanceFlow:
 
         for attr, val_type in self.attr_types.items():
             val_type = locate(val_type.split("'")[1])
-            print(f'attribute {attr}')
+            my_print(f'attribute {attr}')
             value_frequency, domain_size = \
                 DomainAndFrequency(attr=attr, val_type=val_type,
                                    data_frame=self.df).calc_domain_and_frequency()
 
             self.domain_per_attribute.update({attr: domain_size})
             self.freq_per_attribute.update({attr: value_frequency})
-        print(f'domain per attribute {self.domain_per_attribute}')
-        print(f'freq per attribute {self.freq_per_attribute}')
+        my_print(f'domain per attribute {self.domain_per_attribute}')
+        my_print(f'freq per attribute {self.freq_per_attribute}')
 
         domain_size_path = self.set_path('dataTool/domain_size')
         # domain_size_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'dataTool/domain_size'))\
@@ -177,12 +183,12 @@ class DistanceFlow:
             elif data_type == np.float64:
                 data_type = float
             if data_type not in types:
-                print(f'Error! unpredicted value type')
+                my_print(f'Error! unpredicted value type')
 
             self.attr_types[attr] = str(data_type)
 
         self.calc_nested_attribute_type()
-        print(f'all attributes type- {self.attr_types}')
+        my_print(f'all attributes type- {self.attr_types}')
 
         path = self.set_path('dataTool/attributes_types')
         attribute_type_path = os.path.abspath(
@@ -229,7 +235,8 @@ class DistanceFlow:
 
     def candidate_dist_for_companies(self, candidate_full_name: str) -> dict:
         url = "http://localhost:3003/graphql"
-        clusters_centers_full_name = ["adam blaine", "joshua rahm", "yanjun huang", "rami awad", "jeff crilly", ]
+        clusters_centers_full_name = [
+            "adam blaine", "joshua rahm", "yanjun huang", "rami awad", "jeff crilly", ]
         candidate_instance = {}
         centroids_instances = {}
 
@@ -294,7 +301,7 @@ class DistanceFlow:
             if response.status_code == 200:
                 candidate_instance = response.json(
                 )['data']['getCandidatesByFullName']
-                print(f'candidate instance- {candidate_instance}')
+                my_print(f'candidate instance- {candidate_instance}')
 
         for name in clusters_centers_full_name:
             variables = {"getCandidatesInputFullName": {
@@ -306,7 +313,7 @@ class DistanceFlow:
             if response.status_code == 200 and candidate_instance:
                 centroids_instances[name] = response.json(
                 )['data']['getCandidatesByFullName']
-                print(f'centroids instances- {centroids_instances}')
+                my_print(f'centroids instances- {centroids_instances}')
 
                 distance_obj = DistanceFunctionalityData(instance_a=candidate_instance,
                                                          instance_b=centroids_instances[name],
@@ -318,12 +325,12 @@ class DistanceFlow:
                                                          nested_dist_method=self.nested_dist_method)
                 res[name] = DistanceFunctionality(
                 ).calc_distance(data=distance_obj)
-        print(f'result per centroid name- {res}')
+        my_print(f'result per centroid name- {res}')
         return res
 
     def threads_range_calc_flow(self, num_threads: int = 1):
         self.res = np.zeros((len(self.df), len(self.df)))
-        print(f'df length {len(self.df)}')
+        my_print(f'df length {len(self.df)}')
         dist_range = int(len(self.df) / num_threads)
         i = 0
         i_j_tuples = {}
@@ -347,7 +354,7 @@ class DistanceFlow:
             for j in range(i, end_point):
                 instance_a = self.df_row_to_instance(i)
                 instance_b = self.df_row_to_instance(j)
-                print(
+                my_print(
                     f"in loop: {instance_a['full_name']} VS {instance_b['full_name']}")
                 distance_data_obj = DistanceFunctionalityData(instance_a=instance_a, instance_b=instance_b,
                                                               attr_types=self.attr_types,
@@ -376,7 +383,7 @@ class DistanceFlow:
             #     for j in range(i, len(self.df)):
             #         instance_a = self.df_row_to_instance(i)
             #         instance_b = self.df_row_to_instance(j)
-            #         print(
+            #         my_print(
             #             f"in loop: {instance_a['full_name']} VS {instance_b['full_name']}")
             #         distance_data_obj = DistanceFunctionalityData(instance_a=instance_a, instance_b=instance_b,
             #                                                       attr_types=self.attr_types,
@@ -422,9 +429,11 @@ class DistanceFlow:
         LengthAttr(df=self.df, attr_types=self.attr_types,
                    nested_attr_types=self.nested_attr_types).length_check_per_attr()
 
+
 # def main(candidate_dist_for_companies=False, dist_for_clustering=False,
 #          instance_a: list = None, instance_b: list = None, candidate_full_name: str = None):
-#     print(f'start time {datetime.now().strftime("%H:%M:%S")}')
+
+#     my_print(f'start time {datetime.now().strftime("%H:%M:%S")}')
 #     # choose to calculate domain and frequencies -> domain_and_freq = True means calculate
 #     # domain_and_freq = True
 #     domain_and_freq = False
@@ -446,13 +455,13 @@ class DistanceFlow:
 #         res = dist_obj.run_distance_flow(loop=True)
 #
 #     # if res:
-#     #     print(f'sum- {sum(res)}')
-#     #     print(f'unique val- {len(np.unique(res))}')
-#     #     print(f'distance res- {res}')
-#     #     print(f'min val res- {min(res)}')
-#     #     print(f'max val res- {max(res)}')
+#     #     my_print(f'sum- {sum(res)}')
+#     #     my_print(f'unique val- {len(np.unique(res))}')
+#     #     my_print(f'distance res- {res}')
+#     #     my_print(f'min val res- {min(res)}')
+#     #     my_print(f'max val res- {max(res)}')
 #
-#     print(f'end time {datetime.now().strftime("%H:%M:%S")}')
+#     my_print(f'end time {datetime.now().strftime("%H:%M:%S")}')
 #
 #
 # if __name__ == '__main__':
