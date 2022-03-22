@@ -12,7 +12,6 @@ from sklearn.utils import shuffle
 import argparse
 
 sys.path.insert(0, os.path.abspath(os.path.abspath(os.getcwd())))
-from program.DistanceFlow import DistanceFlow
 
 
 # def my_kmeans(n_clusters):
@@ -117,7 +116,8 @@ class MyKmeans:
             mms = MinMaxScaler()
             return mms.fit_transform(self.data)
 
-        print(f"option: {scaler_type} is not recognized. returning original df")
+        print(
+            f"option: {scaler_type} is not recognized. returning original df")
         return self.data
 
     def split_data_train_test(self, train_percent: float = 0.8):
@@ -190,7 +190,8 @@ class MyKmeans:
             if not found:
                 hits[-1] += 1
 
-        hits = {k: v for k, v in sorted(hits.items(), reverse=True, key=lambda item: item[1])}
+        hits = {k: v for k, v in sorted(
+            hits.items(), reverse=True, key=lambda item: item[1])}
 
         for key in hits:
             print(f"{hits[key] / size * 100}% matched the {key} option")
@@ -221,7 +222,8 @@ class MyKmeans:
         for i in range(self.n_clusters):
             dataframes[i] = groups[groups['cluster'] == i]
 
-        real_centers = pd.DataFrame(columns=['name', 'p1', 'p2', 'center_1', 'center_2'])
+        real_centers = pd.DataFrame(
+            columns=['name', 'p1', 'p2', 'center_1', 'center_2'])
 
         for i in range(self.n_clusters):
             closest = ('', 1000000, 0, 0)
@@ -234,7 +236,8 @@ class MyKmeans:
                 dist = math.sqrt(first + second)
 
                 if dist <= closest[1]:
-                    closest = (row['name'], dist, row['p1'], row['p2'], center[0], center[1])
+                    closest = (row['name'], dist, row['p1'],
+                               row['p2'], center[0], center[1])
 
             real_centers = real_centers.append(
                 {'name': closest[0], 'p1': closest[2], 'cluster': i,
@@ -246,6 +249,8 @@ class MyKmeans:
 
         clusters = self.dist_calc.candidate_dist_for_companies(user)
 
+        print(clusters)
+
         max_ = 0
         label = ''
 
@@ -254,19 +259,32 @@ class MyKmeans:
                 max_ = clusters[key]
                 label = key
 
-        print(self.percents[label], flush=True)
+        # print(f"${self.percents[label]}", flush=True)
+
+    def get_priorety_for_company(self, users):
+        pass
 
 
 if __name__ == '__main__':
+    from program.DistanceFlow import DistanceFlow
+
     parser = argparse.ArgumentParser(description='Process some integers.')
     parser.add_argument('--cand', type=str, nargs='*')
     parser.add_argument('--func', type=str, nargs='*')
+    parser.add_argument('--job', type=str, default='')
     args = parser.parse_args()
 
     func = args.func
-    user_ = args.cand
 
     x = MyKmeans(5, 'clustering/five.npy', 'clustering/fiveOrderCompany.npy')
 
-    if func == "candidate":
+    if func[0] == "candidate":
+        user_ = args.cand[0]
+        user_ = ' '.join(user_.split('_'))
+        print(user_)
         x.get_cluster_for_candidate(user_)
+
+    elif func[0] == "company":
+        users_ = args.cand
+        id = args.job
+        pass
