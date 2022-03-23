@@ -69,4 +69,7 @@ def loop_candidates_convert_to_freq_vec():
 
 if __name__ == '__main__':
     x = loop_candidates_convert_to_freq_vec()
-    from sklearn.cluster import KMeans
+    #
+    np.save('../clustering/tmp/fiveVecRep.npy', x)
+
+    # print(np.load('fiveVecRepy.npy', allow_pickle=True))

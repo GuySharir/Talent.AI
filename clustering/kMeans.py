@@ -4,6 +4,9 @@ import time
 import numpy as np
 import pandas as pd
 import copy
+import pickle
+import time
+
 from numpy.linalg import norm
 # from program.DistanceFlow import DistanceFlow_
 from distance.DistEnum import ListDistMethod
@@ -30,6 +33,7 @@ class Kmeans:
         self.clusters = [[] for _ in range(n_clusters)]
         self.clusters_by_index = [[] for _ in range(n_clusters)]
         self.distance_calc = prepare_data_for_dist_calc_between_freq_vectors
+        self.percents = None
 
         # print(self.data)
 
@@ -38,20 +42,22 @@ class Kmeans:
         data = []
         order = []
         for row in raw_data:
-            data.append(list(row.values())[0])
-            order.append(list(row.keys())[0])
+            converted = list(row.values())
+            data.append(converted[0][1])
+            order.append((list(row.keys())[0], converted[0][0]))
 
         data = pd.DataFrame(data)
         order = pd.DataFrame(order)
-        order.rename(columns={0: "name"}, inplace=True)
+
+        order.rename(columns={0: "name", 1: "company"}, inplace=True)
 
         combined: pd.DataFrame = pd.concat([data, order], axis=1)
         combined = shuffle(combined)
 
-        combined = combined.sample(n=60)
+        # combined = combined.sample(n=100)
 
-        self.order = combined[['name']].copy()
-        self.data = combined.copy().drop(['name'], axis=1)
+        self.order = combined[['name', 'company']].copy()
+        self.data = combined.copy().drop(['name', "company"], axis=1)
 
     def initialize_centroids(self):
         size = self.data.shape[1]
@@ -124,22 +130,50 @@ class Kmeans:
                 break
 
     def predict(self, entry):
-        return self.centroids[self.find_closest_cluster(entry)]
+        return self.find_closest_cluster(entry)
+
+    def calc_percents(self, show=True):
+        percents = {}
+        clusters = [[] for _ in range(self.n_clusters)]
+
+        for i, cluster in enumerate(self.clusters_by_index):
+            for j, can in enumerate(cluster):
+                clusters[i].append(self.order.iloc[j]['company'])
+
+        for i, cluster in enumerate(clusters):
+            options = set(cluster)
+            sums = {}
+            size = len(cluster)
+            for option in options:
+                sums[option] = cluster.count(option) / size * 100
+
+            percents[i] = sums
+
+        self.percents = percents
+
+        if show:
+            self.print_cluster_company_percent()
+
+    def print_cluster_company_percent(self):
+        for k in self.percents:
+            print(f"\n********         cluster {k + 1}:         ********")
+            for row in self.percents[k]:
+                print(f"{row}: {self.percents[k][row]}")
 
 
 if __name__ == "__main__":
-    x = Kmeans('./tmp/fiveVecRep.npy', 6, 10)
-    x.fit()
-
-    for c in x.clusters_by_index:
-        print(c)
-
-    # d = []
+    # start = time.time()
+    # x = Kmeans('./tmp/fiveVecRep.npy', 6, 10)
+    # x.fit()
+    # x.calc_percents()
     #
-    # for i in range(5):
-    #     d.append([1, 2, 3, 4, 5, 6, 7, 8])
+    # with open('model.pkl', 'wb') as outp:
+    #     pickle.dump(x, outp, pickle.HIGHEST_PROTOCOL)
     #
-    # print(np.average(d, axis=0))
+    # print(f"totak time: {time.time() - start}")
 
-# for model in x.models:
-#     my_print(model)
+    with open('model.pkl', 'rb') as inp:
+        model = pickle.load(inp)
+        # with pd.option_context('display.max_rows', None, 'display.max_columns', None):
+        #     print(model.data)
+        #     print(model.order)
