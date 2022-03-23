@@ -2,11 +2,11 @@ import os
 import json
 import pandas as pd
 import numpy as np
-from pydoc import locate
-from datetime import datetime
-
 import requests
 
+from pydoc import locate
+from datetime import datetime
+from dataTool.runtimeObjectsInfo.DBQueries import JOB_OFFER_QUERY, CANDIDATE_QUERY
 from distance.DistEnum import ListDistMethod
 from distance.DistEnum import NestedDistMethod
 from distance.DistanceData import DistanceFunctionalityData
@@ -230,48 +230,7 @@ class DistanceFlow:
         candidate_instance = {}
         centroids_instances = {}
 
-        query = """query GetCandidatesByFullName($getCandidatesInputFullName: GetCandidatesInputFullName!) {
-                        getCandidatesByFullName(getCandidatesInputFullName: $getCandidatesInputFullName) {
-                            full_name
-                            first_name
-                            last_name
-                            gender
-                            birth_date
-                            industry
-                            job_title
-                            job_title_role
-                            job_title_sub_role
-                            job_title_levels
-                            job_company_id
-                            job_company_name
-                            job_start_date
-                            interests
-                            skills
-                            experience {
-                              company_name
-                              company_industry
-                              company_size
-                              current_job
-                              company_location_name
-                              company_location_country
-                              company_location_continent
-                              end_date
-                              start_date
-                              title_name
-                              title_role
-                              title_levels
-                            }
-                            education {
-                              school_name
-                              school_type
-                              degrees
-                              start_date
-                              end_date
-                              majors
-                              minors
-                            }
-                        }
-                }"""
+        query = CANDIDATE_QUERY
 
         variables = {"getCandidatesInputFullName": {
             "candidateFullName": f'{candidate_full_name}'
@@ -316,6 +275,56 @@ class DistanceFlow:
                 res[name] = DistanceFunctionality(
                 ).calc_distance(data=distance_obj)
         print(f'result per centroid name- {res}')
+        return res
+
+    def dist_for_job_offer(self, job_id: str) -> dict:
+        res = {}
+        url = "http://localhost:3003/graphql"
+        clusters_centers_full_name = ["adam blaine", "joshua rahm", "yanjun huang", "rami awad", "jeff crilly", ]
+        job_offer_instance = {}
+        centroids_instances = {}
+
+        query = JOB_OFFER_QUERY
+        variables = {"getJobOfferInput": {
+            "jobOfferID": f'{job_id}'
+        }}
+
+        if job_id:
+            response = requests.post(
+                url, json={'query': query, 'variables': variables})
+            if response.status_code == 200:
+                job_offer_instance = response.json()['data']['getJobOffer']
+                print(f'candidate instance- {job_offer_instance}')
+
+        self.read_attr_types()
+        self.read_attr_domain()
+        self.read_attr_freq()
+
+        # query = CANDIDATE_QUERY
+        # for name in clusters_centers_full_name:
+        #     variables = {"getCandidatesInputFullName": {
+        #         "candidateFullName": f'{name}'
+        #     }}
+        #
+        #     response = requests.post(
+        #         url, json={'query': query, 'variables': variables})
+        #     if response.status_code == 200 and job_offer_instance:
+        #         centroids_instances[name] = response.json(
+        #         )['data']['getCandidatesByFullName']
+        #         print(f'centroids instances- {centroids_instances}')
+        #
+        #         distance_obj = DistanceFunctionalityData(instance_a=job_offer_instance,
+        #                                                  instance_b=centroids_instances[name],
+        #                                                  attr_types=self.attr_types,
+        #                                                  nested_attr_types=self.nested_attr_types,
+        #                                                  freq_per_attribute=self.freq_per_attribute,
+        #                                                  domain_per_attribute=self.domain_per_attribute,
+        #                                                  lists_dist_method=self.lists_dist_method,
+        #                                                  nested_dist_method=self.nested_dist_method)
+        #         res[name] = DistanceFunctionality(
+        #         ).calc_distance(data=distance_obj)
+        # print(f'result per centroid name- {res}')
+
         return res
 
     def threads_range_calc_flow(self, num_threads: int = 1):
@@ -420,8 +429,8 @@ class DistanceFlow:
                    nested_attr_types=self.nested_attr_types).length_check_per_attr()
 
 
-def main(candidate_dist_for_companies=False, dist_for_clustering=False,
-         instance_a: list = None, instance_b: list = None, candidate_full_name: str = None):
+def main(job_offer_dist=False, candidate_dist_for_companies=False, dist_for_clustering=False,
+         instance_a: list = None, instance_b: list = None, candidate_full_name: str = None, job_offer_id: str = None):
     print(f'start time {datetime.now().strftime("%H:%M:%S")}')
     # choose to calculate domain and frequencies -> domain_and_freq = True means calculate
     # domain_and_freq = True
@@ -440,6 +449,8 @@ def main(candidate_dist_for_companies=False, dist_for_clustering=False,
     elif candidate_dist_for_companies:
         res = dist_obj.candidate_dist_for_companies(
             candidate_full_name=candidate_full_name)
+    elif job_offer_dist:
+        res = dist_obj.dist_for_job_offer(job_id=job_offer_id)
     else:
         res = dist_obj.run_distance_flow(loop=True)
 
@@ -459,5 +470,7 @@ if __name__ == '__main__':
     # instance_a =
     # instance_b =
 
-    main(candidate_dist_for_companies=True, dist_for_clustering=False, instance_a=None,
-         instance_b=None, candidate_full_name="trevor mccauley")
+    main(job_offer_dist=True, candidate_dist_for_companies=False, dist_for_clustering=False, instance_a=None,
+         instance_b=None, candidate_full_name=None, job_offer_id="623927b9fac2bb1e313b9fb1")
+    # main(job_offer_dist=False, candidate_dist_for_companies=True, dist_for_clustering=False, instance_a=None,
+    #      instance_b=None, candidate_full_name="trevor mccauley", job_offer_id=None)

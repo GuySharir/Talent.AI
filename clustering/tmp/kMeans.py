@@ -4,7 +4,7 @@ import time
 import numpy as np
 import pandas as pd
 from numpy.linalg import norm
-from program.DistanceFlow import DistanceFlow
+from program.DistanceFlow import DistanceFlow_
 from distance.DistEnum import ListDistMethod
 from distance.DistEnum import NestedDistMethod
 import inspect
@@ -25,8 +25,8 @@ class Kmeans:
         self.load_data(dataPath)
         self.centroids = []
         self.clusters = [[] for _ in range(n_clusters)]
-        self.distance_calc: DistanceFlow = DistanceFlow(False, False, ListDistMethod.intersection,
-                                                        NestedDistMethod.all_items)
+        self.distance_calc: DistanceFlow_ = DistanceFlow_(False, False, ListDistMethod.intersection,
+                                                          NestedDistMethod.all_items)
         self.dp = {}
 
     def load_data(self, dataPath: str) -> pd.DataFrame:

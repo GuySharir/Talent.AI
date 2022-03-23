@@ -46,7 +46,7 @@ from random import uniform
 # pd.set_option('display.max_columns', 500)
 # pd.set_option('display.width', 100)
 
-# y = pd.read_csv('../program/foo.csv')
+# y = pd.read_csv('../programFlow/foo.csv')
 # print(y.describe(include='all'))
 
 # data = []
@@ -62,7 +62,7 @@ from sklearn.mixture import GaussianMixture
 
 data = None
 
-data = np.load('../program/combined.npy')
+data = np.load('../programFlow/combined.npy')
 
 data = pd.DataFrame(data)
 # data.rename(columns={0: "start", 1: "end"}, inplace=True)
