@@ -1,18 +1,16 @@
-import json
-import time
+import argparse
+import sys
+import os
 
 import numpy as np
 import pandas as pd
 import copy
 import pickle
-import time
-
-from numpy.linalg import norm
-# from program.DistanceFlow import DistanceFlow_
-from distance.DistEnum import ListDistMethod
-from distance.DistEnum import NestedDistMethod
-from programFlow.DistFunctions import prepare_data_for_dist_calc_between_freq_vectors
+# from programFlow.DistFunctions import prepare_data_for_dist_calc_between_freq_vectors
+from DistFunctions import prepare_data_for_dist_calc_between_freq_vectors
 from sklearn.utils import shuffle
+
+sys.path.insert(0, os.path.abspath(os.path.abspath(os.getcwd())))
 
 
 def my_print(message):
@@ -161,19 +159,32 @@ class Kmeans:
                 print(f"{row}: {self.percents[k][row]}")
 
 
+# def get_user_by
+
 if __name__ == "__main__":
-    # start = time.time()
-    # x = Kmeans('./tmp/fiveVecRep.npy', 6, 10)
-    # x.fit()
-    # x.calc_percents()
-    #
-    # with open('model.pkl', 'wb') as outp:
-    #     pickle.dump(x, outp, pickle.HIGHEST_PROTOCOL)
-    #
-    # print(f"totak time: {time.time() - start}")
 
     with open('model.pkl', 'rb') as inp:
         model = pickle.load(inp)
-        # with pd.option_context('display.max_rows', None, 'display.max_columns', None):
-        #     print(model.data)
-        #     print(model.order)
+
+        parser = argparse.ArgumentParser(description='Process some integers.')
+        parser.add_argument('--cand', type=str, nargs='*')
+        parser.add_argument('--func', type=str, nargs='*')
+        parser.add_argument('--job', type=str, default='')
+        args = parser.parse_args()
+
+        func = args.func
+
+        if func[0] == "candidate":
+            user_ = args.cand
+            print(user_)
+            # user_ = ' '.join(user_.split('_'))
+            # print(user_)
+            # percents = model.percents
+            # cluster = model.predict(user_)
+            # print(f"$${percents[cluster]}")
+
+
+        elif func[0] == "company":
+            users_ = args.cand
+            id = args.job
+            pass

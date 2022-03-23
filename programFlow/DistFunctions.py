@@ -1,7 +1,7 @@
 import math
 from dataclasses import dataclass
-from programFlow.ReadData import read_freq_per_value_data, read_domain_per_attr_data
-from programFlow.ReadData import DATA_TYPE_PER_INDEX, ATTRIBUTE_PER_INDEX
+from ReadData import read_freq_per_value_data, read_domain_per_attr_data
+from ReadData import DATA_TYPE_PER_INDEX, ATTRIBUTE_PER_INDEX
 
 
 @dataclass
@@ -31,7 +31,7 @@ class Distance:
         min_freq = min(self.data.frequency.items(), key=lambda x: x[1])[1]
         max_freq = max(self.data.val1_frequency, self.data.val2_frequency)
         dist = (abs(self.data.val1_frequency -
-                self.data.val2_frequency) + min_freq) / max_freq
+                    self.data.val2_frequency) + min_freq) / max_freq
         return dist
 
     def q10(self) -> float:
