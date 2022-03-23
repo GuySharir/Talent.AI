@@ -32,6 +32,7 @@ def convert_instance_to_freq_vec(instance: dict) -> dict:
 
     instance_freq_vec = []
     name = instance["full_name"]
+    company = instance["job_company_name"]
 
     for attr, val in instance.items():
         val_type = locate(attr_types[attr].split("'")[1])
@@ -45,7 +46,7 @@ def convert_instance_to_freq_vec(instance: dict) -> dict:
         #         instance_freq_vec = convert_to_freq(val_type=val_type, freq_val=freq_val,
         #                                             val=list_val, instance_freq_vec=instance_freq_vec)
 
-    result = {name: instance_freq_vec}
+    result = {name: (company, instance_freq_vec)}
     logger(f'instance as frequencies vector- \n{result}')
     return result
 

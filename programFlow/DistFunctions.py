@@ -73,15 +73,15 @@ def distance_between_freq_vectors(attr_type, data: DistanceData = None, num_val1
         return q13result
 
 
-def prepare_data_for_dist_calc_between_freq_vectors(instance1: dict, instance2: dict):
+def prepare_data_for_dist_calc_between_freq_vectors(vec1: list, vec2: list):
     cat_distance_result = []
     num_distance_result = []
 
     domain = read_domain_per_attr_data()
     freq = read_freq_per_value_data()
-
-    vec1 = instance1[list(instance1.keys())[0]]
-    vec2 = instance2[list(instance2.keys())[0]]
+    #
+    # vec1 = instance1[list(instance1.keys())[0]]
+    # vec2 = instance2[list(instance2.keys())[0]]
     for inx, val in enumerate(vec1):
         attr = ATTRIBUTE_PER_INDEX[inx]
         attr_freq = freq[attr]
@@ -112,4 +112,7 @@ def q14(categorical_sum, numerical_sum) -> float:
 if __name__ == '__main__':
     instance1_ = {'laura gao': [1, 3, 1, 144, 1996.0, 462, 69, 1, 107, 101, 61, 61, 16]}
     instance2_ = {'bruk argaw': [1, 1, 1, 775, 1991.0, 1, 69, 145, 668, 544, 61, 61, 15]}
-    prepare_data_for_dist_calc_between_freq_vectors(instance1=instance1_, instance2=instance2_)
+
+    vec1_ = [1, 3, 1, 144, 1996.0, 462, 69, 1, 107, 101, 61, 61, 16]
+    vec2_ = [1, 1, 1, 775, 1991.0, 1, 69, 145, 668, 544, 61, 61, 15]
+    prepare_data_for_dist_calc_between_freq_vectors(vec1=vec1_, vec2=vec2_)
