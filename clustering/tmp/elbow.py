@@ -212,13 +212,21 @@ def scale_data(data: pd.DataFrame, scalerType: str) -> pd.DataFrame:
 
 
 if __name__ == '__main__':
-    # data = load_data('five.npy')
-    # # data = scale_data(data, "minmax")
+    # data = load_data('fiveVecRep.npy' )
+    # data = scale_data(data, "minmax")
     # data = scale_data(data, "standard")
     # data = normalize_data(data)
-    #
-    # find_k_elbow(data, 2, 11)
-    # find_k_silhouette(data, 2, 11, True)
+
+    data = np.load('fiveVecRep.npy', allow_pickle=True)
+    x = [list(_.values())[0] for _ in data]
+    data = pd.DataFrame(x)
+
+    data = scale_data(data, "minmax")
+    # data = scale_data(data, "standard")
+    data = normalize_data(data)
+
+    find_k_elbow(data, 2, 20)
+    find_k_silhouette(data, 2, 20, True)
 
     # my_kmeans(5)
 

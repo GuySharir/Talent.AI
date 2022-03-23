@@ -1,10 +1,12 @@
 from pydoc import locate
 import pandas as pd
 from programFlow.ReadData import read_local_json_employees, read_attr_types_data, read_freq_per_value_data
+import numpy as np
 
 
 def logger(*args):
-    print(*args)
+    # print(*args)
+    pass
 
 
 def df_row_to_instance(df: pd.DataFrame, index: int) -> dict:
@@ -52,11 +54,18 @@ def convert_instance_to_freq_vec(instance: dict) -> dict:
 
 def loop_candidates_convert_to_freq_vec():
     df = read_local_json_employees()
-    # for row in range(0, len(df)):
-    for row in range(0, 2):
+
+    converted = []
+
+    for row in range(0, len(df)):
+        # for row in range(0, 2):
         instance = df_row_to_instance(df=df, index=row)
         instance_freq_vec = convert_instance_to_freq_vec(instance=instance)
+        converted.append(instance_freq_vec)
+
+    return converted
 
 
 if __name__ == '__main__':
-    loop_candidates_convert_to_freq_vec()
+    x = loop_candidates_convert_to_freq_vec()
+    from sklearn.cluster import KMeans

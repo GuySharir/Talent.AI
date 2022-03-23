@@ -73,15 +73,21 @@ def distance_between_freq_vectors(attr_type, data: DistanceData = None, num_val1
         return q13result
 
 
-def prepare_data_for_dist_calc_between_freq_vectors(instance1: dict, instance2: dict):
+def prepare_data_for_dist_calc_between_freq_vectors(instance1, instance2):
     cat_distance_result = []
     num_distance_result = []
 
     domain = read_domain_per_attr_data()
     freq = read_freq_per_value_data()
 
-    vec1 = instance1[list(instance1.keys())[0]]
-    vec2 = instance2[list(instance2.keys())[0]]
+    # vec1 = instance1[list(instance1.keys())[0]]
+    # vec2 = instance2[list(instance2.keys())[0]]
+
+    vec1 = instance1
+    vec2 = instance2
+
+    # print(f"1: {vec1}\n2: {vec2}")
+
     for inx, val in enumerate(vec1):
         attr = ATTRIBUTE_PER_INDEX[inx]
         attr_freq = freq[attr]
@@ -99,10 +105,10 @@ def prepare_data_for_dist_calc_between_freq_vectors(instance1: dict, instance2: 
             num_distance_result.append(distance_between_freq_vectors(attr_type=DATA_TYPE_PER_INDEX[inx],
                                                                      data=None, num_val1=val, num_val2=vec2[inx]))
 
-    print(f'categorical result-\n {cat_distance_result}')
-    print(f'numerical result-\n {num_distance_result}')
-    distance_result = q14(categorical_sum=sum(cat_distance_result), numerical_sum=sum(num_distance_result))
-    print(f'distance result-\n {distance_result}')
+    # print(f'categorical result-\n {cat_distance_result}')
+    # print(f'numerical result-\n {num_distance_result}')
+    return q14(categorical_sum=sum(cat_distance_result), numerical_sum=sum(num_distance_result))
+    # print(f'distance result-\n {distance_result}')
 
 
 def q14(categorical_sum, numerical_sum) -> float:
@@ -110,6 +116,6 @@ def q14(categorical_sum, numerical_sum) -> float:
 
 
 if __name__ == '__main__':
-    instance1_ = {'laura gao': [1, 3, 1, 144, 1996.0, 462, 69, 1, 107, 101, 61, 61, 16]}
-    instance2_ = {'bruk argaw': [1, 1, 1, 775, 1991.0, 1, 69, 145, 668, 544, 61, 61, 15]}
-    prepare_data_for_dist_calc_between_freq_vectors(instance1=instance1_, instance2=instance2_)
+    instance1_ = [1, 3, 1, 144, 1996.0, 462, 69, 1, 107, 101, 61, 61, 16]
+    instance2_ = [1, 1, 1, 775, 1991.0, 1, 69, 145, 668, 544, 61, 61, 15]
+    print(prepare_data_for_dist_calc_between_freq_vectors(instance1=instance1_, instance2=instance2_))
