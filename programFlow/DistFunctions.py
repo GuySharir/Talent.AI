@@ -1,3 +1,4 @@
+import math
 from dataclasses import dataclass
 from programFlow.ReadData import read_freq_per_value_data, read_domain_per_attr_data
 from programFlow.ReadData import DATA_TYPE_PER_INDEX, ATTRIBUTE_PER_INDEX
@@ -100,6 +101,12 @@ def prepare_data_for_dist_calc_between_freq_vectors(instance1: dict, instance2: 
 
     print(f'categorical result-\n {cat_distance_result}')
     print(f'numerical result-\n {num_distance_result}')
+    distance_result = q14(categorical_sum=sum(cat_distance_result), numerical_sum=sum(num_distance_result))
+    print(f'distance result-\n {distance_result}')
+
+
+def q14(categorical_sum, numerical_sum) -> float:
+    return math.sqrt(categorical_sum + numerical_sum)
 
 
 if __name__ == '__main__':
