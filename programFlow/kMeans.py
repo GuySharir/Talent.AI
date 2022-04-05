@@ -1,16 +1,18 @@
 import argparse
 import sys
 import os
+import requests
 
 import numpy as np
 import pandas as pd
 import copy
 import pickle
-# from programFlow.DistFunctions import prepare_data_for_dist_calc_between_freq_vectors
-from DistFunctions import prepare_data_for_dist_calc_between_freq_vectors
-from sklearn.utils import shuffle
 
 sys.path.insert(0, os.path.abspath(os.path.abspath(os.getcwd())))
+# from programFlow.DistFunctions import prepare_data_for_dist_calc_between_freq_vectors
+from DistFunctions import prepare_data_for_dist_calc_between_freq_vectors
+from InstanceFreq import convert_instance_to_freq_vec
+from sklearn.utils import shuffle
 
 
 def my_print(message):
@@ -162,29 +164,39 @@ class Kmeans:
 # def get_user_by
 
 if __name__ == "__main__":
-
-    with open('model.pkl', 'rb') as inp:
+    sys.path.insert(0, os.path.abspath(os.path.abspath(os.getcwd())))
+    # payload = {'guy sharir': 1, "opal peltamzn": "loserit"}
+    # r = requests.post('http://127.0.0.1:3000/api/candidate/forAlgo', data=payload)
+    # print(r.json)
+    with open('../model.pkl', 'rb') as inp:
         model = pickle.load(inp)
+        model.print_cluster_company_percent()
 
-        parser = argparse.ArgumentParser(description='Process some integers.')
-        parser.add_argument('--cand', type=str, nargs='*')
-        parser.add_argument('--func', type=str, nargs='*')
-        parser.add_argument('--job', type=str, default='')
-        args = parser.parse_args()
+        # parser = argparse.ArgumentParser(description='Process some integers.')
+        # parser.add_argument('--cand', type=str, nargs='*')
+        # parser.add_argument('--func', type=str, nargs='*')
+        # parser.add_argument('--job', type=str, default='')
+        # args = parser.parse_args()
+        #
+        # func = args.func
+        #
+        # if func[0] == "candidate":
+        #     users = args.cand
+        #     users = [user.replace('_', ' ') for user in users]
+        #     payload = {"candidates": users}
+        #     req = requests.post('http://127.0.0.1:3000/api/candidate/forAlgo', data=payload)
+        #     candidate = req.json()[0]
+        #     candidate.pop('_id')
+        #
+        #     candidate = convert_instance_to_freq_vec(candidate)
+        #     candidate = list(candidate.values())[0][1]
+        #     percents = model.percents
+        #     prediction = model.predict(candidate)
+        #     #
+        #     print(f"$${percents[prediction]}", flush=True)
 
-        func = args.func
-
-        if func[0] == "candidate":
-            user_ = args.cand
-            print(user_)
-            # user_ = ' '.join(user_.split('_'))
-            # print(user_)
-            # percents = model.percents
-            # cluster = model.predict(user_)
-            # print(f"$${percents[cluster]}")
-
-
-        elif func[0] == "company":
-            users_ = args.cand
-            id = args.job
-            pass
+sys.exit(0)
+# elif func[0] == "company":
+#     users_ = args.cand
+#     id = args.job
+#     pass

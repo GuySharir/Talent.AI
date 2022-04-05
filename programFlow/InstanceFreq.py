@@ -1,6 +1,10 @@
 from pydoc import locate
 import pandas as pd
-from programFlow.ReadData import read_local_json_employees, read_attr_types_data, read_freq_per_value_data
+import os
+import sys
+
+sys.path.insert(0, os.path.abspath(os.path.abspath(os.getcwd())))
+from ReadData import read_local_json_employees, read_attr_types_data, read_freq_per_value_data
 import numpy as np
 
 

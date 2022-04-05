@@ -1,6 +1,9 @@
 import os
 import json
 import pandas as pd
+import sys
+
+sys.path.insert(0, os.path.abspath(os.path.abspath(os.getcwd())))
 
 DATA_TYPE_PER_INDEX = {0: str, 1: str, 2: str, 3: str,
                        4: int, 5: str, 6: str, 7: str,
