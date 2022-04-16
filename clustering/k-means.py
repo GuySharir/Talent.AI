@@ -108,7 +108,7 @@ class MyKmeans:
         return raw_df
 
     def normalize_data(self) -> pd.DataFrame:
-        return normalize(self.data)
+        return
 
     def scale_data(self, scaler_type: str) -> pd.DataFrame:
         if scaler_type == "standard":
