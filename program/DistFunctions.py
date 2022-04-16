@@ -1,7 +1,7 @@
 import math
 from dataclasses import dataclass
-from program.ReadData import read_freq_per_value_data, read_domain_per_attr_data
-from program.ReadData import DATA_TYPE_PER_INDEX, ATTRIBUTE_PER_INDEX
+from ReadData import read_freq_per_value_data, read_domain_per_attr_data, DATA_TYPE_PER_INDEX, ATTRIBUTE_PER_INDEX
+from dataTool.runtimeObjectsInfo.ListLengthData import LIST_LENGTH_PER_ATTR, NESTED_LENGTH_PER_ATTR
 
 
 @dataclass
@@ -15,7 +15,7 @@ class DistanceData:
     attribute_inx: int
 
 
-class Distance:
+class DistanceFunctions:
     def __init__(self, data: DistanceData):
         self.data = data
 
@@ -60,17 +60,23 @@ def calc_num_distance_q13(val1, val2) -> float:
         return (val1 - val2) ** 2
 
 
-def distance_between_freq_vectors(attr_type, data: DistanceData = None, num_val1=None, num_val2=None):
+def categorical_dist_between_freq_vectors(attr_type, data: DistanceData = None):
     if attr_type == str:
         data = data
-        str_obj = Distance(data=data)
+        str_obj = DistanceFunctions(data=data)
         q10result = str_obj.q10()
         q12result = str_obj.q12()
         return (q10result * q12result) ** 2
 
-    elif attr_type == int or attr_type == float:
+
+def numerical_dist_between_freq_vectors(attr_type, num_val1=None, num_val2=None):
+    if attr_type == int or attr_type == float:
         q13result = calc_num_distance_q13(val1=num_val1, val2=num_val2)
         return q13result
+
+
+def q14(categorical_sum, numerical_sum) -> float:
+    return math.sqrt(categorical_sum + numerical_sum)
 
 
 def prepare_data_for_dist_calc_between_freq_vectors(vec1: list, vec2: list):
@@ -90,21 +96,17 @@ def prepare_data_for_dist_calc_between_freq_vectors(vec1: list, vec2: list):
                                 val2_frequency=vec2[inx], frequency=attr_freq,
                                 domain_size=attr_domain, attribute_inx=inx)
 
-            cat_distance_result.append(distance_between_freq_vectors(attr_type=DATA_TYPE_PER_INDEX[inx],
-                                                                     data=data, num_val1=None, num_val2=None))
+            cat_distance_result.append(categorical_dist_between_freq_vectors(attr_type=DATA_TYPE_PER_INDEX[inx],
+                                                                             data=data))
 
         elif DATA_TYPE_PER_INDEX[inx] == float or DATA_TYPE_PER_INDEX[inx] == int:
-            num_distance_result.append(distance_between_freq_vectors(attr_type=DATA_TYPE_PER_INDEX[inx],
-                                                                     data=None, num_val1=val, num_val2=vec2[inx]))
+            num_distance_result.append(numerical_dist_between_freq_vectors(attr_type=DATA_TYPE_PER_INDEX[inx],
+                                                                           num_val1=val, num_val2=vec2[inx]))
 
     print(f'categorical result-\n {cat_distance_result}')
     print(f'numerical result-\n {num_distance_result}')
     distance_result = q14(categorical_sum=sum(cat_distance_result), numerical_sum=sum(num_distance_result))
     print(f'distance result-\n {distance_result}')
-
-
-def q14(categorical_sum, numerical_sum) -> float:
-    return math.sqrt(categorical_sum + numerical_sum)
 
 
 if __name__ == '__main__':
