@@ -39,6 +39,7 @@ class LengthAttr:
             self.lis_lengths_per_attr[attr] = [list_length]
 
     def length_check_per_attr(self):
+
         for i in range(0, len(self.df)):
             instance = {attr: self.df.iloc[i][inx] for inx, attr in enumerate(self.attr_types.keys())}
 
