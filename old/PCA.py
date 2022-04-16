@@ -8,7 +8,7 @@ import json
 
 # data = None
 #
-# data = np.load('../program/full_matrix.npy')
+# data = np.load('../programFlow/full_matrix.npy')
 # data = pd.DataFrame(data)
 #
 # with pd.option_context('display.max_rows', None, 'display.max_columns', None):  # more options can be specified also

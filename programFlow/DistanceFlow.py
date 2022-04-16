@@ -1,32 +1,19 @@
-from threading import Thread
-from distance.LengthPerAttr import LengthAttr
-from distance.DistanceFunctionality import DistanceFunctionality
-from distance.DomainSizeFrequencies import DomainAndFrequency
-from distance.DistanceData import DistanceFunctionalityData
-from distance.DistEnum import NestedDistMethod
-from distance.DistEnum import ListDistMethod
 import os
 import json
 import pandas as pd
 import numpy as np
+import requests
+
 from pydoc import locate
 from datetime import datetime
-
-import requests
-import sys
-
-<< << << < HEAD
-== == == =
-sys.path.insert(0, os.path.abspath(os.path.abspath(os.getcwd())))
-
-sys.path.insert(0, os.path.abspath(os.path.abspath(os.getcwd())))
-
-
-def my_print(*args):
-    pass
-
-
->>>>>> > alpha
+from dataTool.runtimeObjectsInfo.DBQueries import JOB_OFFER_QUERY, CANDIDATE_QUERY
+from distance.DistEnum import ListDistMethod
+from distance.DistEnum import NestedDistMethod
+from distance.DistanceData import DistanceFunctionalityData
+from distance.DomainSizeFrequencies import DomainAndFrequency
+from distance.DistanceFunctionality import DistanceFunctionality
+from distance.LengthPerAttr import LengthAttr
+from threading import Thread
 
 
 class DistanceFlow:
@@ -78,7 +65,7 @@ class DistanceFlow:
         data_path = self.set_path('dataTool/clean_data')
         # data_path = os.path.abspath(os.path.
         #                             join(os.path.dirname(__file__), '..', 'dataTool/clean_data')).replace('/', '/')
-        my_print(f'data path', data_path)
+        print(f'data path', data_path)
 
         # all_files = [os.path.join(data_path, 'AppleEmployees.json'),
         #              os.path.join(data_path, 'AmazonEmployees.json'),
@@ -137,15 +124,15 @@ class DistanceFlow:
 
         for attr, val_type in self.attr_types.items():
             val_type = locate(val_type.split("'")[1])
-            my_print(f'attribute {attr}')
+            print(f'attribute {attr}')
             value_frequency, domain_size = \
                 DomainAndFrequency(attr=attr, val_type=val_type,
                                    data_frame=self.df).calc_domain_and_frequency()
 
             self.domain_per_attribute.update({attr: domain_size})
             self.freq_per_attribute.update({attr: value_frequency})
-        my_print(f'domain per attribute {self.domain_per_attribute}')
-        my_print(f'freq per attribute {self.freq_per_attribute}')
+        print(f'domain per attribute {self.domain_per_attribute}')
+        print(f'freq per attribute {self.freq_per_attribute}')
 
         domain_size_path = self.set_path('dataTool/domain_size')
         # domain_size_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'dataTool/domain_size'))\
@@ -187,12 +174,12 @@ class DistanceFlow:
             elif data_type == np.float64:
                 data_type = float
             if data_type not in types:
-                my_print(f'Error! unpredicted value type')
+                print(f'Error! unpredicted value type')
 
             self.attr_types[attr] = str(data_type)
 
         self.calc_nested_attribute_type()
-        my_print(f'all attributes type- {self.attr_types}')
+        print(f'all attributes type- {self.attr_types}')
 
         path = self.set_path('dataTool/attributes_types')
         attribute_type_path = os.path.abspath(
@@ -239,53 +226,11 @@ class DistanceFlow:
 
     def candidate_dist_for_companies(self, candidate_full_name: str) -> dict:
         url = "http://localhost:3003/graphql"
-        clusters_centers_full_name = [
-            "adam blaine", "joshua rahm", "yanjun huang", "rami awad", "jeff crilly", ]
+        clusters_centers_full_name = ["adam blaine", "joshua rahm", "yanjun huang", "rami awad", "jeff crilly", ]
         candidate_instance = {}
         centroids_instances = {}
 
-        query = """query GetCandidatesByFullName($getCandidatesInputFullName: GetCandidatesInputFullName!) {
-                        getCandidatesByFullName(getCandidatesInputFullName: $getCandidatesInputFullName) {
-                            full_name
-                            first_name
-                            last_name
-                            gender
-                            birth_date
-                            industry
-                            job_title
-                            job_title_role
-                            job_title_sub_role
-                            job_title_levels
-                            job_company_id
-                            job_company_name
-                            job_start_date
-                            interests
-                            skills
-                            experience {
-                              company_name
-                              company_industry
-                              company_size
-                              current_job
-                              company_location_name
-                              company_location_country
-                              company_location_continent
-                              end_date
-                              start_date
-                              title_name
-                              title_role
-                              title_levels
-                            }
-                            education {
-                              school_name
-                              school_type
-                              degrees
-                              start_date
-                              end_date
-                              majors
-                              minors
-                            }
-                        }
-                }"""
+        query = CANDIDATE_QUERY
 
         variables = {"getCandidatesInputFullName": {
             "candidateFullName": f'{candidate_full_name}'
@@ -305,7 +250,7 @@ class DistanceFlow:
             if response.status_code == 200:
                 candidate_instance = response.json(
                 )['data']['getCandidatesByFullName']
-                my_print(f'candidate instance- {candidate_instance}')
+                print(f'candidate instance- {candidate_instance}')
 
         for name in clusters_centers_full_name:
             variables = {"getCandidatesInputFullName": {
@@ -317,7 +262,7 @@ class DistanceFlow:
             if response.status_code == 200 and candidate_instance:
                 centroids_instances[name] = response.json(
                 )['data']['getCandidatesByFullName']
-                my_print(f'centroids instances- {centroids_instances}')
+                print(f'centroids instances- {centroids_instances}')
 
                 distance_obj = DistanceFunctionalityData(instance_a=candidate_instance,
                                                          instance_b=centroids_instances[name],
@@ -329,12 +274,62 @@ class DistanceFlow:
                                                          nested_dist_method=self.nested_dist_method)
                 res[name] = DistanceFunctionality(
                 ).calc_distance(data=distance_obj)
-        my_print(f'result per centroid name- {res}')
+        print(f'result per centroid name- {res}')
+        return res
+
+    def dist_for_job_offer(self, job_id: str) -> dict:
+        res = {}
+        url = "http://localhost:3003/graphql"
+        clusters_centers_full_name = ["adam blaine", "joshua rahm", "yanjun huang", "rami awad", "jeff crilly", ]
+        job_offer_instance = {}
+        centroids_instances = {}
+
+        query = JOB_OFFER_QUERY
+        variables = {"getJobOfferInput": {
+            "jobOfferID": f'{job_id}'
+        }}
+
+        if job_id:
+            response = requests.post(
+                url, json={'query': query, 'variables': variables})
+            if response.status_code == 200:
+                job_offer_instance = response.json()['data']['getJobOffer']
+                print(f'candidate instance- {job_offer_instance}')
+
+        self.read_attr_types()
+        self.read_attr_domain()
+        self.read_attr_freq()
+
+        # query = CANDIDATE_QUERY
+        # for name in clusters_centers_full_name:
+        #     variables = {"getCandidatesInputFullName": {
+        #         "candidateFullName": f'{name}'
+        #     }}
+        #
+        #     response = requests.post(
+        #         url, json={'query': query, 'variables': variables})
+        #     if response.status_code == 200 and job_offer_instance:
+        #         centroids_instances[name] = response.json(
+        #         )['data']['getCandidatesByFullName']
+        #         print(f'centroids instances- {centroids_instances}')
+        #
+        #         distance_obj = DistanceFunctionalityData(instance_a=job_offer_instance,
+        #                                                  instance_b=centroids_instances[name],
+        #                                                  attr_types=self.attr_types,
+        #                                                  nested_attr_types=self.nested_attr_types,
+        #                                                  freq_per_attribute=self.freq_per_attribute,
+        #                                                  domain_per_attribute=self.domain_per_attribute,
+        #                                                  lists_dist_method=self.lists_dist_method,
+        #                                                  nested_dist_method=self.nested_dist_method)
+        #         res[name] = DistanceFunctionality(
+        #         ).calc_distance(data=distance_obj)
+        # print(f'result per centroid name- {res}')
+
         return res
 
     def threads_range_calc_flow(self, num_threads: int = 1):
         self.res = np.zeros((len(self.df), len(self.df)))
-        my_print(f'df length {len(self.df)}')
+        print(f'df length {len(self.df)}')
         dist_range = int(len(self.df) / num_threads)
         i = 0
         i_j_tuples = {}
@@ -358,7 +353,7 @@ class DistanceFlow:
             for j in range(i, end_point):
                 instance_a = self.df_row_to_instance(i)
                 instance_b = self.df_row_to_instance(j)
-                my_print(
+                print(
                     f"in loop: {instance_a['full_name']} VS {instance_b['full_name']}")
                 distance_data_obj = DistanceFunctionalityData(instance_a=instance_a, instance_b=instance_b,
                                                               attr_types=self.attr_types,
@@ -387,7 +382,7 @@ class DistanceFlow:
             #     for j in range(i, len(self.df)):
             #         instance_a = self.df_row_to_instance(i)
             #         instance_b = self.df_row_to_instance(j)
-            #         my_print(
+            #         print(
             #             f"in loop: {instance_a['full_name']} VS {instance_b['full_name']}")
             #         distance_data_obj = DistanceFunctionalityData(instance_a=instance_a, instance_b=instance_b,
             #                                                       attr_types=self.attr_types,
@@ -434,45 +429,48 @@ class DistanceFlow:
                    nested_attr_types=self.nested_attr_types).length_check_per_attr()
 
 
-# def main(candidate_dist_for_companies=False, dist_for_clustering=False,
-#          instance_a: list = None, instance_b: list = None, candidate_full_name: str = None):
+def main(job_offer_dist=False, candidate_dist_for_companies=False, dist_for_clustering=False,
+         instance_a: list = None, instance_b: list = None, candidate_full_name: str = None, job_offer_id: str = None):
+    print(f'start time {datetime.now().strftime("%H:%M:%S")}')
+    # choose to calculate domain and frequencies -> domain_and_freq = True means calculate
+    # domain_and_freq = True
+    domain_and_freq = False
 
-#     my_print(f'start time {datetime.now().strftime("%H:%M:%S")}')
-#     # choose to calculate domain and frequencies -> domain_and_freq = True means calculate
-#     # domain_and_freq = True
-#     domain_and_freq = False
-#
-#     # choose to calculate attributes types -> attr_type = True means calculate
-#     # attr_type = True
-#     attr_type = False
-#     dist_obj = DistanceFlow(calc_domain_freq=domain_and_freq, calc_attr_type=attr_type,
-#                             lists_dist_method=ListDistMethod.freq_order_lists,
-#                             nested_dist_method=NestedDistMethod.fixed_length)
-#
-#     if dist_for_clustering:
-#         res = dist_obj.dis_for_clustering(
-#             instance_a=instance_a, instance_b=instance_b)
-#     elif candidate_dist_for_companies:
-#         res = dist_obj.candidate_dist_for_companies(
-#             candidate_full_name=candidate_full_name)
-#     else:
-#         res = dist_obj.run_distance_flow(loop=True)
-#
-#     # if res:
-#     #     my_print(f'sum- {sum(res)}')
-#     #     my_print(f'unique val- {len(np.unique(res))}')
-#     #     my_print(f'distance res- {res}')
-#     #     my_print(f'min val res- {min(res)}')
-#     #     my_print(f'max val res- {max(res)}')
-#
-#     my_print(f'end time {datetime.now().strftime("%H:%M:%S")}')
-#
-#
-# if __name__ == '__main__':
-#     # choose dist_for_clustering
-#     # dist_for_clustering = True
-#     # instance_a =
-#     # instance_b =
-#
-#     main(candidate_dist_for_companies=True, dist_for_clustering=False, instance_a=None,
-#          instance_b=None, candidate_full_name="trevor mccauley")
+    # choose to calculate attributes types -> attr_type = True means calculate
+    # attr_type = True
+    attr_type = False
+    dist_obj = DistanceFlow(calc_domain_freq=domain_and_freq, calc_attr_type=attr_type,
+                            lists_dist_method=ListDistMethod.freq_order_lists,
+                            nested_dist_method=NestedDistMethod.fixed_length)
+
+    if dist_for_clustering:
+        res = dist_obj.dis_for_clustering(
+            instance_a=instance_a, instance_b=instance_b)
+    elif candidate_dist_for_companies:
+        res = dist_obj.candidate_dist_for_companies(
+            candidate_full_name=candidate_full_name)
+    elif job_offer_dist:
+        res = dist_obj.dist_for_job_offer(job_id=job_offer_id)
+    else:
+        res = dist_obj.run_distance_flow(loop=True)
+
+    # if res:
+    #     print(f'sum- {sum(res)}')
+    #     print(f'unique val- {len(np.unique(res))}')
+    #     print(f'distance res- {res}')
+    #     print(f'min val res- {min(res)}')
+    #     print(f'max val res- {max(res)}')
+
+    print(f'end time {datetime.now().strftime("%H:%M:%S")}')
+
+
+if __name__ == '__main__':
+    # choose dist_for_clustering
+    # dist_for_clustering = True
+    # instance_a =
+    # instance_b =
+
+    main(job_offer_dist=True, candidate_dist_for_companies=False, dist_for_clustering=False, instance_a=None,
+         instance_b=None, candidate_full_name=None, job_offer_id="623927b9fac2bb1e313b9fb1")
+    # main(job_offer_dist=False, candidate_dist_for_companies=True, dist_for_clustering=False, instance_a=None,
+    #      instance_b=None, candidate_full_name="trevor mccauley", job_offer_id=None)

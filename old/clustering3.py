@@ -35,7 +35,7 @@ SelBest = lambda arr, x: arr[np.argsort(arr)[:x]]
 #         cur_min = min(row)
 
 
-# raw_df = np.load('../../program/combined3.npy')
+# raw_df = np.load('../../programFlow/combined3.npy')
 raw_df = np.load('combined3.npy')
 raw_df = pd.DataFrame(raw_df)
 raw_df = shuffle(raw_df)
