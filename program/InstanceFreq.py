@@ -206,14 +206,13 @@ def convert_instance_to_freq_vec(instance: dict, representation_option: DistMeth
             instance_freq_vec = list_to_vec_representation(representation_option=representation_option_set, attr_name=attr, freq_val=freq_val,
                                                            list_val=val, instance_freq_vec=instance_freq_vec)
 
-        # elif val_type == dict:
-        #     instance_freq_vec = nested_to_vec_representation(representation_option=representation_option_nested, representation_option_set=representation_option_set,
-        #                                                      attr_name=attr, freq_val=freq_val,
-        #                                                      nested_val=val, instance_freq_vec=instance_freq_vec)
+        elif val_type == dict:
+            instance_freq_vec = nested_to_vec_representation(representation_option=representation_option_nested, representation_option_set=representation_option_set,
+                                                             attr_name=attr, freq_val=freq_val,
+                                                             nested_val=val, instance_freq_vec=instance_freq_vec)
 
     result = {name: (company, instance_freq_vec)}
-    # logger(f'instance as frequencies vector- \n{instance_freq_vec}')
-    logger(f'vec len {len(instance_freq_vec)}')
+    logger(f'vector length- {len(instance_freq_vec)}')
     return result
 
 

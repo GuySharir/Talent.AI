@@ -1,5 +1,5 @@
-from ReadData import read_freq_per_value_data, read_domain_per_attr_data, DATA_TYPE_PER_INDEX, ATTRIBUTE_PER_INDEX, DATA_TYPE_PER_INDEX_EXPERIENCE, DATA_TYPE_PER_INDEX_EDUCATION
-from dataTool.runtimeObjectsInfo.ListLengthData import LIST_LENGTH_PER_ATTR, NESTED_LENGTH_PER_ATTR
+from ReadData import read_freq_per_value_data, read_domain_per_attr_data, DATA_TYPE_PER_INDEX, ATTRIBUTE_PER_INDEX, DATA_TYPE_PER_INDEX_EXPERIENCE, DATA_TYPE_PER_INDEX_EDUCATION, EXPERIENCE_OBJECT_ATTR_LENGTH, EDUCATION_OBJECT_ATTR_LENGTH
+from dataTool.runtimeObjectsInfo.ListLengthData import LIST_LENGTH_PER_ATTR, NESTED_LENGTH_PER_ATTR, EXPERIENCE_LISTS_LENGTH, EDUCATION_LISTS_LENGTH
 from DistEnum import DistMethod
 from DistFunctions import DistanceData, q14, categorical_dist_between_freq_vectors, numerical_dist_between_freq_vectors
 
@@ -36,7 +36,7 @@ class DistanceFlow:
                                 domain_size=domain_size, attribute_inx=self.inx)
             self.cat_distance_result.append(categorical_dist_between_freq_vectors(attr_type=attr_type, data=data))
 
-    def set_distance(self, attr_name: str):
+    def set_distance(self, attr_name: str, frequency: dict, domain_size: int):
         # each set contains only categorical values in different representations
         attr_length = LIST_LENGTH_PER_ATTR[attr_name]
         set1 = self.vec1[self.inx: self.inx + attr_length]
@@ -46,38 +46,47 @@ class DistanceFlow:
         logger(f'set2-\n{set2}')
 
         if self.representation_option_set == DistMethod.fix_length_freq:
-            pass
+            for _ in range(attr_length):
+                self.categorical_distance(representation_option=self.representation_option_set, attr_type=str, frequency=frequency, domain_size=domain_size)
+                self.inx += 1
 
-        self.inx = self.inx + attr_length
+        self.inx = self.inx - 1
 
-    def nested_distance(self, nested1, nested2):
-        pass
+    def nested_distance(self, attr_name: str, frequency: dict, domain_size: int):
+        if attr_name == 'experience':
+            attr_length = (sum(EXPERIENCE_LISTS_LENGTH.values()) + EXPERIENCE_OBJECT_ATTR_LENGTH - len(
+                EXPERIENCE_LISTS_LENGTH.keys())) * NESTED_LENGTH_PER_ATTR[attr_name]
+        elif attr_name == 'education':
+            attr_length = (sum(EDUCATION_LISTS_LENGTH.values()) + EDUCATION_OBJECT_ATTR_LENGTH - len(
+                EDUCATION_LISTS_LENGTH.keys())) * NESTED_LENGTH_PER_ATTR[attr_name]
+        print()
 
     def calc_distance(self):
         domain = read_domain_per_attr_data()
         freq = read_freq_per_value_data()
 
-        for val in self.vec1:
-            attr = ATTRIBUTE_PER_INDEX[self.inx]
+        for raw_data_inx, data_type in DATA_TYPE_PER_INDEX.items():
+            attr = ATTRIBUTE_PER_INDEX[raw_data_inx]
             attr_freq = freq[attr]
             attr_domain = domain[attr]
 
-            if DATA_TYPE_PER_INDEX[self.inx] == str:
-                self.categorical_distance(representation_option=self.representation_option, attr_type=str, frequency=attr_freq, domain_size=attr_domain)
+            if data_type == str:
+                self.categorical_distance(representation_option=self.representation_option, attr_type=data_type, frequency=attr_freq, domain_size=attr_domain)
 
-            elif DATA_TYPE_PER_INDEX[self.inx] == float or DATA_TYPE_PER_INDEX[self.inx] == int:
-                self.numerical_distance(representation_option=self.representation_option, attr_type=DATA_TYPE_PER_INDEX[self.inx], num1=val,
+            elif data_type == float or data_type == int:
+                self.numerical_distance(representation_option=self.representation_option, attr_type=data_type, num1=self.vec1[self.inx],
                                         num2=self.vec2[self.inx])
 
-            elif DATA_TYPE_PER_INDEX[self.inx] == list:
-                self.set_distance(attr_name=attr)
+            elif data_type == list:
+                self.set_distance(attr_name=attr, frequency=attr_freq, domain_size=attr_domain)
 
-            elif DATA_TYPE_PER_INDEX[self.inx] == dict:
-                pass
+            elif data_type == dict:
+                self.nested_distance(attr_name=attr, frequency=attr_freq, domain_size=attr_domain)
 
             self.inx += 1
 
         print(f'categorical result-\n {self.cat_distance_result}')
+        print(f'categorical list length-\n {len(self.cat_distance_result)}')
         print(f'numerical result-\n {self.num_distance_result}')
         self.freq_distance_result = q14(categorical_sum=sum(self.cat_distance_result), numerical_sum=sum(self.num_distance_result))
         print(f'distance result-\n {self.freq_distance_result}')
