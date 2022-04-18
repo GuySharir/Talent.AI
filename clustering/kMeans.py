@@ -1,17 +1,17 @@
 import argparse
 import sys
 import os
-import requests
 
 import numpy as np
 import pandas as pd
 import copy
 import pickle
+from datetime import datetime
+import pickle as pkl
 
-from sklearn.decomposition import PCA
-from sklearn.preprocessing import normalize
+# sys.path.insert(0, os.path.abspath(os.path.abspath(os.getcwd())))
+sys.path.append(os.path.abspath('../Foo'))
 
-sys.path.insert(0, os.path.abspath(os.path.abspath(os.getcwd())))
 # from programFlow.DistFunctions import prepare_data_for_dist_calc_between_freq_vectors
 from DistFunctions import prepare_data_for_dist_calc_between_freq_vectors
 from InstanceFreq import convert_instance_to_freq_vec
@@ -66,7 +66,6 @@ class Kmeans:
         self.data = combined.copy().drop(['name', "company"], axis=1)
 
     def initialize_centroids(self):
-        size = self.data.shape[1]
         for i in range(self.n_clusters):
             self.centroids.append(self.data.sample(n=1).values[0])
 
@@ -186,13 +185,8 @@ class Kmeans:
 # def get_user_by
 
 if __name__ == "__main__":
-    from datetime import datetime
-    import pickle as pkl
 
     sys.path.insert(0, os.path.abspath(os.path.abspath(os.getcwd())))
-    # payload = {'guy sharir': 1, "opal peltamzn": "loserit"}
-    # r = requests.post('http://127.0.0.1:3000/api/candidate/forAlgo', data=payload)
-    # print(r.json)
 
     pd.set_option("display.max_rows", None, "display.max_columns", None)
     with open('../model.pkl', 'rb') as inp:
