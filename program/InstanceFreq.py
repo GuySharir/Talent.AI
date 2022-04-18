@@ -41,7 +41,7 @@ def convert_to_freq_numerical(val, instance_freq_vec) -> list:
 def list_to_vec_representation(representation_option: DistMethod, attr_name: str, freq_val: dict, list_val: list, instance_freq_vec: list) -> list:
     # each list contains only categorical values
     # logger(f'########################################## list ######################################')
-    # logger(f'attr-\n{attr_name}')
+    logger(f'attr-\n{attr_name}')
     # logger(f'list val-\n{list_val}')
     # logger(f'attr average length-\n{LIST_LENGTH_PER_ATTR[attr_name]}')
     # logger(f'list representation option-\n{representation_option}')
@@ -66,15 +66,16 @@ def list_to_vec_representation(representation_option: DistMethod, attr_name: str
             freq_values_representation.sort(reverse=True)
             instance_freq_vec.extend(freq_values_representation)
 
-        # logger(f'list conversion- \n{freq_values_representation}')
+        logger(f'freq list conversion- \n{freq_values_representation}')
+        logger(f'freq list conversion len = {len(freq_values_representation)}')
         # logger(f'vec after list conversion- \n{instance_freq_vec}')
 
-    elif representation_option == DistMethod.one_hot_vector or representation_option == DistMethod.intersection:
+    elif representation_option == DistMethod.inner_product or representation_option == DistMethod.intersection:
         # logger(f'freq val-\n{freq_val}')
-        freq_values_representation = [1 if value in list_val else 0 for value in freq_val.keys()]
-        instance_freq_vec.extend(freq_values_representation)
-        # logger(f'freq values representation-\n{freq_values_representation}')
-    # logger(f'########################################################################################')
+        one_hot_values_representation = [1 if value in list_val else 0 for value in freq_val.keys()]
+        instance_freq_vec.extend(one_hot_values_representation)
+        # logger(f'one hot values representation-\n{one_hot_values_representation}')
+    logger(f'########################################################################################')
     return instance_freq_vec
 
 
@@ -211,15 +212,14 @@ def convert_instance_to_freq_vec(instance: dict, representation_option: DistMeth
                                                              nested_val=val, instance_freq_vec=instance_freq_vec)
 
     result = {name: (company, instance_freq_vec)}
-    # logger(f'instance as frequencies vector- \n{instance_freq_vec}')
-    logger(f'vec len {len(instance_freq_vec)}')
+    logger(f'vector length- {len(instance_freq_vec)}')
     return result
 
 
 def loop_candidates_convert_to_freq_vec(representation_option: DistMethod, representation_option_for_set: DistMethod, representation_option_for_nested: DistMethod):
     df = read_local_json_employees()
     # for row in range(0, len(df)):
-    for row in range(0, 5):
+    for row in range(0, 2):
         instance = df_row_to_instance(df=df, index=row)
         instance_freq_vec = convert_instance_to_freq_vec(instance=instance, representation_option=representation_option, representation_option_set=representation_option_for_set, representation_option_nested=representation_option_for_nested)
         logger(f'instance as raw data- \n{instance}')
@@ -228,4 +228,4 @@ def loop_candidates_convert_to_freq_vec(representation_option: DistMethod, repre
 
 
 if __name__ == '__main__':
-    loop_candidates_convert_to_freq_vec(representation_option=DistMethod.hamming_distance, representation_option_for_set=DistMethod.fix_length_freq, representation_option_for_nested=DistMethod.fix_length_freq)
+    loop_candidates_convert_to_freq_vec(representation_option=DistMethod.fix_length_freq, representation_option_for_set=DistMethod.fix_length_freq, representation_option_for_nested=DistMethod.fix_length_freq)
