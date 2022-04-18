@@ -24,6 +24,16 @@ LIST_LENGTH_PER_ATTR = {
     'minors': 1
 }
 
+EXPERIENCE_LISTS_LENGTH = {
+    'title_levels': 1
+}
+
+EDUCATION_LISTS_LENGTH = {
+    'degrees': 1,
+    'majors': 1,
+    'minors': 1
+}
+
 NESTED_LENGTH_PER_ATTR = {
     'experience': 5,
     'education': 3,
