@@ -46,7 +46,7 @@ class DistanceFunctions:
         else:
             return max(q3result, q2result)
 
-    def q12(self) -> int:
+    def q12(self) -> float:
         if self.data.instance1[self.data.attribute_inx] == self.data.instance2[self.data.attribute_inx]:
             return 0
         elif self.data.instance1[self.data.attribute_inx] != self.data.instance2[self.data.attribute_inx]:
@@ -60,8 +60,8 @@ def calc_num_distance_q13(val1, val2) -> float:
         return (val1 - val2) ** 2
 
 
-def categorical_dist_between_freq_vectors(attr_type, data: DistanceData = None):
-    if attr_type == str:
+def categorical_dist_between_freq_vectors(attr_type, data: DistanceData = None) -> float:
+    if attr_type == str or attr_type == bool:
         data = data
         str_obj = DistanceFunctions(data=data)
         q10result = str_obj.q10()

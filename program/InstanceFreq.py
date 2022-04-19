@@ -21,9 +21,9 @@ def convert_to_freq_categorical(val_type, freq_val: dict, val, instance_freq_vec
     else:
         if val_type == str and not val:
             val = 'null'
-        if val_type == bool and not val:
+        elif val_type == bool and not val:
             val = 'false'
-        if val_type == bool and val:
+        elif val_type == bool and val:
             val = 'true'
         instance_freq_vec.append(freq_val[val])
     return instance_freq_vec

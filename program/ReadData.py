@@ -23,12 +23,20 @@ ATTRIBUTE_PER_INDEX = {0: "full_name", 1: "first_name", 2: "last_name", 3: "gend
 # index 16
 DATA_TYPE_PER_INDEX_EXPERIENCE = {0: str, 1: str, 2: str, 3: int,
                                   4: str, 5: str, 6: str, 7: bool,
-                                  8: str, 9: str, 10: list, 11: str,
+                                  8: str, 9: str, 10: str, 11: str,
                                   12: str, 13: list}
+
+EXPERIENCE_ATTRIBUTE_PER_INDEX = {0: "company_name", 1: "company_size", 2: "company_id", 3: "company_founded",
+                                  4: "company_industry", 5: "end_date", 6: "start_date", 7: "current_job",
+                                  8: "company_location_name", 9: "company_location_country", 10: "company_location_continent",
+                                  11: "title_name", 12: "title_role", 13: "title_levels"}
 
 # index 17
 DATA_TYPE_PER_INDEX_EDUCATION = {0: str, 1: str, 2: str, 3: str,
                                  4: float, 5: list, 6: list, 7: list}
+
+EDUCATION_ATTRIBUTE_PER_INDEX = {0: "school_name", 1: "school_type", 2: "end_date", 3: "start_date",
+                                 4: "gpa", 5: "degrees", 6: "majors", 7: "minors"}
 
 EXPERIENCE_OBJECT_ATTR_LENGTH = 14
 EDUCATION_OBJECT_ATTR_LENGTH = 8
