@@ -25,10 +25,10 @@ class DistanceFlow:
         self.total_distance_result = None
 
     def numerical_distance(self, representation_option: DistMethod, attr_type, num1, num2):
-
-        if representation_option == DistMethod.fix_length_freq:
-            self.num_distance_result.append(numerical_dist_between_freq_vectors(attr_type=attr_type,
-                                                                                num_val1=num1, num_val2=num2))
+        if num1 and num2:   # dealing with missing values when numerical type by deleting missing data
+            if representation_option == DistMethod.fix_length_freq:
+                self.num_distance_result.append(numerical_dist_between_freq_vectors(attr_type=attr_type,
+                                                                                    num_val1=num1, num_val2=num2))
 
     def categorical_distance(self, representation_option: DistMethod, attr_type, frequency: dict, domain_size: int):
 
