@@ -10,7 +10,7 @@ def logger(*args):
     print(*args)
 
 
-class DistanceFlow:
+class DistanceFlowFreq:
     def __init__(self, vec1: list, vec2: list, representation_option: DistMethod, representation_option_set: DistMethod):
         self.vec1 = vec1
         self.vec2 = vec2
@@ -22,13 +22,12 @@ class DistanceFlow:
         self.cat_distance_result = []
         self.num_distance_result = []
         self.freq_distance_result = None
-        self.total_distance_result = None
 
     def numerical_distance(self, representation_option: DistMethod, attr_type, num1, num2):
-
-        if representation_option == DistMethod.fix_length_freq:
-            self.num_distance_result.append(numerical_dist_between_freq_vectors(attr_type=attr_type,
-                                                                                num_val1=num1, num_val2=num2))
+        if num1 and num2:   # dealing with missing values when numerical type by deleting missing data
+            if representation_option == DistMethod.fix_length_freq:
+                self.num_distance_result.append(numerical_dist_between_freq_vectors(attr_type=attr_type,
+                                                                                    num_val1=num1, num_val2=num2))
 
     def categorical_distance(self, representation_option: DistMethod, attr_type, frequency: dict, domain_size: int):
 
@@ -92,7 +91,7 @@ class DistanceFlow:
         self.inx = self.inx - 1
         print()
 
-    def calc_distance(self):
+    def calc_distance(self) -> float:
         domain = read_domain_per_attr_data()
         freq = read_freq_per_value_data()
 
@@ -122,9 +121,11 @@ class DistanceFlow:
         self.freq_distance_result = q14(categorical_sum=sum(self.cat_distance_result), numerical_sum=sum(self.num_distance_result))
         print(f'distance result-\n {self.freq_distance_result}')
 
+        return self.freq_distance_result
 
-def run_distance(vec1: list, vec2: list, representation_option: DistMethod, representation_option_set: DistMethod):
-    DistanceFlow(vec1=vec1, vec2=vec2, representation_option=representation_option, representation_option_set=representation_option_set).calc_distance()
+
+def run_distance_freq(vec1: list, vec2: list, representation_option: DistMethod, representation_option_set: DistMethod) -> float:
+    return DistanceFlowFreq(vec1=vec1, vec2=vec2, representation_option=representation_option, representation_option_set=representation_option_set).calc_distance()
 
 
 if __name__ == '__main__':
@@ -133,4 +134,4 @@ if __name__ == '__main__':
 
     vec1_ = [1, 1, 1, 5, 1996.0, 57, 14, 1, 7, 7, 1, 61, 61, 4, 1, 1, 1, 1, 14, 10, 7, 1, 1, 1, 68, 1, 2013, 5, 4, 1, 709, 1, 650, 658, 1, 44, 117, 2, 233, 2, 1994, 165, 5, 8, 709, 11, 650, 658, 1, 491, 117, 1, 170, 1, 2010, 2, 14, 14, 709, 4, 650, 658, 1, 179, 117, 91, 170, 91, 2006, 165, 92, 7, 98, 156, 650, 658, 1, 44, 1, 1, 1, 1, None, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 35, 58, 100, None, 104, 1, 1, 2, 42, 1, 100, None, 1, 1, 1, 1, 225, 8, 11, 3.64, 104, 2, 1]
     vec2_ = [1, 1, 1, 93, 1991.0, 1, 14, 18, 88, 82, 1, 61, 61, 1, 34, 28, 22, 10, 14, 11, 10, 6, 1, 1, 26, 1, 1916, 76, 6, 4, 709, 25, 650, 658, 1, 52, 1, 5, 233, 5, 1868, 76, 14, 4, 709, 5, 650, 658, 1, 52, 1, 5, 233, 5, 1868, 76, 5, 11, 709, 5, 650, 658, 1, 52, 1, 91, 170, 91, 2006, 165, 92, 1, 98, 156, 650, 658, 72, 491, 1, 1, 82, 1, 2016, 3, 3, 6, 709, 156, 650, 658, 72, 491, 1, 1, 225, 58, 100, None, 1, 1, 1, 1, 225, 58, 3, None, 1, 7, 1, 1, 42, 21, 100, None, 1, 1, 1]
-    run_distance(vec1=vec1_, vec2=vec2_, representation_option=DistMethod.fix_length_freq, representation_option_set=DistMethod.fix_length_freq)
+    run_distance_freq(vec1=vec1_, vec2=vec2_, representation_option=DistMethod.fix_length_freq, representation_option_set=DistMethod.fix_length_freq)
