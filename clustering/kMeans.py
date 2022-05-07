@@ -1,4 +1,5 @@
 import argparse
+import math
 import sys
 import os
 
@@ -6,15 +7,16 @@ import numpy as np
 import pandas as pd
 import copy
 import pickle
+from program.DistEnum import DistMethod
 from datetime import datetime
 import pickle as pkl
+from sklearn.decomposition import PCA
+from sklearn.preprocessing import normalize, StandardScaler
+import matplotlib.pyplot as plt
 
 # sys.path.insert(0, os.path.abspath(os.path.abspath(os.getcwd())))
-sys.path.append(os.path.abspath('../Foo'))
 
-# from programFlow.DistFunctions import prepare_data_for_dist_calc_between_freq_vectors
-from DistFunctions import prepare_data_for_dist_calc_between_freq_vectors
-from InstanceFreq import convert_instance_to_freq_vec
+from program.DistanceFlow import run_distance
 from sklearn.utils import shuffle
 
 import matplotlib.pyplot as plt
@@ -27,7 +29,6 @@ def my_print(message):
 
 
 class Kmeans:
-
     def __init__(self, dataPath: str, n_clusters: int, max_iter: int = 20, random_state: int = None):
         self.n_clusters = n_clusters
         self.max_iter = max_iter
@@ -38,10 +39,8 @@ class Kmeans:
         self.centroids = []
         self.clusters = [[] for _ in range(n_clusters)]
         self.clusters_with_candidate_idx = [[] for _ in range(n_clusters)]
-        self.distance_calc = prepare_data_for_dist_calc_between_freq_vectors
+        self.distance_calc = run_distance
         self.percents = None
-
-        # print(self.data)
 
     def load_data(self, dataPath: str) -> pd.DataFrame:
         raw_data = np.load(dataPath, allow_pickle=True)
@@ -58,12 +57,14 @@ class Kmeans:
         order.rename(columns={0: "name", 1: "company"}, inplace=True)
 
         combined: pd.DataFrame = pd.concat([data, order], axis=1)
-        combined = shuffle(combined)
+        # combined = shuffle(combined)
 
         # combined = combined.sample(n=100)
 
         self.order = combined[['name', 'company']].copy()
-        self.data = combined.copy().drop(['name', "company"], axis=1)
+        self.data = combined.copy().drop(['name', "company"], axis=1).replace({np.nan: None})
+
+        print(f"data len: {len(self.data)}")
 
     def initialize_centroids(self):
         for i in range(self.n_clusters):
@@ -75,8 +76,16 @@ class Kmeans:
             self.clusters_with_candidate_idx[i].clear()
 
     def calc_centroids(self):
-        i = 0
+
+        tmp_clusters = []
         for cluster in self.clusters:
+            tmp = []
+            for item in cluster:
+                tmp.append([x if x is not None else 0 for x in item])
+            tmp_clusters.append(tmp)
+
+        i = 0
+        for cluster in tmp_clusters:
             if len(cluster) != 0:
                 tmp = np.average(cluster, axis=0)
                 self.centroids[i] = tmp
@@ -85,9 +94,12 @@ class Kmeans:
     def find_closest_cluster(self, entry):
         distances = []
         for centroid in self.centroids:
-            distances.append(self.distance_calc(entry, centroid))
+            dist = self.distance_calc(entry, centroid, representation_option=DistMethod.fix_length_freq,
+                                      representation_option_set=DistMethod.fix_length_freq)
+            distances.append(dist)
 
-        return np.argmin(distances)
+        best = np.argmin(distances)
+        return best
 
     def add_to_cluster(self, cluster_idx, entry):
         self.clusters[cluster_idx].append(entry)
@@ -107,6 +119,54 @@ class Kmeans:
                 tmp.append(self.order.iloc[i]['name'])
             percents[idx] = tmp
 
+    def compare_centroids(self, index, old):
+
+        for i in range(len(self.centroids[0])):
+            if math.isnan(self.centroids[index][i]) and math.isnan(old[index][i]):
+                continue
+
+            if self.centroids[index][i] != old[index][i]:
+                print(
+                    f"at centroid: {index}, found at index:{i}, values: {self.centroids[index][i]} and {old[index][i]}")
+                return False
+
+        return True
+
+    def show_clusters(self):
+
+        print('\n clusters segmentation:')
+        for i, cluster in enumerate(self.clusters):
+            print(f"cluster: {i}, length: {len(cluster)}")
+
+        pca = PCA(n_components=2)
+        tmp = self.data.replace({None: 0})
+
+        scaler = StandardScaler()
+        scaled_df = scaler.fit_transform(tmp)
+
+        # Normalizing the Data
+        normalized_df = normalize(scaled_df)
+
+        # Converting the numpy array into a pandas DataFrame
+        normalized_df = pd.DataFrame(normalized_df)
+
+        x_principal = pca.fit_transform(normalized_df)
+        x_principal = pd.DataFrame(x_principal)
+        x_principal.columns = ['x', 'y']
+
+        # test = x_principal.iloc[self.clusters_with_candidate_idx[0]]
+        # print(test)
+
+        for i in range(self.n_clusters):
+            tmp = x_principal.iloc[self.clusters_with_candidate_idx[i]]
+            plt.scatter(tmp['x'], tmp['y'])
+
+        plt.show()
+
+    def print_centroids(self):
+        for centroid in self.centroids:
+            print(centroid)
+
     def fit(self):
         self.initialize_centroids()
         size = len(self.data)
@@ -117,21 +177,24 @@ class Kmeans:
 
             for idx in range(size):
                 entry = list(self.data.iloc[idx])
-
                 cluster_idx = self.find_closest_cluster(entry)
                 self.add_to_cluster(cluster_idx, entry)
                 self.clusters_with_candidate_idx[cluster_idx].append(idx)
+
+            self.show_clusters()
+            # self.print_centroids()
 
             old_centroids = copy.deepcopy(self.centroids)
             self.calc_centroids()
 
             stop = True
             for i in range(self.n_clusters):
-                if np.all(old_centroids[i] != self.centroids[i]):
+                if not self.compare_centroids(i, old_centroids):
                     stop = False
+                    # break
 
             if stop:
-                print("exited since noe centroides were changed")
+                print("exited since no centroides were changed")
                 break
 
     def predict(self, entry):
@@ -165,43 +228,61 @@ class Kmeans:
             for row in self.percents[k]:
                 print(f"{row}: {self.percents[k][row]}")
 
-    # def calculate_WSS(points, kmax):
-    #     sse = []
-    #     for k in range(1, kmax + 1):
-    #         kmeans = KMeans(n_clusters=k).fit(points)
-    #         centroids = kmeans.cluster_centers_
-    #         pred_clusters = kmeans.predict(points)
-    #         curr_sse = 0
-    #
-    #         # calculate square of Euclidean distance of each point from its cluster center and add to current WSS
-    #         for i in range(len(points)):
-    #             curr_center = centroids[pred_clusters[i]]
-    #             curr_sse += (points[i, 0] - curr_center[0]) ** 2 + (points[i, 1] - curr_center[1]) ** 2
-    #
-    #         sse.append(curr_sse)
-    #     return sse
+
+# def calculate_WSS(points, kmax):
+#     sse = []
+#     for k in range(1, kmax + 1):
+#         kmeans = KMeans(n_clusters=k).fit(points)
+#         centroids = kmeans.cluster_centers_
+#         pred_clusters = kmeans.predict(points)
+#         curr_sse = 0
+#
+#         # calculate square of Euclidean distance of each point from its cluster center and add to current WSS
+#         for i in range(len(points)):
+#             curr_center = centroids[pred_clusters[i]]
+#             curr_sse += (points[i, 0] - curr_center[0]) ** 2 + (points[i, 1] - curr_center[1]) ** 2
+#
+#         sse.append(curr_sse)
+#     return sse
 
 
 # def get_user_by
 
-if __name__ == "__main__":
 
-    sys.path.insert(0, os.path.abspath(os.path.abspath(os.getcwd())))
+def create_matrix():
+    with open('./freqRepAll.pkl', 'rb') as inp:
+        pd.set_option('display.max_columns', None)
+        pd.set_option('display.width', 1000000)
+        raw_data = pickle.load(inp)
+        data = []
+        order = []
+        counter = 0
+        for row in raw_data:
+            converted = list(row.values())
+            data.append(converted[0][1])
+            order.append((list(row.keys())[0], converted[0][0]))
 
-    pd.set_option("display.max_rows", None, "display.max_columns", None)
-    with open('../model.pkl', 'rb') as inp:
-        model = pickle.load(inp)
+        data = pd.DataFrame(data)
+        order = pd.DataFrame(order)
 
-        data: pd.DataFrame = model.data
-        order: pd.DataFrame = model.order
+        order.rename(columns={0: "name", 1: "company"}, inplace=True)
 
-        data.reset_index(inplace=True, drop=True)
-        order.reset_index(inplace=True, drop=True)
+        combined: pd.DataFrame = pd.concat([data, order], axis=1)
+        combined = shuffle(combined)
+        combined = combined.sample(n=450)
+
+        order = combined[['name', 'company']].copy()
+        data = combined.copy().drop(['name', "company"], axis=1)
+
+        np.save('data450.npy', data)
+        np.save('order450.npy', order)
 
         size = len(data)
         distances = np.zeros((size, size))
 
         start = 0
+
+        data = data.replace({np.nan: None})
 
         for i in range(size):
             if i == 0:
@@ -214,50 +295,28 @@ if __name__ == "__main__":
             print(f"now calculating the {i} row out of {size}")
 
             for j in range(i, size):
-                distances[i][j] = distances[j][i] = prepare_data_for_dist_calc_between_freq_vectors(data.iloc[i],
-                                                                                                    data.iloc[j])
+                distances[i][j] = distances[j][i] = run_distance(list(data.iloc[i]), list(data.iloc[j]),
+                                                                 representation_option=DistMethod.fix_length_freq,
+                                                                 representation_option_set=DistMethod.fix_length_freq)
 
-        np.save("matrix.npy", distances)
-        np.save("matrixOrder.npy", order)
+        np.save("matrixFreqAll.npy", distances)
+        np.save("matrixOrderFreqAll.npy", order)
 
-        with open('matrix.pkl', 'wb') as f:
+        with open('matrixFreqAll.pkl', 'wb') as f:
             pkl.dump(distances, f)
 
-        with open('matrixOrder.pkl', 'wb') as f:
+        with open('matrixOrderFreqAll.pkl', 'wb') as f:
             pkl.dump(order, f)
-        # model.calc_percents(True)
 
-        # t.columns = ['p1', 'p2']
-        #
-        # # print(len(np.unique(t)))
-        #
-        # sns.relplot(data=t, x="p1", y="p2")
-        # plt.show()
 
-        # parser = argparse.ArgumentParser(description='Process some integers.')
-        # parser.add_argument('--cand', type=str, nargs='*')
-        # parser.add_argument('--func', type=str, nargs='*')
-        # parser.add_argument('--job', type=str, default='')
-        # args = parser.parse_args()
-        #
-        # func = args.func
-        #
-        # if func[0] == "candidate":
-        #     users = args.cand
-        #     users = [user.replace('_', ' ') for user in users]
-        #     payload = {"candidates": users}
-        #     req = requests.post('http://127.0.0.1:3000/api/candidate/forAlgo', data=payload)
-        #     candidate = req.json()[0]
-        #     candidate.pop('_id')
-        #
-        #     candidate = convert_instance_to_freq_vec(candidate)
-        #     candidate = list(candidate.values())[0][1]
-        #     percents = model.percents
-        #     prediction = model.predict(candidate)
-        #     #
-        #     print(f"$${percents[prediction]}", flush=True)
+def print_centroids(centroids):
+    for x in centroids:
+        print(["{:0.5f}".format(y) for y in x])
 
-# elif func[0] == "company":
-#     users_ = args.cand
-#     id = args.job
-#     pass
+
+if __name__ == "__main__":
+    sys.path.insert(0, os.path.abspath(os.path.abspath(os.getcwd())))
+
+    model = Kmeans('./allFreqRep.npy', 7)
+    model.fit()
+    model.calc_percents()

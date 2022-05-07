@@ -7,7 +7,8 @@ from DomainSizeFrequencies import DomainAndFrequency
 
 
 def logger(*args):
-    print(*args)
+    # print(*args)
+    pass
 
 
 class DomainFreqCalc:
@@ -24,7 +25,6 @@ class DomainFreqCalc:
         return path
 
     def calc_domain_freq_per_value(self):
-
         self.attr_types = read_attr_types_data()
 
         for attr, val_type in self.attr_types.items():

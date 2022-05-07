@@ -6,7 +6,8 @@ from ReadData import read_nested_attr_types_data
 
 
 def logger(*args):
-    print(*args)
+    # print(*args)
+    pass
 
 
 class DomainAndFrequency:
