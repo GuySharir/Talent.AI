@@ -55,10 +55,11 @@ class DistanceFunctions:
 
 
 def calc_num_distance_q13(val1, val2) -> float:
-    if not val1 or not val2:
-        return 0
-    else:
-        return (val1 - val2) ** 2
+    # change missing value according to michal article
+    # if not val1 or not val2:
+    #     return 0
+    # else:
+    return (val1 - val2) ** 2
 
 
 def categorical_dist_between_freq_vectors(attr_type, data: DistanceData = None) -> float:
