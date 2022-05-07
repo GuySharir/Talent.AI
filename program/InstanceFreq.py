@@ -1,6 +1,6 @@
 from pydoc import locate
 import pandas as pd
-from ReadData import read_local_json_employees, read_attr_types_data, read_nested_attr_types_data, read_freq_per_value_data, MIN_FREQ, NUMERIC_DEFAULT, HAMMING_DEFAULT
+from ReadData import read_local_json_employees, read_attr_types_data, read_nested_attr_types_data, read_freq_per_value_data, MIN_FREQ, NUMERIC_DEFAULT, HAMMING_DEFAULT, ONE_HOT_SPARE
 from dataTool.runtimeObjectsInfo.ListLengthData import LIST_LENGTH_PER_ATTR, NESTED_LENGTH_PER_ATTR
 from DistEnum import DistMethod, DefaultVal
 
@@ -73,6 +73,8 @@ def list_to_vec_representation(representation_option: DistMethod, attr_name: str
     elif representation_option == DistMethod.inner_product or representation_option == DistMethod.intersection:
         # logger(f'freq val-\n{freq_val}')
         one_hot_values_representation = [1 if value in list_val else 0 for value in freq_val.keys()]
+        # one hot vector spare extension for future list values
+        one_hot_values_representation.extend([0] * ONE_HOT_SPARE)
         instance_freq_vec.extend(one_hot_values_representation)
         # logger(f'one hot values representation-\n{one_hot_values_representation}')
 
@@ -263,6 +265,8 @@ def loop_candidates_convert_to_freq_vec(representation_option: DistMethod, repre
 
 
 if __name__ == '__main__':
-    loop_candidates_convert_to_freq_vec(representation_option=DistMethod.hamming_distance, representation_option_for_set=DistMethod.hamming_distance, representation_option_for_nested=DistMethod.hamming_distance)
+    # loop_candidates_convert_to_freq_vec(representation_option=DistMethod.hamming_distance, representation_option_for_set=DistMethod.hamming_distance, representation_option_for_nested=DistMethod.hamming_distance)
     # loop_candidates_convert_to_freq_vec(representation_option=DistMethod.fix_length_freq, representation_option_for_set=DistMethod.fix_length_freq, representation_option_for_nested=DistMethod.fix_length_freq)
+    loop_candidates_convert_to_freq_vec(representation_option=DistMethod.fix_length_freq, representation_option_for_set=DistMethod.intersection, representation_option_for_nested=DistMethod.fix_length_freq)
+    # loop_candidates_convert_to_freq_vec(representation_option=DistMethod.fix_length_freq, representation_option_for_set=DistMethod.inner_product, representation_option_for_nested=DistMethod.fix_length_freq)
 

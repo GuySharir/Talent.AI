@@ -6,8 +6,9 @@ import pandas as pd
 MIN_FREQ = 1
 NUMERIC_DEFAULT = None
 
-# indicated missing raw information -> not included in the distance calculation
+# indicated missing raw information -> not included in the hamming distance calculation
 HAMMING_DEFAULT = '$'
+ONE_HOT_SPARE = 10
 
 DATA_TYPE_PER_INDEX = {0: str, 1: str, 2: str, 3: str,
                        4: int, 5: str, 6: str, 7: str,
