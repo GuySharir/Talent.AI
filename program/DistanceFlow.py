@@ -26,16 +26,15 @@ class DistanceFlowFreq:
         self.cat_distance_result = []
         self.num_distance_result = []
 
-        self.one_hot_index = set_path('dataTool/one_hot_index')
-        self.count_inx = 0
+        self.one_hot_index = set_path('dataTool/one_hot_index.json')
         self.first_one_hot_inx = None
         self.last_one_hot_inx = None
-        self.one_hot_index_dict = {}
+        self.one_hot_index_list = []
 
-    def write_inx_of_one_hot_vector(self, attr_name):
-        self.one_hot_index_dict[attr_name] = (self.first_one_hot_inx, self.last_one_hot_inx)
+    def write_inx_of_one_hot_vector(self):
+        self.one_hot_index_list.append((self.first_one_hot_inx, self.last_one_hot_inx))
         with open(self.one_hot_index, 'w') as fp:
-            json.dump(self.one_hot_index_dict, fp)
+            json.dump(self.one_hot_index_list, fp)
 
     def numerical_distance(self, representation_option: DistMethod, attr_type, num1, num2):
         if num1 and num2:   # dealing with missing values when numerical type by deleting missing data
@@ -141,12 +140,7 @@ class DistanceFlowFreq:
                     self.first_one_hot_inx = self.inx
                     self.set_distance(attr_name=attr, frequency=attr_freq, domain_size=attr_domain)
                     self.last_one_hot_inx = self.inx
-                    if attr in self.one_hot_index_dict.keys():
-                        self.count_inx += 1
-                        attr_for_file = attr + str(self.count_inx)
-                    else:
-                        attr_for_file = attr
-                    self.write_inx_of_one_hot_vector(attr_name=attr_for_file)
+                    self.write_inx_of_one_hot_vector()
                 self.inx += 1
         self.inx = self.inx - 1
         print()
@@ -171,7 +165,7 @@ class DistanceFlowFreq:
                 self.first_one_hot_inx = self.inx
                 self.set_distance(attr_name=attr, frequency=attr_freq, domain_size=attr_domain)
                 self.last_one_hot_inx = self.inx
-                self.write_inx_of_one_hot_vector(attr_name=attr)
+                self.write_inx_of_one_hot_vector()
 
             elif data_type == dict:
                 self.nested_distance(attr_name=attr, frequency=attr_freq, domain_size=attr_domain)
