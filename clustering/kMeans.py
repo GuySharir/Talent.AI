@@ -28,9 +28,8 @@ import seaborn as sns
 
 class DistType(Enum):
     intersection = 1
-    inner_product = 2
-    fix_length_freq = 3
-    hamming_distance = 4
+    freq = 2
+    hamming_distance = 3
 
 
 def my_print(message):
@@ -39,7 +38,9 @@ def my_print(message):
 
 
 class Kmeans:
-    def __init__(self, dataPath: str, n_clusters: int, max_iter: int = 20, random_state: int = None):
+    def __init__(self, dataPath: str, n_clusters: int, max_iter: int = 20, representation: DistType = DistType.freq,
+                 random_state: int = None):
+        self.representation = representation
         self.n_clusters = n_clusters
         self.max_iter = max_iter
         self.random_state = random_state
@@ -345,13 +346,13 @@ def find_inner_correlation():
 if __name__ == "__main__":
     sys.path.insert(0, os.path.abspath(os.path.abspath(os.getcwd())))
     #
-    # model = Kmeans('./all.npy', 8)
+    model = Kmeans('./allIntersection.npy', 3)
     # model.fit()
     # model.calc_percents()
-    #
+
     # with open('8cluster.pkl', 'wb') as file:
     #     pkl.dump(model, file)
     #
-    # pd.set_option('display.max_rows', None, 'display.max_columns', None)
-
+    pd.set_option('display.max_rows', None, 'display.max_columns', None)
+    print(model.data.iloc[0])
     # create_matrix()
