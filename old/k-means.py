@@ -61,8 +61,8 @@ class MyKmeans:
     def prepare_data(self):
         self.order.rename(columns={0: "name", 1: "company"}, inplace=True)
 
-        self.data = self.scale_data("standard")
-        self.data = self.normalize_data()
+        # self.data = self.scale_data("standard")
+        # self.data = self.normalize_data()
         self.data = self.reduce_dimension()
 
         # concat both actual labels and feature dataFrame so shuffle would be performed equally
@@ -75,9 +75,9 @@ class MyKmeans:
 
         return train_x, train_y
 
-    def __init__(self, n_clusters: int, data_path: str, order_path: str):
-        self.data = self.load_data(data_path)
-        self.order = self.load_data(order_path)
+    def __init__(self, n_clusters: int, data_path: str):
+        self.data, self.order = self.load_data(data_path)
+
         self.prepare_data()
         self.n_clusters = n_clusters
 
@@ -90,7 +90,6 @@ class MyKmeans:
         self.centers = kmeans.cluster_centers_
         self.real_centers = self.find_real_centers()
         self.percents, self.names = self.calc_clusters_company_percent()
-        self.dist_calc: DistanceFlow = DistanceFlow()
 
     def reduce_dimension(self) -> pd.DataFrame:
         pca = PCA(n_components=2)
@@ -100,9 +99,29 @@ class MyKmeans:
         return x_principal
 
     def load_data(self, path) -> pd.DataFrame:
-        raw_df = np.load(path)
-        raw_df = pd.DataFrame(raw_df)
-        return raw_df
+        raw_data = np.load(path, allow_pickle=True)
+        data = []
+        order = []
+        for row in raw_data:
+            converted = list(row.values())
+            data.append(converted[0][1])
+            order.append((list(row.keys())[0], converted[0][0]))
+
+        data = pd.DataFrame(data)
+        order = pd.DataFrame(order)
+
+        order.rename(columns={0: "name", 1: "company"}, inplace=True)
+
+        combined: pd.DataFrame = pd.concat([data, order], axis=1)
+        combined = shuffle(combined)
+
+        # combined = combined.sample(n=60)
+
+        order = combined[['name', 'company']].copy()
+        data = combined.copy().drop(
+            ['name', "company"], axis=1).replace({np.nan: None})
+
+        return data, order
 
     def normalize_data(self) -> pd.DataFrame:
         return
@@ -259,32 +278,9 @@ class MyKmeans:
                 max_ = clusters[key]
                 label = key
 
-        # print(f"${self.percents[label]}", flush=True)
-
     def get_priorety_for_company(self, users):
         pass
 
 
 if __name__ == '__main__':
-    from program.DistanceFlow import DistanceFlow
-
-    parser = argparse.ArgumentParser(description='Process some integers.')
-    parser.add_argument('--cand', type=str, nargs='*')
-    parser.add_argument('--func', type=str, nargs='*')
-    parser.add_argument('--job', type=str, default='')
-    args = parser.parse_args()
-
-    func = args.func
-
-    x = MyKmeans(5, 'clustering/five.npy', 'clustering/fiveOrderCompany.npy')
-
-    if func[0] == "candidate":
-        user_ = args.cand[0]
-        user_ = ' '.join(user_.split('_'))
-        print(user_)
-        x.get_cluster_for_candidate(user_)
-
-    elif func[0] == "company":
-        users_ = args.cand
-        id = args.job
-        pass
+    x = MyKmeans(7, "./clustering/30each.npy")
