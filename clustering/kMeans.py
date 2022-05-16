@@ -16,7 +16,7 @@ from sklearn.model_selection import train_test_split
 from enum import Enum
 import matplotlib.pyplot as plt
 
-# sys.path.insert(0, os.path.abspath(os.path.abspath(os.getcwd())))
+sys.path.insert(0, os.path.abspath(os.path.abspath(os.getcwd())))
 
 from program.DistanceFlow import run_distance_freq
 from program.ReadData import read_local_json_employees
@@ -38,9 +38,15 @@ def my_print(message):
 
 
 class Kmeans:
-    def __init__(self, dataPath: str, n_clusters: int, max_iter: int = 20, representation: DistType = DistType.freq,
+    def __init__(self, dataPath: str, n_clusters: int, max_iter: int = 20,
+                 representation: DistType = DistType.intersection,
                  random_state: int = None):
         self.representation = representation
+
+        if self.representation == DistType.intersection:
+            self.rep_file = np.load("one_hot_index.npy")
+            print(self.rep_file)
+
         self.n_clusters = n_clusters
         self.max_iter = max_iter
         self.random_state = random_state
@@ -346,13 +352,13 @@ def find_inner_correlation():
 if __name__ == "__main__":
     sys.path.insert(0, os.path.abspath(os.path.abspath(os.getcwd())))
     #
-    model = Kmeans('./allIntersection.npy', 3)
+    model = Kmeans('./allIntersection.npy', 4)
     # model.fit()
     # model.calc_percents()
 
     # with open('8cluster.pkl', 'wb') as file:
     #     pkl.dump(model, file)
     #
-    pd.set_option('display.max_rows', None, 'display.max_columns', None)
-    print(model.data.iloc[0])
+    # pd.set_option('display.max_rows', None, 'display.max_columns', None)
+    # print(model.data.iloc[0])
     # create_matrix()

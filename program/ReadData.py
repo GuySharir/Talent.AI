@@ -2,7 +2,6 @@ import os
 import json
 import pandas as pd
 
-
 MIN_FREQ = 1
 NUMERIC_DEFAULT = None
 
@@ -15,7 +14,6 @@ DATA_TYPE_PER_INDEX = {0: str, 1: str, 2: str, 3: str,
                        8: str, 9: str, 10: list, 11: str,
                        12: str, 13: str, 14: list, 15: list,
                        16: dict, 17: dict}
-
 
 ATTRIBUTE_PER_INDEX = {0: "full_name", 1: "first_name", 2: "last_name", 3: "gender",
                        4: "birth_year", 5: "birth_date", 6: "industry", 7: "job_title",
@@ -32,7 +30,8 @@ DATA_TYPE_PER_INDEX_EXPERIENCE = {0: str, 1: str, 2: str, 3: int,
 
 EXPERIENCE_ATTRIBUTE_PER_INDEX = {0: "company_name", 1: "company_size", 2: "company_id", 3: "company_founded",
                                   4: "company_industry", 5: "end_date", 6: "start_date", 7: "current_job",
-                                  8: "company_location_name", 9: "company_location_country", 10: "company_location_continent",
+                                  8: "company_location_name", 9: "company_location_country",
+                                  10: "company_location_continent",
                                   11: "title_name", 12: "title_role", 13: "title_levels"}
 
 # index 17
@@ -57,22 +56,22 @@ def set_path(name) -> str:
 
 def read_local_json_employees() -> pd.DataFrame:
     path = set_path('dataTool/clean_data')
-    # all_files = [os.path.join(path, 'AppleEmployees.json'),
-    #              os.path.join(path, 'AmazonEmployees.json'),
-    #              os.path.join(path, 'AdobeEmployees.json'),
-    #              os.path.join(path, 'FacebookEmployees.json'),
-    #              os.path.join(path, 'TwitterEmployees.json'),
-    #              os.path.join(path, 'TeslaEmployees.json'),
-    #              os.path.join(path, 'GoogleEmployees.json'),
-    #              os.path.join(path, 'IbmEmployees.json'),
-    #              os.path.join(path, 'MicrosoftEmployees.json'),
-    #              os.path.join(path, 'NvidiaEmployees.json'),
-    #              os.path.join(path, 'OracleEmployees.json'),
-    #              os.path.join(path, 'SalesforceEmployees.json'),
-    #              os.path.join(path, 'UberEmployees.json')
-    #              ]
-    all_files = [os.path.join(path, 'TwitterEmployees.json'),
-                 os.path.join(path, 'TeslaEmployees.json')]
+    all_files = [os.path.join(path, 'AppleEmployees.json'),
+                 os.path.join(path, 'AmazonEmployees.json'),
+                 os.path.join(path, 'AdobeEmployees.json'),
+                 os.path.join(path, 'FacebookEmployees.json'),
+                 os.path.join(path, 'TwitterEmployees.json'),
+                 os.path.join(path, 'TeslaEmployees.json'),
+                 os.path.join(path, 'GoogleEmployees.json'),
+                 os.path.join(path, 'IbmEmployees.json'),
+                 os.path.join(path, 'MicrosoftEmployees.json'),
+                 os.path.join(path, 'NvidiaEmployees.json'),
+                 os.path.join(path, 'OracleEmployees.json'),
+                 os.path.join(path, 'SalesforceEmployees.json'),
+                 os.path.join(path, 'UberEmployees.json')
+                 ]
+    # all_files = [os.path.join(path, 'TwitterEmployees.json'),
+    #              os.path.join(path, 'TeslaEmployees.json')]
     li = []
     for filename in all_files:
         with open(filename) as f:
@@ -126,4 +125,3 @@ if __name__ == '__main__':
     read_local_json_employees()
     read_freq_per_value_data()
     read_domain_per_attr_data()
-
