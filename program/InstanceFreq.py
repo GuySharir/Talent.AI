@@ -29,7 +29,10 @@ def convert_to_freq_categorical(val_type, freq_val: dict, val, instance_freq_vec
             val = 'false'
         elif val_type == bool and val:
             val = 'true'
-        instance_freq_vec.append(freq_val[val])
+        if val not in freq_val.keys():
+            instance_freq_vec.append(MIN_FREQ)
+        else:
+            instance_freq_vec.append(freq_val[val])
     return instance_freq_vec
 
 
@@ -260,7 +263,8 @@ def convert_instance_to_freq_vec(instance: dict, representation_option: DistMeth
 def loop_candidates_convert_to_freq_vec(df: pd.DataFrame, representation_option: DistMethod, representation_option_for_set: DistMethod, representation_option_for_nested: DistMethod):
     df_converted = set_path('dataTool/df_converted.npy')
     result = []
-    for row in range(0, len(df)):
+    # for row in range(0, len(df)):
+    for row in range(0, 2):
         instance = df_row_to_instance(df=df, index=row)
         instance_freq_vec = convert_instance_to_freq_vec(instance=instance, representation_option=representation_option, representation_option_set=representation_option_for_set, representation_option_nested=representation_option_for_nested)
         result.append(instance_freq_vec)
@@ -497,3 +501,70 @@ if __name__ == '__main__':
     # hamming_rep(instance=instance_)
     one_hot_rep(instance=instance_)
 
+    a = {
+    "full_name": "sivan",
+    "first_name": "$",
+    "last_name": "$",
+    "gender": "$",
+    "birth_year": None,
+    "birth_date": "$",
+    "industry": "Internet",
+    "job_title": "business product marketing, program manager",
+    "job_title_role": "marketing",
+    "job_title_sub_role": "product_marketing",
+    "job_title_levels": [
+        "Intern"
+    ],
+    "job_company_id": "facebook",
+    "job_company_name": "facebook",
+    "job_start_date": "2020-03",
+    "interests": [
+        "travelling",
+        "environment",
+        "photography",
+        "palmistry",
+        "science and technology",
+        "sketching",
+        "animal welfare",
+        "health"
+    ],
+    "skills": [
+        "brand management",
+        "strategy",
+        "team management",
+        "marketing management",
+        "marketing",
+        "crm",
+        "market research",
+        "management",
+        "product marketing",
+        "market analysis",
+        "product development",
+        "key account management",
+        "product management",
+        "cross functional team leadership",
+        "business development",
+        "business strategy",
+        "project management",
+        "customer relationship management",
+        "product launch",
+        "start ups",
+        "business analysis",
+        "negotiation",
+        "consumer insight",
+        "digital marketing",
+        "sales operations",
+        "customer insight",
+        "social media marketing",
+        "saas",
+        "software as a service",
+        "user experience",
+        "user interface",
+        "user research"
+    ],
+    "experience": [],
+    "education": [],
+}
+    # freq_rep(instance=a)
+    # hamming_rep(instance=a)
+    one_hot_rep(instance=a)

@@ -21,7 +21,7 @@ class DistanceFunctions:
         self.data = data
 
     def q2(self) -> float:
-        if self.data.domain_size >= 3:
+        if self.data.domain_size <= 3:
             return 1
         elif 3 < self.data.domain_size <= 10:
             return 1 - (0.05 * (self.data.domain_size - 3))
