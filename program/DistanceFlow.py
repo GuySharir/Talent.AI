@@ -10,7 +10,8 @@ import numpy as np
 
 
 def logger(*args):
-    print(*args)
+    # print(*args)
+    pass
 
 
 class DistanceFlowFreq:
@@ -146,7 +147,7 @@ class DistanceFlowFreq:
                     self.write_inx_of_one_hot_vector()
                 self.inx += 1
         self.inx = self.inx - 1
-        print()
+        # print()
 
     def calc_distance(self, birth_year: bool = True, gender: bool = True) -> float:
         domain = read_domain_per_attr_data()
@@ -181,17 +182,17 @@ class DistanceFlowFreq:
 
             self.inx += 1
 
-        print(f'categorical result-\n {self.cat_distance_result}')
-        print(f'categorical list length-\n {len(self.cat_distance_result)}')
-        print(f'numerical result-\n {self.num_distance_result}')
+        # print(f'categorical result-\n {self.cat_distance_result}')
+        # print(f'categorical list length-\n {len(self.cat_distance_result)}')
+        # print(f'numerical result-\n {self.num_distance_result}')
 
         if self.representation_option == DistMethod.hamming_distance:
             hamming_result = np.sqrt((sum(self.cat_distance_result) - sum(self.num_distance_result)) ** 2)
-            print(f'hamming distance result-\n {hamming_result}')
+            # print(f'hamming distance result-\n {hamming_result}')
             return hamming_result
         else:
             freq_distance_result = q14(categorical_sum=sum(self.cat_distance_result), numerical_sum=sum(self.num_distance_result))
-            print(f'freq distance result-\n {freq_distance_result}')
+            # print(f'freq distance result-\n {freq_distance_result}')
             return freq_distance_result
 
 

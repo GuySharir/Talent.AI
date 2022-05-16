@@ -46,7 +46,8 @@ EDUCATION_OBJECT_ATTR_LENGTH = 8
 
 
 def logger(*args):
-    print(*args)
+    # print(*args)
+    pass
 
 
 def set_path(name) -> str:
