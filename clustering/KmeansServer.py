@@ -1,21 +1,22 @@
+import uvicorn
 from fastapi import FastAPI
 from pydantic import BaseModel
-from typing import List
-import time
+import numpy as np
+from kMeans import Kmeans
 
 app = FastAPI()
-
-
-def test():
-    time.sleep(10)
+model: Kmeans = np.load('./5cluster.pkl', allow_pickle=True)
 
 
 @app.get("/")
-def read_root():
-    test()
+def classify_candidate(candidate):
+    # convert candidate to mathcing representation
+    # find which cluster the candidate belongs to
+    # get innner cluster segemntation of companys
+
     return {"Hello": "World"}
 
 
 @app.post("/")
-async def read_root():
+def read_root():
     return {"Bye": "World"}

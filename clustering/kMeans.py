@@ -6,30 +6,20 @@ import os
 import numpy as np
 import pandas as pd
 import copy
-import pickle
-from program.DistEnum import DistMethod
 from datetime import datetime
 import pickle as pkl
 from sklearn.decomposition import PCA
 from sklearn.preprocessing import normalize, StandardScaler
 from sklearn.model_selection import train_test_split
-from enum import Enum
 import matplotlib.pyplot as plt
+from sklearn.utils import shuffle
 
 sys.path.insert(0, os.path.abspath(os.path.abspath(os.getcwd())))
 
 from program.DistanceFlow import run_distance_freq
 from program.ReadData import read_local_json_employees
-from sklearn.utils import shuffle
-
-import matplotlib.pyplot as plt
-import seaborn as sns
-
-
-class DistType(Enum):
-    intersection = 1
-    freq = 2
-    hamming_distance = 3
+from program.DistEnum import DistMethod
+from program.DistanceFlow import inner_product_rep_dist, hamming_rep_dist, intersection_rep_dist, freq_rep_dist
 
 
 def my_print(message):
@@ -38,18 +28,31 @@ def my_print(message):
 
 
 class Kmeans:
-    def __init__(self, dataPath: str, n_clusters: int, max_iter: int = 20,
-                 representation: DistType = DistType.intersection,
-                 random_state: int = None):
+    def __init__(self, dataPath: str,
+                 n_clusters: int,
+                 max_iter: int = 20,
+                 representation: DistMethod = DistMethod.fix_length_freq):
+
         self.representation = representation
 
-        if self.representation == DistType.intersection:
-            self.rep_file = np.load("one_hot_index.npy")
-            print(self.rep_file)
+        if self.representation == DistMethod.intersection:
+            self.distance_calc = intersection_rep_dist
+            self.representation_conversion = None
+
+        if self.representation == DistMethod.fix_length_freq:
+            self.distance_calc = freq_rep_dist
+            self.representation_conversion = None
+
+        if self.representation == DistMethod.hamming_distance:
+            self.distance_calc = hamming_rep_dist
+            self.representation_conversion = None
+
+        if self.representation == DistMethod.inner_product:
+            self.distance_calc = inner_product_rep_dist
+            self.representation_conversion = None
 
         self.n_clusters = n_clusters
         self.max_iter = max_iter
-        self.random_state = random_state
         self.data: pd.DataFrame = None
         self.order: pd.DataFrame = None
         self.test: pd.DataFrame = None
@@ -58,7 +61,6 @@ class Kmeans:
         self.centroids = []
         self.clusters = [[] for _ in range(n_clusters)]
         self.clusters_with_candidate_idx = [[] for _ in range(n_clusters)]
-        self.distance_calc = run_distance_freq
         self.percents = None
 
     def load_data(self, dataPath: str) -> pd.DataFrame:
@@ -125,8 +127,7 @@ class Kmeans:
     def find_closest_cluster(self, entry):
         distances = []
         for centroid in self.centroids:
-            dist = self.distance_calc(entry, centroid, representation_option=DistMethod.fix_length_freq,
-                                      representation_option_set=DistMethod.fix_length_freq)
+            dist = self.distance_calc(entry, centroid)
             distances.append(dist)
 
         best = np.argmin(distances)
@@ -134,10 +135,6 @@ class Kmeans:
 
     def add_to_cluster(self, cluster_idx, entry):
         self.clusters[cluster_idx].append(entry)
-
-    def print_list(self, data):
-        for row in data:
-            print(row)
 
     def compare_centroids(self, index, old):
 
@@ -219,6 +216,18 @@ class Kmeans:
 
     def predict(self, entry):
         return self.find_closest_cluster(entry)
+
+    def company_order(self, candidates: list, job_offer: list):
+
+        # TODO:
+        # convert candidates and job offer to classifier representation
+        scores = []
+
+        for i, candidate in enumerate(candidates):
+            scores.append([i, self.distance_calc(candidate, job_offer)])
+
+        scores.sort(key=lambda score: score[1])
+        return scores
 
     def calc_percents(self, show=True):
         percents = {}
@@ -308,11 +317,6 @@ def create_matrix():
         pkl.dump(order, f)
 
 
-def print_centroids(centroids):
-    for x in centroids:
-        print(["{:0.5f}".format(y) for y in x])
-
-
 def find_inner_correlation():
     with open('6cluster.pkl', 'rb') as file:
         x: Kmeans = pkl.load(file)
@@ -352,8 +356,8 @@ def find_inner_correlation():
 if __name__ == "__main__":
     sys.path.insert(0, os.path.abspath(os.path.abspath(os.getcwd())))
     #
-    model = Kmeans('./allIntersection.npy', 4)
-    # model.fit()
+    # model = Kmeans('./clustering/allIntersection.npy', 4)
+    # # model.fit()
     # model.calc_percents()
 
     # with open('8cluster.pkl', 'wb') as file:
