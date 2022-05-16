@@ -18,16 +18,16 @@ class Candidate(BaseModel):
     values: list
 
 
-with open('./3cluster.pkl', 'rb') as file:
-    model = pkl.load(file)
+with open('./fivetest.pkl', 'rb') as file:
+    model: Kmeans = pkl.load(file)
 
 
 @app.post("/")
 def classify_candidate(candidate: Candidate):
-    cluster = model.predict(candidate)
-    companys = model.percents[cluster]
+    cluster = model.predict(candidate.values)
+    print(model.percents)
 
-    return companys
+    return model.percents
 
 
 # @app.post("/")
@@ -36,4 +36,9 @@ def classify_candidate(candidate: Candidate):
 
 
 if __name__ == "__main__":
-    uvicorn.run("KmeansServer:app", host="127.0.0.1", port=3000)
+    # uvicorn.run("KmeansServer:app", host="127.0.0.1", port=3000)
+    with open('./fivetest.pkl', 'rb') as file:
+        model: Kmeans = pkl.load(file)
+        print(model.percents)
+        model.calc_percents()
+        print(model.percents)

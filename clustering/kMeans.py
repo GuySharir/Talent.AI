@@ -17,9 +17,10 @@ from sklearn.utils import shuffle
 sys.path.insert(0, os.path.abspath(os.path.abspath(os.getcwd())))
 
 from program.DistanceFlow import run_distance_freq
-from program.ReadData import read_local_json_employees
 from program.DistEnum import DistMethod
 from program.DistanceFlow import inner_product_rep_dist, hamming_rep_dist, intersection_rep_dist, freq_rep_dist
+from program.InstanceFreq import one_hot_rep, freq_rep, hamming_rep, loop_candidates_convert_to_freq_vec
+from program.ReadData import read_local_json_employees
 
 
 def my_print(message):
@@ -28,7 +29,7 @@ def my_print(message):
 
 
 class Kmeans:
-    def __init__(self, dataPath: str,
+    def __init__(self,
                  n_clusters: int,
                  max_iter: int = 20,
                  representation: DistMethod = DistMethod.fix_length_freq):
@@ -37,19 +38,19 @@ class Kmeans:
 
         if self.representation == DistMethod.intersection:
             self.distance_calc = intersection_rep_dist
-            self.representation_conversion = None
+            self.representation_conversion = one_hot_rep
 
         if self.representation == DistMethod.fix_length_freq:
             self.distance_calc = freq_rep_dist
-            self.representation_conversion = None
+            self.representation_conversion = freq_rep
 
         if self.representation == DistMethod.hamming_distance:
             self.distance_calc = hamming_rep_dist
-            self.representation_conversion = None
+            self.representation_conversion = hamming_rep
 
         if self.representation == DistMethod.inner_product:
             self.distance_calc = inner_product_rep_dist
-            self.representation_conversion = None
+            self.representation_conversion = one_hot_rep
 
         self.n_clusters = n_clusters
         self.max_iter = max_iter
@@ -57,14 +58,38 @@ class Kmeans:
         self.order: pd.DataFrame = None
         self.test: pd.DataFrame = None
         self.testOrder: pd.DataFrame = None
-        self.load_data(dataPath)
+        self.load_data()
         self.centroids = []
         self.clusters = [[] for _ in range(n_clusters)]
         self.clusters_with_candidate_idx = [[] for _ in range(n_clusters)]
         self.percents = None
 
-    def load_data(self, dataPath: str) -> pd.DataFrame:
-        raw_data = np.load(dataPath, allow_pickle=True)
+    def load_data(self) -> pd.DataFrame:
+
+        df = read_local_json_employees()
+
+        if self.representation == DistMethod.intersection:
+            loop_candidates_convert_to_freq_vec(df, representation_option=DistMethod.fix_length_freq,
+                                                representation_option_for_set=DistMethod.intersection,
+                                                representation_option_for_nested=DistMethod.fix_length_freq)
+
+        if self.representation == DistMethod.fix_length_freq:
+            loop_candidates_convert_to_freq_vec(df, representation_option=DistMethod.fix_length_freq,
+                                                representation_option_for_set=DistMethod.fix_length_freq,
+                                                representation_option_for_nested=DistMethod.fix_length_freq)
+
+        if self.representation == DistMethod.hamming_distance:
+            loop_candidates_convert_to_freq_vec(df, representation_option=DistMethod.hamming_distance,
+                                                representation_option_for_set=DistMethod.hamming_distance,
+                                                representation_option_for_nested=DistMethod.hamming_distance)
+
+        if self.representation == DistMethod.inner_product:
+            loop_candidates_convert_to_freq_vec(df, representation_option=DistMethod.fix_length_freq,
+                                                representation_option_for_set=DistMethod.inner_product,
+                                                representation_option_for_nested=DistMethod.fix_length_freq)
+
+        raw_data = np.load('./dataTool/df_converted.npy', allow_pickle=True)
+
         data = []
         order = []
         for row in raw_data:
@@ -81,8 +106,9 @@ class Kmeans:
         combined = shuffle(combined)
         self.all = combined
 
+        combined = combined.sample(n=80)
+
         train, test = train_test_split(combined, test_size=0.2)
-        # combined = combined.sample(n=60)
 
         self.order = train[['name', 'company']].copy()
         self.data = train.copy().drop(['name', "company"], axis=1).replace({np.nan: None})
@@ -213,6 +239,8 @@ class Kmeans:
             if stop:
                 print("exited since no centroides were changed")
                 break
+
+            self.calc_percents(show=False)
 
     def predict(self, entry):
 
@@ -361,13 +389,14 @@ def find_inner_correlation():
 if __name__ == "__main__":
     sys.path.insert(0, os.path.abspath(os.path.abspath(os.getcwd())))
     #
-    # model = Kmeans('./clustering/allIntersection.npy', 4)
-    # model.fit()
-    # print(model.percents)
+    model = Kmeans(5)
+    model.fit()
+    with open('fivetest.pkl', 'wb') as f:
+        pkl.dump(model, f)
 
-    with open('./clustering/3cluster.pkl', 'rb') as file:
-        model: Kmeans = pkl.load(file)
-        model.calc_percents()
+    # with open('./clustering/3cluster.pkl', 'rb') as file:
+    #     model: Kmeans = pkl.load(file)
+    #     model.calc_percents()
     #
     #     for key in model.percents:
     #         print(model.percents[key])
