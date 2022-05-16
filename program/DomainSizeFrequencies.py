@@ -2,7 +2,7 @@ import os
 from pydoc import locate
 import pandas as pd
 
-from ReadData import read_nested_attr_types_data
+from program.ReadData import read_nested_attr_types_data
 
 
 def logger(*args):
