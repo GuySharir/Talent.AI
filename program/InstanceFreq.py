@@ -29,7 +29,10 @@ def convert_to_freq_categorical(val_type, freq_val: dict, val, instance_freq_vec
             val = 'false'
         elif val_type == bool and val:
             val = 'true'
-        instance_freq_vec.append(freq_val[val])
+        if val not in freq_val.keys():
+            instance_freq_vec.append(MIN_FREQ)
+        else:
+            instance_freq_vec.append(freq_val[val])
     return instance_freq_vec
 
 
@@ -278,7 +281,8 @@ def loop_candidates_convert_to_freq_vec(df: pd.DataFrame, representation_option:
                                         representation_option_for_nested: DistMethod):
     df_converted = set_path('dataTool/df_converted.npy')
     result = []
-    for row in range(0, len(df)):
+    # for row in range(0, len(df)):
+    for row in range(0, 2):
         instance = df_row_to_instance(df=df, index=row)
         instance_freq_vec = convert_instance_to_freq_vec(instance=instance, representation_option=representation_option,
                                                          representation_option_set=representation_option_for_set,
