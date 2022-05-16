@@ -10,7 +10,8 @@ import numpy as np
 
 
 def logger(*args):
-    print(*args)
+    # print(*args)
+    pass
 
 
 class DistanceFlowFreq:
@@ -146,9 +147,9 @@ class DistanceFlowFreq:
                     self.write_inx_of_one_hot_vector()
                 self.inx += 1
         self.inx = self.inx - 1
-        print()
+        # print()
 
-    def calc_distance(self) -> float:
+    def calc_distance(self, birth_year: bool = True, gender: bool = True) -> float:
         domain = read_domain_per_attr_data()
         freq = read_freq_per_value_data()
 
@@ -158,11 +159,17 @@ class DistanceFlowFreq:
             attr_domain = domain[attr]
 
             if data_type == str:
-                self.categorical_distance(representation_option=self.representation_option, attr_type=data_type, frequency=attr_freq, domain_size=attr_domain)
+                if attr == 'gender' and not gender:
+                    pass
+                else:
+                    self.categorical_distance(representation_option=self.representation_option, attr_type=data_type, frequency=attr_freq, domain_size=attr_domain)
 
             elif data_type == float or data_type == int:
-                self.numerical_distance(representation_option=self.representation_option, attr_type=data_type, num1=self.vec1[self.inx],
-                                        num2=self.vec2[self.inx])
+                if attr == 'birth_year' and not birth_year:
+                    pass
+                else:
+                    self.numerical_distance(representation_option=self.representation_option, attr_type=data_type, num1=self.vec1[self.inx],
+                                            num2=self.vec2[self.inx])
 
             elif data_type == list:
                 self.first_one_hot_inx = self.inx
@@ -175,44 +182,45 @@ class DistanceFlowFreq:
 
             self.inx += 1
 
-        print(f'categorical result-\n {self.cat_distance_result}')
-        print(f'categorical list length-\n {len(self.cat_distance_result)}')
-        print(f'numerical result-\n {self.num_distance_result}')
+        # print(f'categorical result-\n {self.cat_distance_result}')
+        # print(f'categorical list length-\n {len(self.cat_distance_result)}')
+        # print(f'numerical result-\n {self.num_distance_result}')
 
         if self.representation_option == DistMethod.hamming_distance:
             hamming_result = np.sqrt((sum(self.cat_distance_result) - sum(self.num_distance_result)) ** 2)
-            print(f'hamming distance result-\n {hamming_result}')
+            # print(f'hamming distance result-\n {hamming_result}')
             return hamming_result
         else:
             freq_distance_result = q14(categorical_sum=sum(self.cat_distance_result), numerical_sum=sum(self.num_distance_result))
-            print(f'freq distance result-\n {freq_distance_result}')
+            # print(f'freq distance result-\n {freq_distance_result}')
             return freq_distance_result
 
 
-def run_distance_freq(vec1: list, vec2: list, representation_option: DistMethod, representation_option_set: DistMethod) -> float:
+def run_distance_freq(vec1: list, vec2: list, representation_option: DistMethod, representation_option_set: DistMethod, birth_year: bool = True, gender: bool = True) -> float:
     return DistanceFlowFreq(vec1=vec1, vec2=vec2, representation_option=representation_option,
-                            representation_option_set=representation_option_set).calc_distance()
+                            representation_option_set=representation_option_set).\
+                            calc_distance(birth_year=birth_year, gender=gender)
 
 
 # different distance options
-def freq_rep_dist(vec1: list, vec2: list) -> float:
+def freq_rep_dist(vec1: list, vec2: list, birth_year: bool = True, gender: bool = True) -> float:
     return run_distance_freq(vec1=vec1, vec2=vec2, representation_option=DistMethod.fix_length_freq,
-                             representation_option_set=DistMethod.fix_length_freq)
+                             representation_option_set=DistMethod.fix_length_freq, birth_year=birth_year, gender=gender)
 
 
-def hamming_rep_dist(vec1: list, vec2: list) -> float:
+def hamming_rep_dist(vec1: list, vec2: list, birth_year: bool = True, gender: bool = True) -> float:
     return run_distance_freq(vec1=vec1, vec2=vec2, representation_option=DistMethod.hamming_distance,
-                             representation_option_set=DistMethod.hamming_distance)
+                             representation_option_set=DistMethod.hamming_distance, birth_year=birth_year, gender=gender)
 
 
-def inner_product_rep_dist(vec1: list, vec2: list) -> float:
+def inner_product_rep_dist(vec1: list, vec2: list, birth_year: bool = True, gender: bool = True) -> float:
     return run_distance_freq(vec1=vec1, vec2=vec2, representation_option=DistMethod.fix_length_freq,
-                             representation_option_set=DistMethod.inner_product)
+                             representation_option_set=DistMethod.inner_product, birth_year=birth_year, gender=gender)
 
 
-def intersection_rep_dist(vec1: list, vec2: list) -> float:
+def intersection_rep_dist(vec1: list, vec2: list, birth_year: bool = True, gender: bool = True) -> float:
     return run_distance_freq(vec1=vec1, vec2=vec2, representation_option=DistMethod.fix_length_freq,
-                             representation_option_set=DistMethod.intersection)
+                             representation_option_set=DistMethod.intersection, birth_year=birth_year, gender=gender)
 
 
 if __name__ == '__main__':
@@ -228,7 +236,7 @@ if __name__ == '__main__':
              76, 5, 11, 709, 5, 650, 658, 1, 52, 1, 91, 170, 91, 2006, 165, 92, 1, 98, 156, 650, 658, 72, 491, 1, 1, 82,
              1, 2016, 3, 3, 6, 709, 156, 650, 658, 72, 491, 1, 1, 225, 58, 100, None, 1, 1, 1, 1, 225, 58, 3, None, 1,
              7, 1, 1, 42, 21, 100, None, 1, 1, 1]
-    # freq_rep_dist(vec1=freq_vec1_, vec2=freq_vec2_)
+    # freq_rep_dist(vec1=freq_vec1_, vec2=freq_vec2_, birth_year=True, gender=True)
 
     # option 2
     hamming_vec1_ = ['laura gao', 'laura', 'gao', 'female', 1996.0, None, 'internet', 'associate product manager ii',
@@ -265,7 +273,7 @@ if __name__ == '__main__':
              None, None, '$', '$', '$', 'app academy', 'post-secondary institution', None, '2017', None, '$',
              'software engineering', '$', 'el camino fundamental high school', 'secondary school', '2010', None, None,
              '$', '$', '$']
-    # hamming_rep_dist(vec1=hamming_vec1_, vec2=hamming_vec2_)
+    # hamming_rep_dist(vec1=hamming_vec1_, vec2=hamming_vec2_, birth_year=True, gender=True)
 
     # option 3 and 4
     # option 3
@@ -371,7 +379,7 @@ if __name__ == '__main__':
              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-    # inner_product_rep_dist(vec1=one_hot_vec1_, vec2=one_hot_vec2_)
+    # inner_product_rep_dist(vec1=one_hot_vec1_, vec2=one_hot_vec2_, birth_year=True, gender=True)
 
     # option 4
-    intersection_rep_dist(vec1=one_hot_vec1_, vec2=one_hot_vec2_)
+    intersection_rep_dist(vec1=one_hot_vec1_, vec2=one_hot_vec2_, birth_year=False, gender=True)

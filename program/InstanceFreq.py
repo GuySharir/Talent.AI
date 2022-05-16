@@ -9,7 +9,8 @@ from DistEnum import DistMethod, DefaultVal
 
 
 def logger(*args):
-    print(*args)
+    # print(*args)
+    pass
 
 
 def df_row_to_instance(df: pd.DataFrame, index: int) -> dict:
