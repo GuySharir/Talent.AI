@@ -215,12 +215,17 @@ class Kmeans:
                 break
 
     def predict(self, entry):
+
+        # TODO:
+        # convert entry to matching rep
+
         return self.find_closest_cluster(entry)
 
     def company_order(self, candidates: list, job_offer: list):
 
         # TODO:
         # convert candidates and job offer to classifier representation
+
         scores = []
 
         for i, candidate in enumerate(candidates):
@@ -357,11 +362,15 @@ if __name__ == "__main__":
     sys.path.insert(0, os.path.abspath(os.path.abspath(os.getcwd())))
     #
     # model = Kmeans('./clustering/allIntersection.npy', 4)
-    # # model.fit()
-    # model.calc_percents()
+    # model.fit()
+    # print(model.percents)
 
-    # with open('8cluster.pkl', 'wb') as file:
-    #     pkl.dump(model, file)
+    with open('./clustering/3cluster.pkl', 'rb') as file:
+        model: Kmeans = pkl.load(file)
+        model.calc_percents()
+    #
+    #     for key in model.percents:
+    #         print(model.percents[key])
     #
     # pd.set_option('display.max_rows', None, 'display.max_columns', None)
     # print(model.data.iloc[0])
