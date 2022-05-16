@@ -1,9 +1,8 @@
 import json
 import os
 from pydoc import locate
-
-from ReadData import read_attr_types_data, read_local_json_employees
-from DomainSizeFrequencies import DomainAndFrequency
+from program.ReadData import read_attr_types_data, read_local_json_employees
+from program.DomainSizeFrequencies import DomainAndFrequency
 
 
 def logger(*args):
