@@ -242,22 +242,16 @@ class Kmeans:
 
             self.calc_percents(show=False)
 
-    def predict(self, entry):
+    def predict(self, entry: dict):
+        converted = self.representation_conversion(entry)
+        return self.find_closest_cluster(converted)
 
-        # TODO:
-        # convert entry to matching rep
-
-        return self.find_closest_cluster(entry)
-
-    def company_order(self, candidates: list, job_offer: list):
-
-        # TODO:
-        # convert candidates and job offer to classifier representation
-
+    def company_order(self, candidates: list, job_offer: dict):
         scores = []
-
+        job_converted = self.representation_conversion(job_offer)
         for i, candidate in enumerate(candidates):
-            scores.append([i, self.distance_calc(candidate, job_offer)])
+            converted = self.representation_conversion(vars(candidate))
+            scores.append([i, self.distance_calc(converted, job_converted)])
 
         scores.sort(key=lambda score: score[1])
         return scores
