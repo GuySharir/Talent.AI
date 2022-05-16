@@ -1,6 +1,9 @@
 from pydoc import locate
+
+import numpy as np
 import pandas as pd
-from ReadData import read_local_json_employees, read_attr_types_data, read_nested_attr_types_data, read_freq_per_value_data, MIN_FREQ, NUMERIC_DEFAULT, HAMMING_DEFAULT, ONE_HOT_SPARE
+from program.ReadData import read_local_json_employees, read_attr_types_data, read_nested_attr_types_data, \
+    read_freq_per_value_data, MIN_FREQ, NUMERIC_DEFAULT, HAMMING_DEFAULT, ONE_HOT_SPARE, set_path
 from dataTool.runtimeObjectsInfo.ListLengthData import LIST_LENGTH_PER_ATTR, NESTED_LENGTH_PER_ATTR
 from DistEnum import DistMethod, DefaultVal
 
@@ -253,20 +256,243 @@ def convert_instance_to_freq_vec(instance: dict, representation_option: DistMeth
     return result
 
 
-def loop_candidates_convert_to_freq_vec(representation_option: DistMethod, representation_option_for_set: DistMethod, representation_option_for_nested: DistMethod):
-    df = read_local_json_employees()
-    # for row in range(0, len(df)):
-    for row in range(0, 2):
+def loop_candidates_convert_to_freq_vec(df: pd.DataFrame, representation_option: DistMethod, representation_option_for_set: DistMethod, representation_option_for_nested: DistMethod):
+    df_converted = set_path('dataTool/df_converted.npy')
+    result = []
+    for row in range(0, len(df)):
         instance = df_row_to_instance(df=df, index=row)
         instance_freq_vec = convert_instance_to_freq_vec(instance=instance, representation_option=representation_option, representation_option_set=representation_option_for_set, representation_option_nested=representation_option_for_nested)
+        result.append(instance_freq_vec)
         logger(f'instance as raw data- \n{instance}')
         logger(f'instance as frequencies vector- \n{instance_freq_vec}')
         logger(f'!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
 
+    np.save(df_converted, result)
+
+
+def freq_rep(instance: dict) -> list:
+    instance_freq_vec = convert_instance_to_freq_vec(instance=instance, representation_option=DistMethod.fix_length_freq,
+                                                     representation_option_set=DistMethod.fix_length_freq,
+                                                     representation_option_nested=DistMethod.fix_length_freq)
+    logger(f'instance as raw data- \n{instance}')
+    logger(f'instance as rep vector- \n{instance_freq_vec}')
+
+    return (list(instance_freq_vec.values())[0])[1]
+
+
+def hamming_rep(instance: dict) -> list:
+    instance_hamming_vec = convert_instance_to_freq_vec(instance=instance, representation_option=DistMethod.hamming_distance,
+                                                        representation_option_set=DistMethod.hamming_distance,
+                                                        representation_option_nested=DistMethod.hamming_distance)
+    logger(f'instance as raw data- \n{instance}')
+    logger(f'instance as rep vector- \n{instance_hamming_vec}')
+    return (list(instance_hamming_vec.values())[0])[1]
+
+
+def one_hot_rep(instance: dict) -> list:
+    instance_one_hot_vec = convert_instance_to_freq_vec(instance=instance, representation_option=DistMethod.fix_length_freq,
+                                                        representation_option_set=DistMethod.inner_product,
+                                                        representation_option_nested=DistMethod.fix_length_freq)
+    logger(f'instance as raw data- \n{instance}')
+    logger(f'instance as rep vector- \n{instance_one_hot_vec}')
+    return (list(instance_one_hot_vec.values())[0])[1]
+
 
 if __name__ == '__main__':
-    # loop_candidates_convert_to_freq_vec(representation_option=DistMethod.hamming_distance, representation_option_for_set=DistMethod.hamming_distance, representation_option_for_nested=DistMethod.hamming_distance)
-    # loop_candidates_convert_to_freq_vec(representation_option=DistMethod.fix_length_freq, representation_option_for_set=DistMethod.fix_length_freq, representation_option_for_nested=DistMethod.fix_length_freq)
-    loop_candidates_convert_to_freq_vec(representation_option=DistMethod.fix_length_freq, representation_option_for_set=DistMethod.intersection, representation_option_for_nested=DistMethod.fix_length_freq)
-    # loop_candidates_convert_to_freq_vec(representation_option=DistMethod.fix_length_freq, representation_option_for_set=DistMethod.inner_product, representation_option_for_nested=DistMethod.fix_length_freq)
+    # loop over df using 4 rep options
+    # df_ = read_local_json_employees()
+    # hamming
+    # loop_candidates_convert_to_freq_vec(df=df_,representation_option=DistMethod.hamming_distance, representation_option_for_set=DistMethod.hamming_distance, representation_option_for_nested=DistMethod.hamming_distance)
+    # freq
+    # loop_candidates_convert_to_freq_vec(df=df_, representation_option=DistMethod.fix_length_freq, representation_option_for_set=DistMethod.fix_length_freq, representation_option_for_nested=DistMethod.fix_length_freq)
+    # one hot intersection
+    # loop_candidates_convert_to_freq_vec(df=df_,representation_option=DistMethod.fix_length_freq, representation_option_for_set=DistMethod.intersection, representation_option_for_nested=DistMethod.fix_length_freq)
+    # one hot inner_product
+    # loop_candidates_convert_to_freq_vec(df=df_,representation_option=DistMethod.fix_length_freq, representation_option_for_set=DistMethod.inner_product, representation_option_for_nested=DistMethod.fix_length_freq)
+
+    # ---------------------------------------------------------------------------------------
+
+    # representation per instance using 4 rep options
+    instance_ = {
+        "full_name": "laura gao",
+        "first_name": "laura",
+        "last_name": "gao",
+        "gender": "female",
+        "birth_year": 1996,
+        "birth_date": None,
+        "industry": "internet",
+        "job_title": "associate product manager ii",
+        "job_title_role": "operations",
+        "job_title_sub_role": "product",
+        "job_title_levels": [],
+        "job_company_id": "twitter",
+        "job_company_name": "twitter",
+        "job_start_date": "2018-09",
+        "interests": [
+            "potenciamiento econ\u00f3mico"
+        ],
+        "skills": [
+            "public speaking",
+            "management",
+            "microsoft office",
+            "technology",
+            "creative strategy",
+            "photoshop",
+            "visual arts",
+            "customer service",
+            "data analysis",
+            "stock trading",
+            "leadership",
+            "microsoft excel",
+            "product management",
+            "powerpoint",
+            "product design",
+            "fundraising",
+            "design"
+        ],
+        "experience": [
+            {
+                "company_name": "smartypal",
+                "company_size": "1-10",
+                "company_id": "smartypal",
+                "company_founded": 2013,
+                "company_industry": "e-learning",
+                "end_date": "2017",
+                "start_date": "2017",
+                "current_job": False,
+                "company_location_name": "philadelphia, pennsylvania, united states",
+                "company_location_country": "united states",
+                "company_location_continent": "north america",
+                "title_name": "product management intern",
+                "title_role": "operations",
+                "title_levels": [
+                    "training"
+                ]
+            },
+            {
+                "company_name": "amazon",
+                "company_size": "10001+",
+                "company_id": "amazon",
+                "company_founded": 1994,
+                "company_industry": "internet",
+                "end_date": "2017-08",
+                "start_date": "2017-06",
+                "current_job": False,
+                "company_location_name": "seattle, washington, united states",
+                "company_location_country": "united states",
+                "company_location_continent": "north america",
+                "title_name": "business data analyst intern",
+                "title_role": "engineering",
+                "title_levels": [
+                    "training"
+                ]
+            },
+            {
+                "company_name": "consumer financial protection bureau",
+                "company_size": "1001-5000",
+                "company_id": "consumer-financial-protection-bureau",
+                "company_founded": 2010,
+                "company_industry": "government administration",
+                "end_date": "2015-08",
+                "start_date": "2015-06",
+                "current_job": False,
+                "company_location_name": "washington, district of columbia, united states",
+                "company_location_country": "united states",
+                "company_location_continent": "north america",
+                "title_name": "chief of staff policy intern",
+                "title_role": None,
+                "title_levels": [
+                    "training"
+                ]
+            },
+            {
+                "company_name": "twitter",
+                "company_size": "1001-5000",
+                "company_id": "twitter",
+                "company_founded": 2006,
+                "company_industry": "internet",
+                "end_date": None,
+                "start_date": "2018-09",
+                "current_job": True,
+                "company_location_name": "san francisco, california, united states",
+                "company_location_country": "united states",
+                "company_location_continent": "north america",
+                "title_name": "associate product manager ii",
+                "title_role": "operations",
+                "title_levels": []
+            }
+        ],
+        "education": [
+            {
+                "school_name": "graduate school of city planning minor",
+                "school_type": None,
+                "end_date": None,
+                "start_date": None,
+                "gpa": None,
+                "degrees": [
+                    "bachelors",
+                    "bachelor of science"
+                ],
+                "majors": [],
+                "minors": []
+            },
+            {
+                "school_name": "coppell high school",
+                "school_type": "secondary school",
+                "end_date": "2014-05",
+                "start_date": None,
+                "gpa": None,
+                "degrees": [],
+                "majors": [],
+                "minors": []
+            },
+            {
+                "school_name": "the wharton school",
+                "school_type": "post-secondary institution",
+                "end_date": "2018",
+                "start_date": "2014",
+                "gpa": 3.64,
+                "degrees": [
+                    "bachelors",
+                    "bachelor of science"
+                ],
+                "majors": [
+                    "economics",
+                    "statistics",
+                    "finance"
+                ],
+                "minors": []
+            },
+            {
+                "school_name": "coppell high school",
+                "school_type": "secondary school",
+                "end_date": "2014",
+                "start_date": "2010",
+                "gpa": None,
+                "degrees": [],
+                "majors": [],
+                "minors": []
+            },
+            {
+                "school_name": "university of pennsylvania",
+                "school_type": "post-secondary institution",
+                "end_date": "2018",
+                "start_date": "2014",
+                "gpa": 3.7,
+                "degrees": [
+                    "bachelors",
+                    "bachelor of science"
+                ],
+                "majors": [
+                    "economics",
+                    "statistics",
+                    "finance"
+                ],
+                "minors": []
+            }
+        ]
+    }
+    # freq_rep(instance=instance_)
+    # hamming_rep(instance=instance_)
+    one_hot_rep(instance=instance_)
 
