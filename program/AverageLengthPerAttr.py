@@ -1,5 +1,5 @@
 import os
-from ReadData import read_local_json_employees, read_attr_types_data, read_nested_attr_types_data
+from program.ReadData import read_local_json_employees, read_attr_types_data, read_nested_attr_types_data
 from pydoc import locate
 import matplotlib.pyplot as plt
 import statistics
