@@ -1,6 +1,7 @@
 import math
 from dataclasses import dataclass
-from ReadData import read_freq_per_value_data, read_domain_per_attr_data, DATA_TYPE_PER_INDEX, ATTRIBUTE_PER_INDEX
+from program.ReadData import read_freq_per_value_data, read_domain_per_attr_data, DATA_TYPE_PER_INDEX, \
+    ATTRIBUTE_PER_INDEX
 from dataTool.runtimeObjectsInfo.ListLengthData import LIST_LENGTH_PER_ATTR, NESTED_LENGTH_PER_ATTR
 
 
@@ -104,10 +105,11 @@ def prepare_data_for_dist_calc_between_freq_vectors(vec1: list, vec2: list):
             num_distance_result.append(numerical_dist_between_freq_vectors(attr_type=DATA_TYPE_PER_INDEX[inx],
                                                                            num_val1=val, num_val2=vec2[inx]))
 
-    print(f'categorical result-\n {cat_distance_result}')
-    print(f'numerical result-\n {num_distance_result}')
+    # print(f'categorical result-\n {cat_distance_result}')
+    # print(f'numerical result-\n {num_distance_result}')
     distance_result = q14(categorical_sum=sum(cat_distance_result), numerical_sum=sum(num_distance_result))
-    print(f'distance result-\n {distance_result}')
+    # print(f'distance result-\n {distance_result}')
+    return distance_result
 
 
 if __name__ == '__main__':
