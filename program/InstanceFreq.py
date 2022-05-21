@@ -2,6 +2,8 @@ from pydoc import locate
 
 import numpy as np
 import pandas as pd
+
+from program.PeriodicalDomainFreq import DomainFreqCalc
 from program.ReadData import read_local_json_employees, read_attr_types_data, read_nested_attr_types_data, \
     read_freq_per_value_data, MIN_FREQ, NUMERIC_DEFAULT, HAMMING_DEFAULT, ONE_HOT_SPARE, set_path
 from dataTool.runtimeObjectsInfo.ListLengthData import LIST_LENGTH_PER_ATTR, NESTED_LENGTH_PER_ATTR
@@ -9,8 +11,8 @@ from DistEnum import DistMethod, DefaultVal
 
 
 def logger(*args):
-    # print(*args)
-    pass
+    print(*args)
+    # pass
 
 
 def df_row_to_instance(df: pd.DataFrame, index: int) -> dict:
@@ -261,10 +263,10 @@ def convert_instance_to_freq_vec(instance: dict, representation_option: DistMeth
 
 
 def loop_candidates_convert_to_freq_vec(df: pd.DataFrame, representation_option: DistMethod, representation_option_for_set: DistMethod, representation_option_for_nested: DistMethod):
+    DomainFreqCalc(df=df).calc_domain_freq_per_value()
     df_converted = set_path('dataTool/df_converted.npy')
     result = []
-    # for row in range(0, len(df)):
-    for row in range(0, 2):
+    for row in range(0, len(df)):
         instance = df_row_to_instance(df=df, index=row)
         instance_freq_vec = convert_instance_to_freq_vec(instance=instance, representation_option=representation_option, representation_option_set=representation_option_for_set, representation_option_nested=representation_option_for_nested)
         result.append(instance_freq_vec)
@@ -305,11 +307,11 @@ def one_hot_rep(instance: dict) -> list:
 
 if __name__ == '__main__':
     # loop over df using 4 rep options
-    # df_ = read_local_json_employees()
+    df_ = read_local_json_employees()
     # hamming
     # loop_candidates_convert_to_freq_vec(df=df_,representation_option=DistMethod.hamming_distance, representation_option_for_set=DistMethod.hamming_distance, representation_option_for_nested=DistMethod.hamming_distance)
     # freq
-    # loop_candidates_convert_to_freq_vec(df=df_, representation_option=DistMethod.fix_length_freq, representation_option_for_set=DistMethod.fix_length_freq, representation_option_for_nested=DistMethod.fix_length_freq)
+    loop_candidates_convert_to_freq_vec(df=df_, representation_option=DistMethod.fix_length_freq, representation_option_for_set=DistMethod.fix_length_freq, representation_option_for_nested=DistMethod.fix_length_freq)
     # one hot intersection
     # loop_candidates_convert_to_freq_vec(df=df_,representation_option=DistMethod.fix_length_freq, representation_option_for_set=DistMethod.intersection, representation_option_for_nested=DistMethod.fix_length_freq)
     # one hot inner_product
