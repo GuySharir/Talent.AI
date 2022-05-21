@@ -32,7 +32,7 @@ class DistanceFlowFreq:
         self.one_hot_index_list = []
 
     def write_inx_of_one_hot_vector(self):
-        self.one_hot_index_list.append((self.first_one_hot_inx, self.last_one_hot_inx))
+        # self.one_hot_index_list.append((self.first_one_hot_inx, self.last_one_hot_inx))
         with open(self.one_hot_index, 'w') as fp:
             json.dump(self.one_hot_index_list, fp)
 
@@ -93,6 +93,7 @@ class DistanceFlowFreq:
                 union_or_count = 0
                 inner_product_sum = 0
                 for _ in range(domain_size + ONE_HOT_SPARE):
+                    self.one_hot_index_list.append(self.inx)
                     inner_product_sum += self.vec1[self.inx] * self.vec2[self.inx]
                     if self.vec1[self.inx] == 1 or self.vec2[self.inx] == 1:
                         union_or_count += 1
@@ -101,14 +102,17 @@ class DistanceFlowFreq:
                     self.cat_distance_result.append(1 - inner_product_sum)
                 else:
                     self.cat_distance_result.append(1 - (inner_product_sum/union_or_count))
+                self.write_inx_of_one_hot_vector()
 
             elif self.representation_option_set == DistMethod.inner_product:
                 inner_product_sum = 0
                 for _ in range(domain_size + ONE_HOT_SPARE):
+                    self.one_hot_index_list.append(self.inx)
                     inner_product_sum += self.vec1[self.inx] * self.vec2[self.inx]
                     self.inx += 1
 
                 self.cat_distance_result.append(1 - inner_product_sum)
+                self.write_inx_of_one_hot_vector()
         self.inx = self.inx - 1
 
     def nested_distance(self, attr_name: str, frequency: dict, domain_size: dict):
@@ -141,10 +145,10 @@ class DistanceFlowFreq:
                 elif data_type == list:
                     attr_freq = frequency[attr]
                     attr_domain = domain_size[attr]
-                    self.first_one_hot_inx = self.inx
+                    # self.first_one_hot_inx = self.inx
                     self.set_distance(attr_name=attr, frequency=attr_freq, domain_size=attr_domain)
-                    self.last_one_hot_inx = self.inx
-                    self.write_inx_of_one_hot_vector()
+                    # self.last_one_hot_inx = self.inx
+                    # self.write_inx_of_one_hot_vector()
                 self.inx += 1
         self.inx = self.inx - 1
         # print()
@@ -172,10 +176,10 @@ class DistanceFlowFreq:
                                             num2=self.vec2[self.inx])
 
             elif data_type == list:
-                self.first_one_hot_inx = self.inx
+                # self.first_one_hot_inx = self.inx
                 self.set_distance(attr_name=attr, frequency=attr_freq, domain_size=attr_domain)
-                self.last_one_hot_inx = self.inx
-                self.write_inx_of_one_hot_vector()
+                # self.last_one_hot_inx = self.inx
+                # self.write_inx_of_one_hot_vector()
 
             elif data_type == dict:
                 self.nested_distance(attr_name=attr, frequency=attr_freq, domain_size=attr_domain)
@@ -273,7 +277,7 @@ if __name__ == '__main__':
              None, None, '$', '$', '$', 'app academy', 'post-secondary institution', None, '2017', None, '$',
              'software engineering', '$', 'el camino fundamental high school', 'secondary school', '2010', None, None,
              '$', '$', '$']
-    # hamming_rep_dist(vec1=hamming_vec1_, vec2=hamming_vec2_, birth_year=True, gender=True)
+    hamming_rep_dist(vec1=hamming_vec1_, vec2=hamming_vec2_, birth_year=True, gender=True)
 
     # option 3 and 4
     # option 3
@@ -382,4 +386,4 @@ if __name__ == '__main__':
     # inner_product_rep_dist(vec1=one_hot_vec1_, vec2=one_hot_vec2_, birth_year=True, gender=True)
 
     # option 4
-    intersection_rep_dist(vec1=one_hot_vec1_, vec2=one_hot_vec2_, birth_year=False, gender=True)
+    # intersection_rep_dist(vec1=one_hot_vec1_, vec2=one_hot_vec2_, birth_year=False, gender=True)
