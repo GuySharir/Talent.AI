@@ -15,6 +15,7 @@ class DomainFreqCalc:
     def __init__(self, df: pd.DataFrame):
         self.attr_types = read_attr_types_data()
         # self.df = read_local_json_employees()
+
         self.df = df
         self.domain_per_attribute = {}
         self.freq_per_attribute = {}
