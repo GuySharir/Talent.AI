@@ -3,6 +3,7 @@ import os
 from pydoc import locate
 from program.ReadData import read_attr_types_data, read_local_json_employees
 from program.DomainSizeFrequencies import DomainAndFrequency
+import pandas as pd
 
 
 def logger(*args):
@@ -11,9 +12,10 @@ def logger(*args):
 
 
 class DomainFreqCalc:
-    def __init__(self):
+    def __init__(self, df: pd.DataFrame):
         self.attr_types = read_attr_types_data()
-        self.df = read_local_json_employees()
+        # self.df = read_local_json_employees()
+        self.df = df
         self.domain_per_attribute = {}
         self.freq_per_attribute = {}
 
@@ -52,4 +54,5 @@ class DomainFreqCalc:
 
 
 if __name__ == '__main__':
-    DomainFreqCalc().calc_domain_freq_per_value()
+    df_ = read_local_json_employees()
+    DomainFreqCalc(df=df_).calc_domain_freq_per_value()
