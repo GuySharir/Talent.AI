@@ -32,7 +32,7 @@ class Kmeans:
     def __init__(self,
                  n_clusters: int,
                  max_iter: int = 20,
-                 representation: DistMethod = DistMethod.fix_length_freq):
+                 representation: DistMethod = DistMethod.intersection):
 
         self.representation = representation
 
@@ -381,12 +381,11 @@ def find_inner_correlation():
 
 
 if __name__ == "__main__":
-    sys.path.insert(0, os.path.abspath(os.path.abspath(os.getcwd())))
-    #
     model = Kmeans(5)
-    model.fit()
-    with open('fivetest.pkl', 'wb') as f:
-        pkl.dump(model, f)
+    # model.fit()
+
+    # with open('fivetest.pkl', 'wb') as f:
+    #     pkl.dump(model, f)
 
     # with open('./clustering/3cluster.pkl', 'rb') as file:
     #     model: Kmeans = pkl.load(file)
