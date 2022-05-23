@@ -14,13 +14,14 @@ from sklearn.model_selection import train_test_split
 import matplotlib.pyplot as plt
 from sklearn.utils import shuffle
 
-sys.path.insert(0, os.path.abspath(os.path.abspath(os.getcwd())))
+# sys.path.insert(0, os.path.abspath(os.path.abspath(os.getcwd())))
 
 from program.DistanceFlow import run_distance_freq
 from program.DistEnum import DistMethod
 from program.DistanceFlow import inner_product_rep_dist, hamming_rep_dist, intersection_rep_dist, freq_rep_dist
 from program.InstanceFreq import one_hot_rep, freq_rep, hamming_rep, loop_candidates_convert_to_freq_vec
-from program.ReadData import read_local_json_employees
+from program.ReadData import set_path
+import program.ReadData
 
 
 def my_print(message):
@@ -32,7 +33,7 @@ class Kmeans:
     def __init__(self,
                  n_clusters: int,
                  max_iter: int = 20,
-                 representation: DistMethod = DistMethod.fix_length_freq):
+                 representation: DistMethod = DistMethod.intersection):
 
         self.representation = representation
 
@@ -63,10 +64,11 @@ class Kmeans:
         self.clusters = [[] for _ in range(n_clusters)]
         self.clusters_with_candidate_idx = [[] for _ in range(n_clusters)]
         self.percents = None
+        self.one_hot_vec = None
 
     def load_data(self) -> pd.DataFrame:
 
-        df = read_local_json_employees()
+        df = program.ReadData.read_local_json_employees()
 
         if self.representation == DistMethod.intersection:
             loop_candidates_convert_to_freq_vec(df, representation_option=DistMethod.fix_length_freq,
@@ -88,6 +90,7 @@ class Kmeans:
                                                 representation_option_for_set=DistMethod.inner_product,
                                                 representation_option_for_nested=DistMethod.fix_length_freq)
 
+        print(os.getcwd())
         raw_data = np.load('./dataTool/df_converted.npy', allow_pickle=True)
 
         data = []
@@ -150,10 +153,16 @@ class Kmeans:
             if len(cluster) != 0:
                 self.centroids[i] = self.column_avrage(cluster)
 
-    def find_closest_cluster(self, entry):
+    def find_closest_cluster(self, entry, first_loop: bool):
         distances = []
         for centroid in self.centroids:
-            dist = self.distance_calc(entry, centroid)
+            if self.representation == DistMethod.inner_product or self.representation == DistMethod.intersection:
+                dist = self.distance_calc(entry, centroid, one_hot_inx_flag=first_loop)
+                if self.one_hot_vec is None:
+                    with open(set_path('dataTool/one_hot_index.json')) as f:
+                        self.one_hot_vec = pd.read_json(f)
+            else:
+                dist = self.distance_calc(entry, centroid)
             distances.append(dist)
 
         best = np.argmin(distances)
@@ -214,6 +223,7 @@ class Kmeans:
     def fit(self):
         self.initialize_centroids()
         size = len(self.data)
+        first_loop = True
 
         for iteration in range(self.max_iter):
             print(f"starting iteration {iteration}")
@@ -221,7 +231,8 @@ class Kmeans:
 
             for idx in range(size):
                 entry = list(self.data.iloc[idx])
-                cluster_idx = self.find_closest_cluster(entry)
+                cluster_idx = self.find_closest_cluster(entry, first_loop)
+                first_loop = False
                 self.add_to_cluster(cluster_idx, entry)
                 self.clusters_with_candidate_idx[cluster_idx].append(idx)
 
@@ -349,7 +360,7 @@ def find_inner_correlation():
         x: Kmeans = pkl.load(file)
         x.show_clusters()
 
-    original = read_local_json_employees()
+    original = program.ReadData.read_local_json_employees()
 
     for i, cluster in enumerate(x.clusters_with_candidate_idx):
         roles = {'name': {}, 'role': {}}
@@ -381,12 +392,11 @@ def find_inner_correlation():
 
 
 if __name__ == "__main__":
-    sys.path.insert(0, os.path.abspath(os.path.abspath(os.getcwd())))
-    #
     model = Kmeans(5)
     model.fit()
-    with open('fivetest.pkl', 'wb') as f:
-        pkl.dump(model, f)
+
+    # with open('fivetest.pkl', 'wb') as f:
+    #     pkl.dump(model, f)
 
     # with open('./clustering/3cluster.pkl', 'rb') as file:
     #     model: Kmeans = pkl.load(file)

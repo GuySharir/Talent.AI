@@ -7,12 +7,12 @@ from program.PeriodicalDomainFreq import DomainFreqCalc
 from program.ReadData import read_local_json_employees, read_attr_types_data, read_nested_attr_types_data, \
     read_freq_per_value_data, MIN_FREQ, NUMERIC_DEFAULT, HAMMING_DEFAULT, ONE_HOT_SPARE, set_path
 from dataTool.runtimeObjectsInfo.ListLengthData import LIST_LENGTH_PER_ATTR, NESTED_LENGTH_PER_ATTR
-from DistEnum import DistMethod, DefaultVal
+from program.DistEnum import DistMethod, DefaultVal
 
 
 def logger(*args):
-    print(*args)
-    # pass
+    # print(*args)
+    pass
 
 
 def df_row_to_instance(df: pd.DataFrame, index: int) -> dict:
@@ -320,185 +320,503 @@ if __name__ == '__main__':
     # ---------------------------------------------------------------------------------------
 
     # representation per instance using 4 rep options
-    instance_ = {
-        "full_name": "laura gao",
-        "first_name": "laura",
-        "last_name": "gao",
-        "gender": "female",
-        "birth_year": 1996,
-        "birth_date": None,
+    instance_1 = {
+        "full_name": "george lo",
+        "first_name": "george",
+        "last_name": "lo",
+        "gender": "male",
+        "birth_year": 1970,
+        "birth_date": "1994-12-29",
         "industry": "internet",
-        "job_title": "associate product manager ii",
-        "job_title_role": "operations",
-        "job_title_sub_role": "product",
-        "job_title_levels": [],
-        "job_company_id": "twitter",
-        "job_company_name": "twitter",
-        "job_start_date": "2018-09",
+        "job_title": "senior software engineer",
+        "job_title_role": "engineering",
+        "job_title_sub_role": "software",
+        "job_title_levels": [
+            "senior"
+        ],
+        "job_company_id": "apple",
+        "job_company_name": "apple",
+        "job_start_date": "2019-09",
         "interests": [
-            "potenciamiento econ\u00f3mico"
+            "computer security",
+            "software engineering",
+            "database and information systems"
         ],
         "skills": [
-            "public speaking",
-            "management",
-            "microsoft office",
-            "technology",
-            "creative strategy",
+            "c",
+            "c++",
+            "c#",
+            "objective c",
+            "swift",
+            "java",
+            "sql",
+            "pl/sql",
+            "html",
+            "javascript",
+            "css",
+            "python",
+            "microsoft sql server",
+            "oracle database",
+            "mysql",
+            "linq",
+            "php",
+            "node.js",
+            "asp.net",
+            "bash",
+            "git",
+            "tortoise svn",
+            "ios",
+            "android",
+            "windows phone",
+            "xamarin",
+            "illustrator",
+            "premiere",
             "photoshop",
-            "visual arts",
-            "customer service",
-            "data analysis",
-            "stock trading",
-            "leadership",
-            "microsoft excel",
-            "product management",
-            "powerpoint",
-            "product design",
-            "fundraising",
-            "design"
+            "imovie",
+            "microsoft office",
+            "dreamweaver",
+            "microsoft certified technology",
+            "windows azure",
+            "unix",
+            "r",
+            "jsp",
+            "websockets",
+            "x86 assembly",
+            "arm assembly",
+            "mongodb",
+            "amazon web services",
+            "adobe photoshop"
         ],
         "experience": [
             {
-                "company_name": "smartypal",
-                "company_size": "1-10",
-                "company_id": "smartypal",
-                "company_founded": 2013,
-                "company_industry": "e-learning",
-                "end_date": "2017",
-                "start_date": "2017",
-                "current_job": False,
-                "company_location_name": "philadelphia, pennsylvania, united states",
+                "company_name": "apple",
+                "company_size": "10001+",
+                "company_id": "apple",
+                "company_founded": 1976,
+                "company_industry": "consumer electronics",
+                "end_date": "2019-12",
+                "start_date": "2019-09",
+                "current_job": True,
+                "company_location_name": "cupertino, california, united states",
                 "company_location_country": "united states",
                 "company_location_continent": "north america",
-                "title_name": "product management intern",
-                "title_role": "operations",
+                "title_name": "senior software engineer",
+                "title_role": "engineering",
                 "title_levels": [
-                    "training"
+                    "senior"
                 ]
             },
             {
-                "company_name": "amazon",
-                "company_size": "10001+",
-                "company_id": "amazon",
-                "company_founded": 1994,
-                "company_industry": "internet",
-                "end_date": "2017-08",
-                "start_date": "2017-06",
+                "company_name": "c-blues",
+                "company_size": "1-10",
+                "company_id": "c-blues",
+                "company_founded": 2006,
+                "company_industry": "information technology and services",
+                "end_date": "2014-08",
+                "start_date": "2014-05",
                 "current_job": False,
-                "company_location_name": "seattle, washington, united states",
-                "company_location_country": "united states",
-                "company_location_continent": "north america",
-                "title_name": "business data analyst intern",
+                "company_location_name": "st petersburg, st.-petersburg, russia",
+                "company_location_country": "russia",
+                "company_location_continent": "europe",
+                "title_name": "software engineering intern",
                 "title_role": "engineering",
                 "title_levels": [
                     "training"
                 ]
             },
             {
-                "company_name": "consumer financial protection bureau",
-                "company_size": "1001-5000",
-                "company_id": "consumer-financial-protection-bureau",
-                "company_founded": 2010,
-                "company_industry": "government administration",
-                "end_date": "2015-08",
-                "start_date": "2015-06",
+                "company_name": "facebook",
+                "company_size": "10001+",
+                "company_id": "facebook",
+                "company_founded": 2004,
+                "company_industry": "internet",
+                "end_date": None,
+                "start_date": "2019-12",
                 "current_job": False,
-                "company_location_name": "washington, district of columbia, united states",
+                "company_location_name": "menlo park, california, united states",
                 "company_location_country": "united states",
                 "company_location_continent": "north america",
-                "title_name": "chief of staff policy intern",
-                "title_role": None,
+                "title_name": "senior software engineer",
+                "title_role": "engineering",
+                "title_levels": [
+                    "senior"
+                ]
+            },
+            {
+                "company_name": "delphi",
+                "company_size": "10001+",
+                "company_id": "delphi",
+                "company_founded": 2009,
+                "company_industry": "automotive",
+                "end_date": "2014-12",
+                "start_date": "2014-01",
+                "current_job": False,
+                "company_location_name": "kent, kent, united kingdom",
+                "company_location_country": "united kingdom",
+                "company_location_continent": "europe",
+                "title_name": "software verification engineer",
+                "title_role": "engineering",
+                "title_levels": []
+            },
+            {
+                "company_name": "apple",
+                "company_size": "10001+",
+                "company_id": "apple",
+                "company_founded": 1976,
+                "company_industry": "consumer electronics",
+                "end_date": "2015-08",
+                "start_date": "2015-05",
+                "current_job": False,
+                "company_location_name": "cupertino, california, united states",
+                "company_location_country": "united states",
+                "company_location_continent": "north america",
+                "title_name": "software engineering intern",
+                "title_role": "engineering",
                 "title_levels": [
                     "training"
                 ]
             },
             {
-                "company_name": "twitter",
-                "company_size": "1001-5000",
-                "company_id": "twitter",
-                "company_founded": 2006,
-                "company_industry": "internet",
-                "end_date": None,
-                "start_date": "2018-09",
-                "current_job": True,
-                "company_location_name": "san francisco, california, united states",
+                "company_name": "greendotparking llc",
+                "company_size": "1-10",
+                "company_id": "greendotparking-llc",
+                "company_founded": 2013,
+                "company_industry": "computer software",
+                "end_date": "2016-04",
+                "start_date": "2013-07",
+                "current_job": False,
+                "company_location_name": "west lafayette, indiana, united states",
                 "company_location_country": "united states",
                 "company_location_continent": "north america",
-                "title_name": "associate product manager ii",
-                "title_role": "operations",
-                "title_levels": []
+                "title_name": "co-founder director of mobile engineering",
+                "title_role": "engineering",
+                "title_levels": [
+                    "director",
+                    "owner"
+                ]
+            },
+            {
+                "company_name": "apple",
+                "company_size": "10001+",
+                "company_id": "apple",
+                "company_founded": 1976,
+                "company_industry": "consumer electronics",
+                "end_date": "2019-09",
+                "start_date": "2016-07",
+                "current_job": False,
+                "company_location_name": "cupertino, california, united states",
+                "company_location_country": "united states",
+                "company_location_continent": "north america",
+                "title_name": "junior software engineer",
+                "title_role": "engineering",
+                "title_levels": [
+                    "entry"
+                ]
             }
         ],
         "education": [
             {
-                "school_name": "graduate school of city planning minor",
-                "school_type": None,
+                "school_name": "kaohsiung american school",
+                "school_type": "post-secondary institution",
                 "end_date": None,
                 "start_date": None,
                 "gpa": None,
-                "degrees": [
-                    "bachelors",
-                    "bachelor of science"
-                ],
+                "degrees": [],
                 "majors": [],
                 "minors": []
             },
             {
-                "school_name": "coppell high school",
-                "school_type": "secondary school",
-                "end_date": "2014-05",
+                "school_name": "harvard university",
+                "school_type": "post-secondary institution",
+                "end_date": "2013",
+                "start_date": "2013",
+                "gpa": None,
+                "degrees": [],
+                "majors": [],
+                "minors": []
+            },
+            {
+                "school_name": "boston university",
+                "school_type": "post-secondary institution",
+                "end_date": "2013",
+                "start_date": "2013",
+                "gpa": None,
+                "degrees": [],
+                "majors": [],
+                "minors": []
+            },
+            {
+                "school_name": "stanford university",
+                "school_type": "post-secondary institution",
+                "end_date": None,
                 "start_date": None,
                 "gpa": None,
                 "degrees": [],
-                "majors": [],
+                "majors": [
+                    "computer science"
+                ],
                 "minors": []
             },
             {
-                "school_name": "the wharton school",
+                "school_name": "purdue university",
                 "school_type": "post-secondary institution",
-                "end_date": "2018",
-                "start_date": "2014",
-                "gpa": 3.64,
+                "end_date": "2016",
+                "start_date": "2012",
+                "gpa": 3.18,
                 "degrees": [
                     "bachelors",
                     "bachelor of science"
                 ],
                 "majors": [
-                    "economics",
-                    "statistics",
-                    "finance"
-                ],
-                "minors": []
-            },
-            {
-                "school_name": "coppell high school",
-                "school_type": "secondary school",
-                "end_date": "2014",
-                "start_date": "2010",
-                "gpa": None,
-                "degrees": [],
-                "majors": [],
-                "minors": []
-            },
-            {
-                "school_name": "university of pennsylvania",
-                "school_type": "post-secondary institution",
-                "end_date": "2018",
-                "start_date": "2014",
-                "gpa": 3.7,
-                "degrees": [
-                    "bachelors",
-                    "bachelor of science"
-                ],
-                "majors": [
-                    "economics",
-                    "statistics",
-                    "finance"
+                    "computer science"
                 ],
                 "minors": []
             }
         ]
     }
+    instance_ = {
+        "full_name": "keerti bishnoi",
+        "first_name": "keerti",
+        "last_name": "bishnoi",
+        "gender": "female",
+        "birth_year": 1993,
+        "birth_date": "1993-05-02",
+        "industry": "computer software",
+        "job_title": "software engineer",
+        "job_title_role": "engineering",
+        "job_title_sub_role": "software",
+        "job_title_levels": [],
+        "job_company_id": "apple",
+        "job_company_name": "apple",
+        "job_start_date": "2018-08",
+        "interests": [
+            "travelling",
+            "playing basketball",
+            "social services",
+            "watching movies and skating"
+        ],
+        "skills": [
+            "java",
+            "c++",
+            "c",
+            "windows",
+            "sql",
+            "javascript",
+            "html",
+            "linux",
+            "oracle",
+            "python",
+            "sql db2",
+            "uml",
+            "salesforce.com",
+            "mongodb",
+            "nosql",
+            "db2",
+            "tcp/ip",
+            "udp",
+            "dns",
+            "coldfusion",
+            "docker",
+            "jquery mobile",
+            "bootstrap",
+            "bamboo",
+            "ruby",
+            "ftp",
+            "scp",
+            "https",
+            "ieee 802.11",
+            "lte"
+        ],
+        "experience": [
+            {
+                "company_name": "marklogic",
+                "company_size": "501-1000",
+                "company_id": "marklogic",
+                "company_founded": 2001,
+                "company_industry": "computer software",
+                "end_date": "2018-08",
+                "start_date": "2016-07",
+                "current_job": False,
+                "company_location_name": "san carlos, california, united states",
+                "company_location_country": "united states",
+                "company_location_continent": "north america",
+                "title_name": "software automation engineer",
+                "title_role": "engineering",
+                "title_levels": []
+            },
+            {
+                "company_name": "apple",
+                "company_size": "10001+",
+                "company_id": "apple",
+                "company_founded": 1976,
+                "company_industry": "consumer electronics",
+                "end_date": None,
+                "start_date": "2018-08",
+                "current_job": True,
+                "company_location_name": "cupertino, california, united states",
+                "company_location_country": "united states",
+                "company_location_continent": "north america",
+                "title_name": "software engineer",
+                "title_role": "engineering",
+                "title_levels": []
+            },
+            {
+                "company_name": "bharti airtel services",
+                "company_size": "10001+",
+                "company_id": "bharti-airtel-services",
+                "company_founded": None,
+                "company_industry": "telecommunications",
+                "end_date": "2012-07",
+                "start_date": "2012-06",
+                "current_job": False,
+                "company_location_name": None,
+                "company_location_country": None,
+                "company_location_continent": None,
+                "title_name": "engineering intern",
+                "title_role": "engineering",
+                "title_levels": [
+                    "training"
+                ]
+            },
+            {
+                "company_name": "san jose state university",
+                "company_size": "5001-10000",
+                "company_id": "san-jose-state-university",
+                "company_founded": 1857,
+                "company_industry": "higher education",
+                "end_date": "2015-05",
+                "start_date": "2014-11",
+                "current_job": False,
+                "company_location_name": "san jose, california, united states",
+                "company_location_country": "united states",
+                "company_location_continent": "north america",
+                "title_name": "student assistant",
+                "title_role": None,
+                "title_levels": []
+            },
+            {
+                "company_name": "messagebroadcast",
+                "company_size": "51-200",
+                "company_id": "messagebroadcast",
+                "company_founded": 1997,
+                "company_industry": "telecommunications",
+                "end_date": "2013-07",
+                "start_date": "2013-06",
+                "current_job": False,
+                "company_location_name": "newport beach, california, united states",
+                "company_location_country": "united states",
+                "company_location_continent": "north america",
+                "title_name": "software engineering intern",
+                "title_role": "engineering",
+                "title_levels": [
+                    "training"
+                ]
+            },
+            {
+                "company_name": "spidercloud wireless, inc",
+                "company_size": "51-200",
+                "company_id": "spidercloud-wireless-inc",
+                "company_founded": 2007,
+                "company_industry": "wireless",
+                "end_date": "2016-03-31",
+                "start_date": "2015-06",
+                "current_job": False,
+                "company_location_name": "milpitas, california, united states",
+                "company_location_country": "united states",
+                "company_location_continent": "north america",
+                "title_name": "software automation intern",
+                "title_role": "engineering",
+                "title_levels": [
+                    "training"
+                ]
+            }
+        ],
+        "education": [
+            {
+                "school_name": "national institute of technology kurukshetra",
+                "school_type": "post-secondary institution",
+                "end_date": "2014",
+                "start_date": "2010",
+                "gpa": None,
+                "degrees": [
+                    "bachelors",
+                    "bachelor of technology"
+                ],
+                "majors": [],
+                "minors": []
+            },
+            {
+                "school_name": "o p jindal modern school",
+                "school_type": None,
+                "end_date": None,
+                "start_date": None,
+                "gpa": None,
+                "degrees": [],
+                "majors": [],
+                "minors": []
+            },
+            {
+                "school_name": "allen career institute",
+                "school_type": "post-secondary institution",
+                "end_date": None,
+                "start_date": None,
+                "gpa": None,
+                "degrees": [],
+                "majors": [],
+                "minors": []
+            },
+            {
+                "school_name": "national institute of technolgy, kurukshetra",
+                "school_type": None,
+                "end_date": None,
+                "start_date": None,
+                "gpa": None,
+                "degrees": [],
+                "majors": [],
+                "minors": []
+            },
+            {
+                "school_name": "national institute of technology",
+                "school_type": None,
+                "end_date": None,
+                "start_date": None,
+                "gpa": None,
+                "degrees": [
+                    "bachelors"
+                ],
+                "majors": [],
+                "minors": []
+            },
+            {
+                "school_name": "national institute of technology kurukshetra",
+                "school_type": "post-secondary institution",
+                "end_date": "2014",
+                "start_date": "2008",
+                "gpa": 3.97,
+                "degrees": [
+                    "bachelors",
+                    "bachelor of technology"
+                ],
+                "majors": [],
+                "minors": []
+            },
+            {
+                "school_name": "san jose state university",
+                "school_type": "post-secondary institution",
+                "end_date": "2016",
+                "start_date": "2014",
+                "gpa": 3.84,
+                "degrees": [
+                    "masters"
+                ],
+                "majors": [
+                    "software engineering"
+                ],
+                "minors": []
+            }
+        ]
+    }
+
     # freq_rep(instance=instance_)
     # hamming_rep(instance=instance_)
     one_hot_rep(instance=instance_)
