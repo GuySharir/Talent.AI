@@ -1,12 +1,15 @@
+from numpy import iterable
 import uvicorn
 import sys
 import os
 from fastapi import FastAPI
 import pickle as pkl
+sys.path.insert(0, os.path.abspath(os.path.abspath(os.getcwd())))
 from clustering.kMeans import Kmeans
 from pydantic import BaseModel
+from typing import TypeVar, Iterable, Tuple,List
 
-sys.path.insert(0, os.path.abspath(os.path.abspath(os.getcwd())))
+
 
 app = FastAPI()
 
@@ -34,18 +37,20 @@ class Candidate(BaseModel):
     googleID: str = None
 
 
-# class Candidates(BaseModel):
-#     data: list[Candidate]
-#     offer: Candidate
+class Bias(BaseModel):
+    age:bool=False
+    gender:bool=False
 
 
-with open('./fivetest.pkl', 'rb') as file:
+
+with open('./clustering/fivetest.pkl', 'rb') as file:
     model: Kmeans = pkl.load(file)
     print(model.percents)
 
 
 def remove_id(candidate: Candidate):
     candidate.__delattr__("googleID")
+
     for item in candidate.education:
         if "_id" in item:
             del item["_id"]
@@ -64,17 +69,16 @@ def classify_candidate(candidate: Candidate):
 
 
 @app.post("/api/company")
-def calc_candidates_order(candidates: list[Candidate], job_offer: Candidate):
-    print(candidates)
-    print(job_offer)
+def calc_candidates_order(candidates: List[Candidate], job_offer: Candidate, bias:Bias):
+
 
     remove_id(job_offer)
     for candidate in candidates:
         remove_id(candidate)
 
-    order = model.company_order(candidates, vars(job_offer))
+    order = model.company_order(candidates, vars(job_offer),gender=bias.gender,age=bias.age)
     return order
 
 
 if __name__ == "__main__":
-    uvicorn.run("KmeansServer:app", host="127.0.0.1", port=3000)
+    uvicorn.run("KmeansServer:app", host="127.0.0.1", port=4000)

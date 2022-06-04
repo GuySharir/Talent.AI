@@ -153,7 +153,7 @@ class Kmeans:
             if len(cluster) != 0:
                 self.centroids[i] = self.column_avrage(cluster)
 
-    def find_closest_cluster(self, entry, first_loop: bool):
+    def find_closest_cluster(self, entry, first_loop: bool = False):
         distances = []
         for centroid in self.centroids:
             if self.representation == DistMethod.inner_product or self.representation == DistMethod.intersection:
@@ -255,14 +255,14 @@ class Kmeans:
 
     def predict(self, entry: dict):
         converted = self.representation_conversion(entry)
-        return self.find_closest_cluster(converted)
+        return self.find_closest_cluster(converted,False)
 
-    def company_order(self, candidates: list, job_offer: dict):
+    def company_order(self, candidates: list, job_offer: dict, gender:bool = False, age:bool = False):
         scores = []
         job_converted = self.representation_conversion(job_offer)
         for i, candidate in enumerate(candidates):
             converted = self.representation_conversion(vars(candidate))
-            scores.append([i, self.distance_calc(converted, job_converted)])
+            scores.append([i, self.distance_calc(converted, job_converted,gender=gender,birth_year=age)])
 
         scores.sort(key=lambda score: score[1])
         return scores
