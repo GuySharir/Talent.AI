@@ -32,8 +32,8 @@ def my_print(message):
 class Kmeans:
     def __init__(self,
                  n_clusters: int,
-                 max_iter: int = 20,
-                 representation: DistMethod = DistMethod.intersection):
+                 representation: DistMethod,
+                 max_iter: int = 20):
 
         self.representation = representation
 
@@ -92,7 +92,7 @@ class Kmeans:
                                                 representation_option_for_nested=DistMethod.fix_length_freq)
 
         print(os.getcwd())
-        raw_data = np.load('./dataTool/df_converted.npy', allow_pickle=True)
+        raw_data = np.load('../dataTool/df_converted.npy', allow_pickle=True)
 
         data = []
         order = []
@@ -464,7 +464,7 @@ def calc_elbow():
     pass
     wcss = []
     for i in range(2, 18):
-        model = Kmeans(i)
+        model = Kmeans(i, representation=DistMethod.fix_length_freq)
         model.fit()
         total = 0
         for cluster in model.clusters_distances:
@@ -480,8 +480,8 @@ def calc_elbow():
 
 
 if __name__ == "__main__":
-    model = Kmeans(7)
-    # # model.fit()
+    model = Kmeans(7, representation=DistMethod.fix_length_freq)
+    # model.fit()
     # #
     with open('five_my.pkl', 'wb') as f:
         pkl.dump(model, f)

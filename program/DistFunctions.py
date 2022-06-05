@@ -31,6 +31,8 @@ class DistanceFunctions:
     def q3(self) -> float:
         min_freq = min(self.data.frequency.items(), key=lambda x: x[1])[1]
         max_freq = max(self.data.val1_frequency, self.data.val2_frequency)
+        if not max_freq:
+            max_freq = 1
         dist = (abs(self.data.val1_frequency - self.data.val2_frequency) + min_freq) / max_freq
         return dist
 

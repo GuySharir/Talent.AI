@@ -7,7 +7,7 @@ import pickle as pkl
 
 
 def create_matrix():
-    with open('../five_my.pkl', 'rb') as inp:
+    with open('./five_my.pkl', 'rb') as inp:
         model: Kmeans = pkl.load(inp)
 
     data = model.data
