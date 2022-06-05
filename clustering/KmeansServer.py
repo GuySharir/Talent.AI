@@ -4,12 +4,11 @@ import sys
 import os
 from fastapi import FastAPI
 import pickle as pkl
+
 sys.path.insert(0, os.path.abspath(os.path.abspath(os.getcwd())))
 from clustering.kMeans import Kmeans
 from pydantic import BaseModel
-from typing import TypeVar, Iterable, Tuple,List
-
-
+from typing import List
 
 app = FastAPI()
 
@@ -38,9 +37,8 @@ class Candidate(BaseModel):
 
 
 class Bias(BaseModel):
-    age:bool=False
-    gender:bool=False
-
+    age: bool = False
+    gender: bool = False
 
 
 with open('./clustering/fivetest.pkl', 'rb') as file:
@@ -69,14 +67,12 @@ def classify_candidate(candidate: Candidate):
 
 
 @app.post("/api/company")
-def calc_candidates_order(candidates: List[Candidate], job_offer: Candidate, bias:Bias):
-
-
+def calc_candidates_order(candidates: List[Candidate], job_offer: Candidate, bias: Bias):
     remove_id(job_offer)
     for candidate in candidates:
         remove_id(candidate)
 
-    order = model.company_order(candidates, vars(job_offer),gender=bias.gender,age=bias.age)
+    order = model.company_order(candidates, vars(job_offer), gender=bias.gender, age=bias.age)
     return order
 
 
