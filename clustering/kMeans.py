@@ -32,8 +32,8 @@ def my_print(message):
 class Kmeans:
     def __init__(self,
                  n_clusters: int,
-                 max_iter: int = 20,
-                 representation: DistMethod = DistMethod.intersection):
+                 representation: DistMethod,
+                 max_iter: int = 20):
 
         self.representation = representation
 
@@ -63,13 +63,14 @@ class Kmeans:
         self.centroids = []
         self.clusters = [[] for _ in range(n_clusters)]
         self.clusters_with_candidate_idx = [[] for _ in range(n_clusters)]
+        self.clusters_distances = [[] for _ in range(n_clusters)]
         self.percents = None
         self.one_hot_vec = None
 
     def load_data(self) -> pd.DataFrame:
 
+        print("started reading data")
         df = program.ReadData.read_local_json_employees()
-
         if self.representation == DistMethod.intersection:
             loop_candidates_convert_to_freq_vec(df, representation_option=DistMethod.fix_length_freq,
                                                 representation_option_for_set=DistMethod.intersection,
@@ -91,7 +92,7 @@ class Kmeans:
                                                 representation_option_for_nested=DistMethod.fix_length_freq)
 
         print(os.getcwd())
-        raw_data = np.load('./dataTool/df_converted.npy', allow_pickle=True)
+        raw_data = np.load('../dataTool/df_converted.npy', allow_pickle=True)
 
         data = []
         order = []
@@ -106,17 +107,17 @@ class Kmeans:
         order.rename(columns={0: "name", 1: "company"}, inplace=True)
 
         combined: pd.DataFrame = pd.concat([data, order], axis=1)
-        combined = shuffle(combined)
+        combined = shuffle(combined, random_state=0)
         self.all = combined
 
-        combined = combined.sample(n=80)
+        # combined = combined.sample(n=70, random_state=0)
 
-        train, test = train_test_split(combined, test_size=0.2)
+        train, test = train_test_split(combined, test_size=0.2, random_state=0)
 
         self.order = train[['name', 'company']].copy()
         self.data = train.copy().drop(['name', "company"], axis=1).replace({np.nan: None})
-        self.test = test[['name', 'company']].copy()
-        self.testOrder = test.copy().drop(['name', "company"], axis=1).replace({np.nan: None})
+        self.testOrder = test[['name', 'company']].copy()
+        self.test = test.copy().drop(['name', "company"], axis=1).replace({np.nan: None})
 
         print(f"data len: {len(self.data)}, test len: {len(self.test)}")
 
@@ -153,7 +154,7 @@ class Kmeans:
             if len(cluster) != 0:
                 self.centroids[i] = self.column_avrage(cluster)
 
-    def find_closest_cluster(self, entry, first_loop: bool):
+    def find_closest_cluster(self, entry, first_loop: bool = False):
         distances = []
         for centroid in self.centroids:
             if self.representation == DistMethod.inner_product or self.representation == DistMethod.intersection:
@@ -166,6 +167,7 @@ class Kmeans:
             distances.append(dist)
 
         best = np.argmin(distances)
+        self.clusters_distances[best].append(distances[best])
         return best
 
     def add_to_cluster(self, cluster_idx, entry):
@@ -227,7 +229,10 @@ class Kmeans:
 
         for iteration in range(self.max_iter):
             print(f"starting iteration {iteration}")
+            print([len(x) for x in self.clusters])
+            # print(self.clusters_distances)
             self.clear_clusters()
+            self.clusters_distances = [[] for _ in range(self.n_clusters)]
 
             for idx in range(size):
                 entry = list(self.data.iloc[idx])
@@ -236,7 +241,7 @@ class Kmeans:
                 self.add_to_cluster(cluster_idx, entry)
                 self.clusters_with_candidate_idx[cluster_idx].append(idx)
 
-            self.show_clusters()
+            # self.show_clusters()
 
             old_centroids = copy.deepcopy(self.centroids)
             self.calc_centroids()
@@ -255,14 +260,14 @@ class Kmeans:
 
     def predict(self, entry: dict):
         converted = self.representation_conversion(entry)
-        return self.find_closest_cluster(converted)
+        return self.find_closest_cluster(converted, False)
 
-    def company_order(self, candidates: list, job_offer: dict):
+    def company_order(self, candidates: list, job_offer: dict, gender: bool = False, age: bool = False):
         scores = []
         job_converted = self.representation_conversion(job_offer)
         for i, candidate in enumerate(candidates):
             converted = self.representation_conversion(vars(candidate))
-            scores.append([i, self.distance_calc(converted, job_converted)])
+            scores.append([i, self.distance_calc(converted, job_converted, gender=gender, birth_year=age)])
 
         scores.sort(key=lambda score: score[1])
         return scores
@@ -294,6 +299,70 @@ class Kmeans:
             print(f"\n********         cluster {k + 1}:         ********")
             for row in self.percents[k]:
                 print(f"{row}: {self.percents[k][row][0]}, total: {self.percents[k][row][1]} ")
+
+    def check_test_group(self):
+        size = len(self.test)
+
+        precision = [
+            {
+                "correct": 0,
+                "wrong": 0
+            },
+            {
+                "correct": 0,
+                "wrong": 0
+            },
+            {
+                "correct": 0,
+                "wrong": 0
+            },
+            {
+                "correct": 0,
+                "wrong": 0
+            },
+            {
+                "correct": 0,
+                "wrong": 0
+            }
+        ]
+
+        correct = 0
+        wrong = 0
+
+        for idx in range(size):
+            entry = list(self.test.iloc[idx])
+            label = self.testOrder.iloc[idx]['company']
+
+            cluster = self.find_closest_cluster(entry)
+            # self.calc_precision(precision, label, cluster)
+            ordered = {k: v for k, v in sorted(self.percents[cluster].items(), reverse=True, key=lambda item: item[1])}
+            ordered = ordered.keys()
+
+            if list(ordered)[0] == label:
+                correct += 1
+            else:
+                wrong += 1
+
+        print(f"correct: {correct / size}, wrong: {wrong / size}")
+
+    def calc_precision(self, precision, label, cluster_idx):
+        ordered = {k: v for k, v in sorted(self.percents[cluster_idx].items(), reverse=True, key=lambda item: item[1])}
+        ordered = ordered.keys()
+
+        success = False
+        for i, item in enumerate(ordered):
+            if i == 4:
+                if success:
+                    precision[i]['correct'] += 1
+                else:
+                    precision[i]['wrong'] += 1
+                break
+
+            if item == label:
+                precision[i]['correct'] += 1
+                success = True
+            else:
+                precision[i]['wrong'] += 1
 
 
 def create_matrix():
@@ -391,17 +460,39 @@ def find_inner_correlation():
         print(f"\n\n\n")
 
 
+def calc_elbow():
+    pass
+    wcss = []
+    for i in range(2, 18):
+        model = Kmeans(i, representation=DistMethod.fix_length_freq)
+        model.fit()
+        total = 0
+        for cluster in model.clusters_distances:
+            total += sum([number ** 2 for number in cluster])
+        wcss.append(total)
+        print(f"******  wcss: {wcss}")
+
+    print(wcss)
+    plt.plot(range(2, 18), wcss)
+    plt.xlabel('Number of clusters')
+    plt.ylabel('WCSS')
+    plt.show()
+
+
 if __name__ == "__main__":
-    model = Kmeans(5)
-    model.fit()
-
-    # with open('fivetest.pkl', 'wb') as f:
-    #     pkl.dump(model, f)
-
-    # with open('./clustering/3cluster.pkl', 'rb') as file:
-    #     model: Kmeans = pkl.load(file)
-    #     model.calc_percents()
+    model = Kmeans(7, representation=DistMethod.fix_length_freq)
+    # model.fit()
+    # #
+    with open('five_my.pkl', 'wb') as f:
+        pkl.dump(model, f)
     #
+    # model.check_test_group()
+
+    # calc_elbow()
+
+    # with open('./all.pkl', 'rb') as file:
+    #     model: Kmeans = pkl.load(file)
+
     #     for key in model.percents:
     #         print(model.percents[key])
     #
