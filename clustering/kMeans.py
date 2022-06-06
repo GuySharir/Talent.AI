@@ -1,6 +1,4 @@
-import argparse
 import math
-import sys
 import os
 
 import numpy as np
@@ -92,7 +90,7 @@ class Kmeans:
                                                 representation_option_for_nested=DistMethod.fix_length_freq)
 
         print(os.getcwd())
-        raw_data = np.load('../dataTool/df_converted.npy', allow_pickle=True)
+        raw_data = np.load('./dataTool/df_converted.npy', allow_pickle=True)
 
         data = []
         order = []
@@ -230,7 +228,6 @@ class Kmeans:
         for iteration in range(self.max_iter):
             print(f"starting iteration {iteration}")
             print([len(x) for x in self.clusters])
-            # print(self.clusters_distances)
             self.clear_clusters()
             self.clusters_distances = [[] for _ in range(self.n_clusters)]
 
@@ -240,8 +237,6 @@ class Kmeans:
                 first_loop = False
                 self.add_to_cluster(cluster_idx, entry)
                 self.clusters_with_candidate_idx[cluster_idx].append(idx)
-
-            # self.show_clusters()
 
             old_centroids = copy.deepcopy(self.centroids)
             self.calc_centroids()
@@ -273,6 +268,7 @@ class Kmeans:
         return scores
 
     def calc_percents(self, show=True):
+
         percents = {}
         clusters = [[] for _ in range(self.n_clusters)]
 
@@ -295,63 +291,54 @@ class Kmeans:
             self.print_cluster_company_percent()
 
     def print_cluster_company_percent(self):
+        """
+        utility function, prints the calculated percents to stdout
+        :return: none
+        """
         for k in self.percents:
             print(f"\n********         cluster {k + 1}:         ********")
             for row in self.percents[k]:
                 print(f"{row}: {self.percents[k][row][0]}, total: {self.percents[k][row][1]} ")
 
-    def check_test_group(self):
+    def check_test_group(self, threshold=3):
+        """
+        :param threshold: what is the level the from which we check if  there was a hit in all levels to threshold
+        :return: precision object, prints precision to stdout
+        """
         size = len(self.test)
 
-        precision = [
-            {
-                "correct": 0,
-                "wrong": 0
-            },
-            {
-                "correct": 0,
-                "wrong": 0
-            },
-            {
-                "correct": 0,
-                "wrong": 0
-            },
-            {
-                "correct": 0,
-                "wrong": 0
-            },
-            {
-                "correct": 0,
-                "wrong": 0
-            }
-        ]
-
-        correct = 0
-        wrong = 0
+        single_precision = {
+            "correct": 0,
+            "wrong": 0
+        }
+        precision = [dict(single_precision) for i in range(threshold + 1)]
 
         for idx in range(size):
             entry = list(self.test.iloc[idx])
             label = self.testOrder.iloc[idx]['company']
 
             cluster = self.find_closest_cluster(entry)
-            # self.calc_precision(precision, label, cluster)
-            ordered = {k: v for k, v in sorted(self.percents[cluster].items(), reverse=True, key=lambda item: item[1])}
-            ordered = ordered.keys()
+            self.calc_precision(precision, label, cluster)
 
-            if list(ordered)[0] == label:
-                correct += 1
+        for i in range(4):
+            if i == 3:
+                print("one of the three highest:")
             else:
-                wrong += 1
+                print(f"matches the {i + 1} highest option:")
+            c = precision[i]['correct']
+            w = precision[i]['wrong']
+            print(f"correct: {c / (c + w) * 100}5, wrong: {w / (c + w) * 100}\n")
+            print(precision[i])
 
-        print(f"correct: {correct / size}, wrong: {wrong / size}")
+        return precision
 
     def calc_precision(self, precision, label, cluster_idx):
         ordered = {k: v for k, v in sorted(self.percents[cluster_idx].items(), reverse=True, key=lambda item: item[1])}
         ordered = ordered.keys()
-
+        print(ordered)
         success = False
         for i, item in enumerate(ordered):
-            if i == 4:
+            if i == 3:
                 if success:
                     precision[i]['correct'] += 1
                 else:
@@ -480,18 +467,21 @@ def calc_elbow():
 
 
 if __name__ == "__main__":
-    model = Kmeans(7, representation=DistMethod.fix_length_freq)
+    # model = Kmeans(8, representation=DistMethod.fix_length_freq)
     # model.fit()
-    # #
-    with open('five_my.pkl', 'wb') as f:
-        pkl.dump(model, f)
+    # # # #
+    # with open('all_test_precision.pkl', 'wb') as f:
+    #     pkl.dump(model, f)
     #
     # model.check_test_group()
 
     # calc_elbow()
 
-    # with open('./all.pkl', 'rb') as file:
-    #     model: Kmeans = pkl.load(file)
+    with open('clustering/all_test_precision.pkl', 'rb') as file:
+        model: Kmeans = pkl.load(file)
+    #     print(model.test)
+    #     print(model.testOrder)
+    model.check_test_group()
 
     #     for key in model.percents:
     #         print(model.percents[key])

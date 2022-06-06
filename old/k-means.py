@@ -9,6 +9,7 @@ from sklearn.decomposition import PCA
 from sklearn.preprocessing import MinMaxScaler, normalize, StandardScaler
 from sklearn.cluster import KMeans
 from sklearn.utils import shuffle
+from sklearn.preprocessing import Normalizer
 import argparse
 
 sys.path.insert(0, os.path.abspath(os.path.abspath(os.getcwd())))
