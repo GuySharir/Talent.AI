@@ -224,6 +224,8 @@ def nested_to_vec_representation(representation_option: DistMethod, representati
 
 
 def convert_instance_to_freq_vec(instance: dict, representation_option: DistMethod, representation_option_set: DistMethod, representation_option_nested: DistMethod) -> dict:
+    print(f'raw instance- {instance}')
+    
     freq = read_freq_per_value_data()
     attr_types = read_attr_types_data()
 
