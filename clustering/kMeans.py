@@ -7,7 +7,7 @@ import copy
 from datetime import datetime
 import pickle as pkl
 from sklearn.decomposition import PCA
-from sklearn.preprocessing import normalize, StandardScaler
+from sklearn.preprocessing import normalize, StandardScaler, MinMaxScaler
 from sklearn.model_selection import train_test_split
 import matplotlib.pyplot as plt
 from sklearn.utils import shuffle
@@ -20,6 +20,7 @@ from program.DistanceFlow import inner_product_rep_dist, hamming_rep_dist, inter
 from program.InstanceFreq import one_hot_rep, freq_rep, hamming_rep, loop_candidates_convert_to_freq_vec
 from program.ReadData import set_path
 import program.ReadData
+import json
 
 
 def my_print(message):
@@ -28,10 +29,7 @@ def my_print(message):
 
 
 class Kmeans:
-    def __init__(self,
-                 n_clusters: int,
-                 representation: DistMethod,
-                 max_iter: int = 20):
+    def __init__(self, n_clusters: int, representation: DistMethod, max_iter: int = 20):
 
         self.representation = representation
 
@@ -62,6 +60,7 @@ class Kmeans:
         self.clusters = [[] for _ in range(n_clusters)]
         self.clusters_with_candidate_idx = [[] for _ in range(n_clusters)]
         self.clusters_distances = [[] for _ in range(n_clusters)]
+        self.clusters_inner_centroids = [{} for _ in range(n_clusters)]
         self.percents = None
         self.one_hot_vec = None
 
@@ -89,7 +88,6 @@ class Kmeans:
                                                 representation_option_for_set=DistMethod.inner_product,
                                                 representation_option_for_nested=DistMethod.fix_length_freq)
 
-        print(os.getcwd())
         raw_data = np.load('./dataTool/df_converted.npy', allow_pickle=True)
 
         data = []
@@ -108,7 +106,7 @@ class Kmeans:
         combined = shuffle(combined, random_state=0)
         self.all = combined
 
-        # combined = combined.sample(n=70, random_state=0)
+        combined = combined.sample(n=60, random_state=0)
 
         train, test = train_test_split(combined, test_size=0.2, random_state=0)
 
@@ -120,37 +118,128 @@ class Kmeans:
         print(f"data len: {len(self.data)}, test len: {len(self.test)}")
 
     def initialize_centroids(self):
+        """
+        initiate centroids randomlly from within the data
+        :return:
+        """
+        centroids = self.data.sample(n=self.n_clusters, random_state=0)
         for i in range(self.n_clusters):
-            self.centroids.append(self.data.sample(n=1).values[0])
+            self.centroids.append(centroids.iloc[i].values)
 
     def clear_clusters(self):
+        """
+        clear clusters in order to re calculate the clusters
+        :return:
+        """
         for i in range(self.n_clusters):
             self.clusters[i].clear()
             self.clusters_with_candidate_idx[i].clear()
 
-    def column_avrage(self, cluster):
+    def frequency_representaion_centroid_calc(self, cluster):
         size = len(cluster[0])
         new_centroid = []
 
         for i in range(size):
-            sum = 0
-            reals = 0
+            total_frequency = 0
+            not_none = 0
             for entry in cluster:
                 if entry[i] is not None:
-                    reals += 1
-                    sum += entry[i]
+                    not_none += 1
+                    total_frequency += entry[i]
 
-            if reals != 0:
-                new_centroid.append(sum / reals)
+            if not_none != 0:
+                new_centroid.append(total_frequency / not_none)
             else:
                 new_centroid.append(0)
 
         return new_centroid
 
+    def onehot_representaion_centroid_calc(self, cluster):
+        vector_length = len(cluster[0])
+        group_size = len(cluster)
+        new_centroid = []
+        with open("dataTool/one_hot_index.json") as f:
+            indexes = json.load(f)
+
+        for i in range(vector_length):
+            if i in indexes:
+                total = 0
+                for entry in cluster:
+                    total += entry[i]
+
+                new_centroid.append(round(total / group_size))
+
+            else:
+                # need to calc by regular sum while ignoring none
+                total_frequency = 0
+                not_none = 0
+                for entry in cluster:
+                    if entry[i] is not None:
+                        not_none += 1
+                        total_frequency += entry[i]
+
+                if not_none != 0:
+                    new_centroid.append(total_frequency / not_none)
+                else:
+                    new_centroid.append(0)
+
+        return new_centroid
+
+    def hamming_representaion_centroid_calc(self, cluster):
+
+        vector_length = len(cluster[0])
+        new_centroid = []
+
+        # we shuffle the entrys in the cluster so that selected val in case of tie will be random
+        cluster = shuffle(cluster)
+
+        for i in range(vector_length):
+            dp = {}
+            max_freq = ("", 0)
+            for entry in cluster:
+                val = entry[i]
+                if val not in dp:
+                    dp[val] = 1
+                else:
+                    dp[val] += 1
+
+                amount = dp[val]
+                if amount > max_freq[1]:
+                    max_freq = (val, amount)
+
+            new_centroid.append(max_freq[0])
+
+        return new_centroid
+
+    def calc_centroids_by_representation(self, cluster):
+        """
+        function to calculate the new centroid based on self.representation\n
+        if rep is freq - then each column gets the avg frequency\n
+        if rep is inner product or intersection - then each column gets the majorty voting\n
+        if rep is hamming - each column gets the most frequent value within the cluster\n
+        :param cluster: the group of vectors we need to use inorder to calcuate the new centroid
+        :return: new_centroid
+        """
+
+        if self.representation == DistMethod.intersection or self.representation == DistMethod.inner_product:
+            new_centroid = self.onehot_representaion_centroid_calc(cluster)
+
+        if self.representation == DistMethod.hamming_distance:
+            new_centroid = self.hamming_representaion_centroid_calc(cluster)
+
+        if self.representation == DistMethod.fix_length_freq:
+            new_centroid = self.frequency_representaion_centroid_calc(cluster)
+
+        return new_centroid
+
     def calc_centroids(self):
+        """
+        calculate the new representative for the cluster centroid, calculation depends on the representation option
+        chosen when model is created
+        """
         for i, cluster in enumerate(self.clusters):
             if len(cluster) != 0:
-                self.centroids[i] = self.column_avrage(cluster)
+                self.centroids[i] = self.calc_centroids_by_representation(cluster)
 
     def find_closest_cluster(self, entry, first_loop: bool = False):
         distances = []
@@ -174,8 +263,9 @@ class Kmeans:
     def compare_centroids(self, index, old):
 
         for i in range(len(self.centroids[0])):
-            if math.isnan(self.centroids[index][i]) and math.isnan(old[index][i]):
-                continue
+            if not isinstance(self.centroids[index][i], str):
+                if math.isnan(self.centroids[index][i]) and math.isnan(old[index][i]):
+                    continue
 
             if self.centroids[index][i] != old[index][i]:
                 return False
@@ -248,10 +338,38 @@ class Kmeans:
                     break
 
             if stop:
-                print("exited since no centroides were changed")
+                print("exited since no centroids were changed")
                 break
 
             self.calc_percents(show=False)
+
+    def calc_inner_centroids(self):
+
+        clusters = self.calc_inner_segmentation()
+
+        for i, cluster in enumerate(clusters):
+            for key in cluster:
+                tmp = []
+                for idx in cluster[key]:
+                    tmp.append(self.data.iloc[idx])
+
+                centroid = self.calc_centroids_by_representation(tmp)
+                self.clusters_inner_centroids[i][key] = centroid
+
+    def calc_inner_segmentation(self):
+        clusters = [{} for _ in range(self.n_clusters)]
+
+        for i, cluster in enumerate(self.clusters_with_candidate_idx):
+            for can in cluster:
+                label = self.order.iloc[can]['company']
+                if label not in clusters[i]:
+                    clusters[i][label] = [can]
+                else:
+                    clusters[i][label].append(can)
+
+        return clusters
+        # for x in clusters:
+        #     print(x)
 
     def predict(self, entry: dict):
         converted = self.representation_conversion(entry)
@@ -274,7 +392,7 @@ class Kmeans:
 
         for i, cluster in enumerate(self.clusters_with_candidate_idx):
             for j, can in enumerate(cluster):
-                clusters[i].append(self.order.iloc[j]['company'])
+                clusters[i].append(self.order.iloc[can]['company'])
 
         for i, cluster in enumerate(clusters):
             options = set(cluster)
@@ -350,6 +468,17 @@ class Kmeans:
                 success = True
             else:
                 precision[i]['wrong'] += 1
+
+    def predict_v2(self, entry: dict):
+        converted = self.representation_conversion(entry)
+        cluster_idx = self.find_closest_cluster(converted, False)
+        distances = []
+        centroids = self.clusters_inner_centroids[cluster_idx]
+
+        for key in centroids:
+            distances.append((key, self.distance_calc(converted, centroids[key])))
+
+        return distances
 
 
 def create_matrix():
@@ -466,26 +595,123 @@ def calc_elbow():
     plt.show()
 
 
+# def calc_clustering_quality(path_a, path_b, path_c, n_clusters):
+#     with open(path_a, 'rb') as file:
+#         freq: Kmeans = pkl.load(file)
+#
+#     with open(path_b, 'rb') as file:
+#         hamming: Kmeans = pkl.load(file)
+#
+#     with open(path_c, 'rb') as file:
+#         intersection: Kmeans = pkl.load(file)
+#
+#     normalized = [[] for _ in range(n_clusters)]
+#
+#     _min = None
+#     _max = None
+#
+#     for version in [hamming.clusters_distances, intersection.clusters_distances, freq.clusters_distances]:
+#         for cluster in version:
+#             if _min is None:
+#                 _min = min(cluster)
+#                 _max = max(cluster)
+#             else:
+#                 _min = min(cluster) if min(cluster) < _min else _min
+#                 _max = max(cluster) if max(cluster) > _max else _max
+#
+#     print(_min)
+#     print(_max)
+#
+#     normalized = []
+#
+#     for version in [hamming.clusters_distances, intersection.clusters_distances, freq.clusters_distances]:
+#         tmp = [[] for _ in range(n_clusters)]
+#         for i, cluster in enumerate(version):
+#             for val in cluster:
+#                 norm = (val - _min) / (_max - _min)
+#                 tmp[i].append(norm)
+#
+#         normalized.append(tmp)
+#
+#     total = 0
+#
+#     for version in normalized:
+#         tmp = []
+#         for cluster in version:
+#             tmp.append(sum([number ** 2 for number in cluster]))
+#
+#         print(tmp)
+#         print(sum(tmp))
+#
+#     # X_std = (X - X.min(axis=0)) / (X.max(axis=0) - X.min(axis=0))
+#
+#     # for cluster in model.clusters_distances:
+#     #     total += sum([number ** 2 for number in cluster])
+#
+#     return total / 7
+
+def calc_clustering_quality(path):
+    with open(path, 'rb') as file:
+        model: Kmeans = pkl.load(file)
+
+    _min = None
+    _max = None
+
+    for cluster in model.clusters_distances:
+        if _min is None:
+            _min = min(cluster)
+            _max = max(cluster)
+        else:
+            _min = min(cluster) if min(cluster) < _min else _min
+            _max = max(cluster) if max(cluster) > _max else _max
+
+    print(_min)
+    print(_max)
+
+    normalized = []
+
+    for cluster in model.clusters_distances:
+        tmp = []
+        for val in cluster:
+            norm = (val - _min) / (_max - _min)
+            tmp.append(norm ** 2)
+
+        normalized.append(tmp)
+
+    sums = [sum(cluster) for cluster in normalized]
+
+    print(f"sums: {sums}")
+    print(f"total sum: {sum(sums)}")
+    print(f"mean: {sum(sums) / model.n_clusters}")
+
+    # X_std = (X - X.min(axis=0)) / (X.max(axis=0) - X.min(axis=0))
+
+    # for cluster in model.clusters_distances:
+    #     total += sum([number ** 2 for number in cluster])
+
+
 if __name__ == "__main__":
     # model = Kmeans(8, representation=DistMethod.fix_length_freq)
     # model.fit()
-    # # # #
-    # with open('all_test_precision.pkl', 'wb') as f:
+    # with open('clustering/precisionModels/demo.pkl', 'wb') as f:
     #     pkl.dump(model, f)
-    #
-    # model.check_test_group()
 
+    # model.check_test_group()
     # calc_elbow()
 
-    with open('clustering/all_test_precision.pkl', 'rb') as file:
-        model: Kmeans = pkl.load(file)
-    #     print(model.test)
-    #     print(model.testOrder)
-    model.check_test_group()
+    # a = calc_clustering_quality('clustering/precisionModels/frequency_based.pkl',
+    #                             'clustering/precisionModels/hamming_based.pkl',
+    #                             'clustering/precisionModels/intersection_based.pkl', 7)
 
-    #     for key in model.percents:
-    #         print(model.percents[key])
-    #
-    # pd.set_option('display.max_rows', None, 'display.max_columns', None)
-    # print(model.data.iloc[0])
-    # create_matrix()
+    # calc_clustering_quality('clustering/precisionModels/frequency_based.pkl')
+    # calc_clustering_quality('clustering/precisionModels/intersection_based.pkl')
+    # calc_clustering_quality('clustering/precisionModels/hamming_based.pkl')
+
+    # print(a)
+    # print(b)
+    # print(c)
+
+    with open('clustering/precisionModels/demo.pkl', 'rb') as file:
+        model: Kmeans = pkl.load(file)
+        # model.calc_percents()
+        # model.calc_inner_segmentation()
