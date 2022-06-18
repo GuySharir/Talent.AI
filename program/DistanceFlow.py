@@ -167,7 +167,6 @@ class DistanceFlowFreq:
         freq = read_freq_per_value_data()
 
         for raw_data_inx, data_type in DATA_TYPE_PER_INDEX.items():
-            print(f'index- {self.inx}')
             attr = ATTRIBUTE_PER_INDEX[raw_data_inx]
             attr_freq = freq[attr]
             attr_domain = domain[attr]
@@ -215,9 +214,6 @@ class DistanceFlowFreq:
 
 def run_distance_freq(vec1: list, vec2: list, representation_option: DistMethod, representation_option_set: DistMethod,
                       birth_year: bool = True, gender: bool = True, one_hot_inx_flag: bool = False) -> float:
-    
-    print(f'vec1- {vec1} vec1_len {len(vec1)}')
-    print(f'vec2- {vec2} vec2_len {len(vec2)}')
     return DistanceFlowFreq(vec1=vec1, vec2=vec2, representation_option=representation_option,
                             representation_option_set=representation_option_set,
                             one_hot_inx_flag=one_hot_inx_flag).calc_distance(birth_year=birth_year, gender=gender)
