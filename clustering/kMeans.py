@@ -108,12 +108,14 @@ class Kmeans:
 
         # combined = combined.sample(n=60, random_state=0)
 
-        train, test = train_test_split(combined, test_size=0.2, random_state=0)
+        # train, test = train_test_split(combined, test_size=0, random_state=0)
 
-        self.order = train[['name', 'company']].copy()
-        self.data = train.copy().drop(['name', "company"], axis=1).replace({np.nan: None})
-        self.testOrder = test[['name', 'company']].copy()
-        self.test = test.copy().drop(['name', "company"], axis=1).replace({np.nan: None})
+        self.order = combined[['name', 'company']].copy()
+        self.data = combined.copy().drop(['name', "company"], axis=1).replace({np.nan: None})
+        self.test = pd.DataFrame()
+        self.testOrder = pd.DataFrame()
+        # self.testOrder = test[['name', 'company']].copy()
+        # self.test = test.copy().drop(['name', "company"], axis=1).replace({np.nan: None})
 
         print(f"data len: {len(self.data)}, test len: {len(self.test)}")
 
@@ -692,10 +694,10 @@ def calc_clustering_quality(path):
 
 
 if __name__ == "__main__":
-    # model = Kmeans(8, representation=DistMethod.fix_length_freq, max_iter=30)
-    # model.fit()
-    # with open('clustering/precisionModels/demo.pkl', 'wb') as f:
-    #     pkl.dump(model, f)
+    model = Kmeans(8, representation=DistMethod.fix_length_freq, max_iter=30)
+    model.fit()
+    with open('clustering/precisionModels/all.pkl', 'wb') as f:
+        pkl.dump(model, f)
 
     # model.check_test_group()
     # calc_elbow()
@@ -710,223 +712,224 @@ if __name__ == "__main__":
 
     # print(a)
     # print(b)
+
     # print(c)
 
-    a = {
-        "full_name": "tanya sweeney",
-        "first_name": "tanya",
-        "last_name": "sweeney",
-        "gender": "female",
-        "birth_year": 1968,
-        "birth_date": None,
-        "industry": "internet",
-        "job_title": "software engineer",
-        "job_title_role": "engineering",
-        "job_title_sub_role": "software",
-        "job_title_levels": [],
-        "job_company_id": "microsoft",
-        "job_company_name": "microsoft",
-        "job_start_date": "2016",
-        "interests": [
-            "economic empowerment",
-            "politics",
-            "education",
-            "poverty alleviation",
-            "science and technology"
-        ],
-        "skills": [
-            "css",
-            "jquery",
-            "html",
-            "php",
-            "html5",
-            "javascript",
-            "web development",
-            "sql",
-            "user experience",
-            "asp.net",
-            "html 5",
-            "c#",
-            "java",
-            "visual studio",
-            "cascading style sheets",
-            "databases",
-            "c++",
-            "microsoft excel",
-            "jquery ui",
-            "visual basic",
-            "uml",
-            "eclipse",
-            "aptana",
-            "facebook api",
-            "access",
-            "bookkeeping",
-            "oop",
-            "quickbooks",
-            "quicken"
-        ],
-        "experience": [
-            {
-                "company_name": "www.warren-woo.com",
-                "company_size": None,
-                "company_id": None,
-                "company_founded": None,
-                "company_industry": None,
-                "end_date": "2012",
-                "start_date": "2012",
-                "current_job": False,
-                "company_location_name": None,
-                "company_location_country": None,
-                "company_location_continent": None,
-                "title_name": "web developer",
-                "title_role": "engineering",
-                "title_levels": []
-            },
-            {
-                "company_name": "www.sarahshay.com",
-                "company_size": None,
-                "company_id": None,
-                "company_founded": None,
-                "company_industry": None,
-                "end_date": "2012",
-                "start_date": "2012",
-                "current_job": False,
-                "company_location_name": None,
-                "company_location_country": None,
-                "company_location_continent": None,
-                "title_name": "web developer",
-                "title_role": "engineering",
-                "title_levels": []
-            },
-            {
-                "company_name": "amazon",
-                "company_size": "10001+",
-                "company_id": "amazon",
-                "company_founded": 1994,
-                "company_industry": "internet",
-                "end_date": "2013-11",
-                "start_date": "2013-08",
-                "current_job": False,
-                "company_location_name": "seattle, washington, united states",
-                "company_location_country": "united states",
-                "company_location_continent": "north america",
-                "title_name": "web developer",
-                "title_role": "engineering",
-                "title_levels": []
-            },
-            {
-                "company_name": "seattle central college",
-                "company_size": "1001-5000",
-                "company_id": "seattle-central-community-college",
-                "company_founded": 1966,
-                "company_industry": "higher education",
-                "end_date": "2012",
-                "start_date": "2012",
-                "current_job": False,
-                "company_location_name": "seattle, washington, united states",
-                "company_location_country": "united states",
-                "company_location_continent": "north america",
-                "title_name": "teacher's assistant",
-                "title_role": None,
-                "title_levels": []
-            },
-            {
-                "company_name": "the independent",
-                "company_size": "201-500",
-                "company_id": "the-independent",
-                "company_founded": None,
-                "company_industry": "newspapers",
-                "end_date": "2013",
-                "start_date": "2010",
-                "current_job": False,
-                "company_location_name": "london, england, united kingdom",
-                "company_location_country": "united kingdom",
-                "company_location_continent": "europe",
-                "title_name": "web developer",
-                "title_role": "engineering",
-                "title_levels": []
-            },
-            {
-                "company_name": "microsoft",
-                "company_size": "10001+",
-                "company_id": "microsoft",
-                "company_founded": 1975,
-                "company_industry": "computer software",
-                "end_date": None,
-                "start_date": "2016",
-                "current_job": True,
-                "company_location_name": "redmond, washington, united states",
-                "company_location_country": "united states",
-                "company_location_continent": "north america",
-                "title_name": "software engineer",
-                "title_role": "engineering",
-                "title_levels": []
-            },
-            {
-                "company_name": "classmates.com",
-                "company_size": "51-200",
-                "company_id": "classmates",
-                "company_founded": 1995,
-                "company_industry": "internet",
-                "end_date": "2016-04",
-                "start_date": "2014",
-                "current_job": False,
-                "company_location_name": "seattle, washington, united states",
-                "company_location_country": "united states",
-                "company_location_continent": "north america",
-                "title_name": "web developer",
-                "title_role": "engineering",
-                "title_levels": []
-            }
-        ],
-        "education": [
-            {
-                "school_name": "kettle falls high school",
-                "school_type": "secondary school",
-                "end_date": None,
-                "start_date": None,
-                "gpa": None,
-                "degrees": [],
-                "majors": [],
-                "minors": []
-            },
-            {
-                "school_name": "eastern washington university",
-                "school_type": "post-secondary institution",
-                "end_date": "1989",
-                "start_date": "1986",
-                "gpa": None,
-                "degrees": [],
-                "majors": [],
-                "minors": []
-            },
-            {
-                "school_name": "seattle central college",
-                "school_type": "post-secondary institution",
-                "end_date": "2012",
-                "start_date": "2010",
-                "gpa": 3.72,
-                "degrees": [
-                    "associates",
-                    "associate of arts"
-                ],
-                "majors": [
-                    "computer programming"
-                ],
-                "minors": []
-            }
-        ]
-    }
+    # a = {
+    #     "full_name": "tanya sweeney",
+    #     "first_name": "tanya",
+    #     "last_name": "sweeney",
+    #     "gender": "female",
+    #     "birth_year": 1968,
+    #     "birth_date": None,
+    #     "industry": "internet",
+    #     "job_title": "software engineer",
+    #     "job_title_role": "engineering",
+    #     "job_title_sub_role": "software",
+    #     "job_title_levels": [],
+    #     "job_company_id": "microsoft",
+    #     "job_company_name": "microsoft",
+    #     "job_start_date": "2016",
+    #     "interests": [
+    #         "economic empowerment",
+    #         "politics",
+    #         "education",
+    #         "poverty alleviation",
+    #         "science and technology"
+    #     ],
+    #     "skills": [
+    #         "css",
+    #         "jquery",
+    #         "html",
+    #         "php",
+    #         "html5",
+    #         "javascript",
+    #         "web development",
+    #         "sql",
+    #         "user experience",
+    #         "asp.net",
+    #         "html 5",
+    #         "c#",
+    #         "java",
+    #         "visual studio",
+    #         "cascading style sheets",
+    #         "databases",
+    #         "c++",
+    #         "microsoft excel",
+    #         "jquery ui",
+    #         "visual basic",
+    #         "uml",
+    #         "eclipse",
+    #         "aptana",
+    #         "facebook api",
+    #         "access",
+    #         "bookkeeping",
+    #         "oop",
+    #         "quickbooks",
+    #         "quicken"
+    #     ],
+    #     "experience": [
+    #         {
+    #             "company_name": "www.warren-woo.com",
+    #             "company_size": None,
+    #             "company_id": None,
+    #             "company_founded": None,
+    #             "company_industry": None,
+    #             "end_date": "2012",
+    #             "start_date": "2012",
+    #             "current_job": False,
+    #             "company_location_name": None,
+    #             "company_location_country": None,
+    #             "company_location_continent": None,
+    #             "title_name": "web developer",
+    #             "title_role": "engineering",
+    #             "title_levels": []
+    #         },
+    #         {
+    #             "company_name": "www.sarahshay.com",
+    #             "company_size": None,
+    #             "company_id": None,
+    #             "company_founded": None,
+    #             "company_industry": None,
+    #             "end_date": "2012",
+    #             "start_date": "2012",
+    #             "current_job": False,
+    #             "company_location_name": None,
+    #             "company_location_country": None,
+    #             "company_location_continent": None,
+    #             "title_name": "web developer",
+    #             "title_role": "engineering",
+    #             "title_levels": []
+    #         },
+    #         {
+    #             "company_name": "amazon",
+    #             "company_size": "10001+",
+    #             "company_id": "amazon",
+    #             "company_founded": 1994,
+    #             "company_industry": "internet",
+    #             "end_date": "2013-11",
+    #             "start_date": "2013-08",
+    #             "current_job": False,
+    #             "company_location_name": "seattle, washington, united states",
+    #             "company_location_country": "united states",
+    #             "company_location_continent": "north america",
+    #             "title_name": "web developer",
+    #             "title_role": "engineering",
+    #             "title_levels": []
+    #         },
+    #         {
+    #             "company_name": "seattle central college",
+    #             "company_size": "1001-5000",
+    #             "company_id": "seattle-central-community-college",
+    #             "company_founded": 1966,
+    #             "company_industry": "higher education",
+    #             "end_date": "2012",
+    #             "start_date": "2012",
+    #             "current_job": False,
+    #             "company_location_name": "seattle, washington, united states",
+    #             "company_location_country": "united states",
+    #             "company_location_continent": "north america",
+    #             "title_name": "teacher's assistant",
+    #             "title_role": None,
+    #             "title_levels": []
+    #         },
+    #         {
+    #             "company_name": "the independent",
+    #             "company_size": "201-500",
+    #             "company_id": "the-independent",
+    #             "company_founded": None,
+    #             "company_industry": "newspapers",
+    #             "end_date": "2013",
+    #             "start_date": "2010",
+    #             "current_job": False,
+    #             "company_location_name": "london, england, united kingdom",
+    #             "company_location_country": "united kingdom",
+    #             "company_location_continent": "europe",
+    #             "title_name": "web developer",
+    #             "title_role": "engineering",
+    #             "title_levels": []
+    #         },
+    #         {
+    #             "company_name": "microsoft",
+    #             "company_size": "10001+",
+    #             "company_id": "microsoft",
+    #             "company_founded": 1975,
+    #             "company_industry": "computer software",
+    #             "end_date": None,
+    #             "start_date": "2016",
+    #             "current_job": True,
+    #             "company_location_name": "redmond, washington, united states",
+    #             "company_location_country": "united states",
+    #             "company_location_continent": "north america",
+    #             "title_name": "software engineer",
+    #             "title_role": "engineering",
+    #             "title_levels": []
+    #         },
+    #         {
+    #             "company_name": "classmates.com",
+    #             "company_size": "51-200",
+    #             "company_id": "classmates",
+    #             "company_founded": 1995,
+    #             "company_industry": "internet",
+    #             "end_date": "2016-04",
+    #             "start_date": "2014",
+    #             "current_job": False,
+    #             "company_location_name": "seattle, washington, united states",
+    #             "company_location_country": "united states",
+    #             "company_location_continent": "north america",
+    #             "title_name": "web developer",
+    #             "title_role": "engineering",
+    #             "title_levels": []
+    #         }
+    #     ],
+    #     "education": [
+    #         {
+    #             "school_name": "kettle falls high school",
+    #             "school_type": "secondary school",
+    #             "end_date": None,
+    #             "start_date": None,
+    #             "gpa": None,
+    #             "degrees": [],
+    #             "majors": [],
+    #             "minors": []
+    #         },
+    #         {
+    #             "school_name": "eastern washington university",
+    #             "school_type": "post-secondary institution",
+    #             "end_date": "1989",
+    #             "start_date": "1986",
+    #             "gpa": None,
+    #             "degrees": [],
+    #             "majors": [],
+    #             "minors": []
+    #         },
+    #         {
+    #             "school_name": "seattle central college",
+    #             "school_type": "post-secondary institution",
+    #             "end_date": "2012",
+    #             "start_date": "2010",
+    #             "gpa": 3.72,
+    #             "degrees": [
+    #                 "associates",
+    #                 "associate of arts"
+    #             ],
+    #             "majors": [
+    #                 "computer programming"
+    #             ],
+    #             "minors": []
+    #         }
+    #     ]
+    # }
+    # #
+    # with open('clustering/precisionModels/demo.pkl', 'rb') as file:
+    #     model: Kmeans = pkl.load(file)
+    #     model.calc_inner_centroids()
+    #     predictions = model.predict_v2(a)
+    #     predictions.sort(key=lambda tup: tup[1])
+    #     for v in predictions:
+    #         print(v)
     #
-    with open('clustering/precisionModels/demo.pkl', 'rb') as file:
-        model: Kmeans = pkl.load(file)
-        model.calc_inner_centroids()
-        predictions = model.predict_v2(a)
-        predictions.sort(key=lambda tup: tup[1])
-        for v in predictions:
-            print(v)
-
-        print(model.percents[model.predict(a)])
+    #     print(model.percents[model.predict(a)])
 
     # model.calc_percents()
     # model.calc_inner_segmentation()
