@@ -7,7 +7,6 @@ from sklearn.cluster import KMeans
 import matplotlib.pyplot as plt
 from sklearn.utils import shuffle
 import matplotlib.cm as cm
-from termcolor import colored
 
 
 def find_k_elbow(data: pd.DataFrame, range_start: int, range_end: int) -> None:

@@ -34,6 +34,7 @@ class Candidate(BaseModel):
     experience: list = None
     education: list = None
     googleID: str = None
+    email: str = None
 
 
 class Bias(BaseModel):
@@ -41,13 +42,13 @@ class Bias(BaseModel):
     gender: bool = False
 
 
-with open('./clustering/fivetest.pkl', 'rb') as file:
+with open('./clustering/demo2.pkl', 'rb') as file:
     model: Kmeans = pkl.load(file)
-    print(model.percents)
 
 
 def remove_id(candidate: Candidate):
     candidate.__delattr__("googleID")
+    candidate.__delattr__("email")
 
     for item in candidate.education:
         if "_id" in item:
@@ -60,10 +61,14 @@ def remove_id(candidate: Candidate):
 
 @app.post("/api/candidate")
 def classify_candidate(candidate: Candidate):
+
     remove_id(candidate)
     cluster = model.predict(vars(candidate))
-    companys = model.percents[cluster]
-    return companys
+    x= model.predict_v2(vars(candidate))
+    print(x)
+    return x
+    # companys = model.percents[cluster]
+    # return companys
 
 
 @app.post("/api/company")

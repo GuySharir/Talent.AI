@@ -208,7 +208,7 @@ class DistanceFlowFreq:
         else:
             freq_distance_result = q14(categorical_sum=sum(self.cat_distance_result),
                                        numerical_sum=sum(self.num_distance_result))
-            print(f'freq distance result-\n {freq_distance_result}')
+            # print(f'freq distance result-\n {freq_distance_result}')
             return freq_distance_result
 
 
@@ -295,6 +295,7 @@ if __name__ == '__main__':
                      'coppell high school', 'secondary school', '2014-05', None, None, '$', '$', '$',
                      'the wharton school',
                      'post-secondary institution', '2018', '2014', 3.64, 'bachelors', 'economics', '$']
+
     hamming_vec2_ = ['bruk argaw', 'bruk', 'argaw', 'male', 1991.0, '1991-01-23', 'internet', 'software engineer',
                      'engineering', 'software', '$', 'twitter', 'twitter', '2020-03', 'environment', 'education',
                      'poverty alleviation', 'science and technology', 'matlab', 'engineering', 'microsoft excel',
