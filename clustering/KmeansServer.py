@@ -1,4 +1,6 @@
-from numpy import iterable
+from typing import List
+from pydantic import BaseModel
+from clustering.kMeans import Kmeans
 import uvicorn
 import sys
 import os
@@ -6,9 +8,6 @@ from fastapi import FastAPI
 import pickle as pkl
 
 sys.path.insert(0, os.path.abspath(os.path.abspath(os.getcwd())))
-from clustering.kMeans import Kmeans
-from pydantic import BaseModel
-from typing import List
 
 app = FastAPI()
 
@@ -61,14 +60,8 @@ def remove_id(candidate: Candidate):
 
 @app.post("/api/candidate")
 def classify_candidate(candidate: Candidate):
-
     remove_id(candidate)
-    cluster = model.predict(vars(candidate))
-    x= model.predict_v2(vars(candidate))
-    print(x)
-    return x
-    # companys = model.percents[cluster]
-    # return companys
+    return model.predict(vars(candidate))
 
 
 @app.post("/api/company")
@@ -77,7 +70,8 @@ def calc_candidates_order(candidates: List[Candidate], job_offer: Candidate, bia
     for candidate in candidates:
         remove_id(candidate)
 
-    order = model.company_order(candidates, vars(job_offer), gender=bias.gender, age=bias.age)
+    order = model.company_order(candidates, vars(
+        job_offer), gender=bias.gender, age=bias.age)
     return order
 
 
