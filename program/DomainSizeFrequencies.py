@@ -12,7 +12,7 @@ def logger(*args):
 
 class DomainAndFrequency:
     """
-        This class (Attribute) is responsible to calculate the frequency fo each possible value for
+        This class is responsible to calculate the frequency fo each possible value for
         the given categorical attribute and the attribute domain size
         - self.attr, the attribute
         - self.domain_size, domain size of a given attribute (the number of possible values for the given attribute)
