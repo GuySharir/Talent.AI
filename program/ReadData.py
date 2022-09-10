@@ -82,7 +82,6 @@ def read_local_json_employees() -> pd.DataFrame:
 
     df = pd.concat(li, axis=0, ignore_index=True)
     # df = df.sample(n=30)
-    # logger(f'data from local json- \n{df}')
 
     return df
 
@@ -93,7 +92,6 @@ def read_freq_per_value_data() -> dict:
     with open(frequencies_path) as fp:
         freq = json.load(fp)
 
-    # logger(f'frequencies- \n{freq}')
     return freq
 
 
@@ -103,7 +101,6 @@ def read_domain_per_attr_data() -> dict:
     with open(domain_path) as fp:
         domain = json.load(fp)
 
-    # logger(f'domain- \n{domain}')
     return domain
 
 

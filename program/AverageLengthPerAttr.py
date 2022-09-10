@@ -50,9 +50,6 @@ class LengthAttr:
                 elif val_type == dict:
                     self.nested_length(instance=val, nested_attr=attr)
 
-        # print(f'lists length {self.lis_lengths_per_attr}')
-        # print(f'nested length {self.nested_lengths_per_attr}')
-
         self.lis_lengths_per_attr_min_max = {key: {'min': min(val), 'max': max(val), 'median': statistics.median(val)} for key, val in self.lis_lengths_per_attr.items()}
         self.nested_lengths_per_attr_min_max = {key: {'min': min(val), 'max': max(val), 'median': statistics.median(val)} for key, val in self.nested_lengths_per_attr.items()}
 

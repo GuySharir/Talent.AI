@@ -1,11 +1,10 @@
 import json
 from program.ReadData import read_freq_per_value_data, read_domain_per_attr_data, DATA_TYPE_PER_INDEX, \
-    ATTRIBUTE_PER_INDEX, DATA_TYPE_PER_INDEX_EXPERIENCE, DATA_TYPE_PER_INDEX_EDUCATION, EXPERIENCE_OBJECT_ATTR_LENGTH, \
-    EDUCATION_OBJECT_ATTR_LENGTH, EXPERIENCE_ATTRIBUTE_PER_INDEX, EDUCATION_ATTRIBUTE_PER_INDEX, HAMMING_DEFAULT, \
+    ATTRIBUTE_PER_INDEX, DATA_TYPE_PER_INDEX_EXPERIENCE, DATA_TYPE_PER_INDEX_EDUCATION,\
+    EXPERIENCE_ATTRIBUTE_PER_INDEX, EDUCATION_ATTRIBUTE_PER_INDEX, HAMMING_DEFAULT, \
     ONE_HOT_SPARE, set_path
 
-from dataTool.runtimeObjectsInfo.ListLengthData import LIST_LENGTH_PER_ATTR, NESTED_LENGTH_PER_ATTR, \
-    EXPERIENCE_LISTS_LENGTH, EDUCATION_LISTS_LENGTH
+from dataTool.runtimeObjectsInfo.ListLengthData import LIST_LENGTH_PER_ATTR, NESTED_LENGTH_PER_ATTR
 from program.DistEnum import DistMethod
 from program.DistFunctions import DistanceData, q14, categorical_dist_between_freq_vectors, \
     numerical_dist_between_freq_vectors
@@ -19,7 +18,7 @@ def logger(*args):
 
 class DistanceFlowFreq:
     def __init__(self, vec1: list, vec2: list, representation_option: DistMethod, representation_option_set: DistMethod,
-                 one_hot_inx_flag: bool = False):
+                 one_hot_inx_flag: bool = False, t1: int = 3, t2: int = 10, beta: float = 0.05, gama: float = 0.01):
         self.vec1 = vec1
         self.vec2 = vec2
         self.inx = 0
@@ -34,6 +33,9 @@ class DistanceFlowFreq:
         self.one_hot_inx_flag = one_hot_inx_flag
         self.one_hot_index_list = []
 
+        # genetic alg parameters
+        self.t1, self.t2, self.beta, self.gama = t1, t2, beta, gama
+
     def write_inx_of_one_hot_vector(self, domain_size: int):
         index = self.inx
         if self.representation_option_set == DistMethod.inner_product or self.representation_option_set == DistMethod.intersection:
@@ -45,7 +47,8 @@ class DistanceFlowFreq:
             json.dump(self.one_hot_index_list, fp)
 
     def numerical_distance(self, representation_option: DistMethod, attr_type, num1, num2):
-        if num1 and num2:  # dealing with missing values when numerical type by deleting missing data
+        # dealing with missing values when numerical type by deleting missing data
+        if num1 and num2:
             if representation_option == DistMethod.fix_length_freq:
                 self.num_distance_result.append(numerical_dist_between_freq_vectors(attr_type=attr_type,
                                                                                     num_val1=num1, num_val2=num2))
@@ -58,11 +61,11 @@ class DistanceFlowFreq:
         if representation_option == DistMethod.fix_length_freq:
             data = DistanceData(instance1=self.vec1, instance2=self.vec2, val1_frequency=self.vec1[self.inx],
                                 val2_frequency=self.vec2[self.inx], frequency=frequency,
-                                domain_size=domain_size, attribute_inx=self.inx)
+                                domain_size=domain_size, attribute_inx=self.inx,
+                                t1=self.t1, t2=self.t2, beta=self.beta, gama=self.gama)
             result = categorical_dist_between_freq_vectors(attr_type=attr_type, data=data)
-            logger(f'categorical result {result}')
+
             self.cat_distance_result.append(result)
-            # self.cat_distance_result.append(categorical_dist_between_freq_vectors(attr_type=attr_type, data=data))
 
         elif representation_option == DistMethod.hamming_distance:
             if self.vec1[self.inx] != HAMMING_DEFAULT and self.vec2[self.inx] != HAMMING_DEFAULT:
@@ -76,13 +79,8 @@ class DistanceFlowFreq:
 
         if self.representation_option_set == DistMethod.fix_length_freq or self.representation_option_set == DistMethod.hamming_distance:
             attr_length = LIST_LENGTH_PER_ATTR[attr_name]
-            set1 = self.vec1[self.inx: self.inx + attr_length]
-            set2 = self.vec2[self.inx: self.inx + attr_length]
-
-            logger(f'set1-\n{set1}')
-            logger(f'set1 len-\n{len(set1)}')
-            logger(f'set2-\n{set2}')
-            logger(f'set1 len-\n{len(set2)}')
+            # set1 = self.vec1[self.inx: self.inx + attr_length]
+            # set2 = self.vec2[self.inx: self.inx + attr_length]
 
             for _ in range(attr_length):
                 self.categorical_distance(representation_option=self.representation_option_set, attr_type=str,
@@ -90,13 +88,8 @@ class DistanceFlowFreq:
                 self.inx += 1
 
         elif self.representation_option_set == DistMethod.inner_product or self.representation_option_set == DistMethod.intersection:
-            set1 = self.vec1[self.inx: self.inx + (domain_size + ONE_HOT_SPARE)]
-            set2 = self.vec2[self.inx: self.inx + (domain_size + ONE_HOT_SPARE)]
-
-            logger(f'set1-\n{set1}')
-            logger(f'set1 len-\n{len(set1)}')
-            logger(f'set2-\n{set2}')
-            logger(f'set1 len-\n{len(set2)}')
+            # set1 = self.vec1[self.inx: self.inx + (domain_size + ONE_HOT_SPARE)]
+            # set2 = self.vec2[self.inx: self.inx + (domain_size + ONE_HOT_SPARE)]
 
             if self.representation_option_set == DistMethod.intersection:
                 if self.one_hot_inx_flag:
@@ -187,42 +180,36 @@ class DistanceFlowFreq:
                                             num2=self.vec2[self.inx])
 
             elif data_type == list:
-                # self.first_one_hot_inx = self.inx
                 self.set_distance(attr_name=attr, frequency=attr_freq, domain_size=attr_domain)
-                # self.last_one_hot_inx = self.inx
-                # self.write_inx_of_one_hot_vector()
 
             elif data_type == dict:
                 self.nested_distance(attr_name=attr, frequency=attr_freq, domain_size=attr_domain)
 
             self.inx += 1
 
-        # print(f'categorical result-\n {self.cat_distance_result}')
-        # print(f'categorical list length-\n {len(self.cat_distance_result)}')
-        # print(f'numerical result-\n {self.num_distance_result}')
-
         if self.representation_option == DistMethod.hamming_distance:
             hamming_result = np.sqrt((sum(self.cat_distance_result) - sum(self.num_distance_result)) ** 2)
-            # print(f'hamming distance result-\n {hamming_result}')
             return hamming_result
         else:
             freq_distance_result = q14(categorical_sum=sum(self.cat_distance_result),
                                        numerical_sum=sum(self.num_distance_result))
-            # print(f'freq distance result-\n {freq_distance_result}')
             return freq_distance_result
 
 
 def run_distance_freq(vec1: list, vec2: list, representation_option: DistMethod, representation_option_set: DistMethod,
-                      birth_year: bool = True, gender: bool = True, one_hot_inx_flag: bool = False) -> float:
+                      birth_year: bool = True, gender: bool = True, one_hot_inx_flag: bool = False,
+                      t1: int = 3, t2: int = 10, beta: float = 0.05, gama: float = 0.01) -> float:
     return DistanceFlowFreq(vec1=vec1, vec2=vec2, representation_option=representation_option,
                             representation_option_set=representation_option_set,
-                            one_hot_inx_flag=one_hot_inx_flag).calc_distance(birth_year=birth_year, gender=gender)
+                            one_hot_inx_flag=one_hot_inx_flag, t1=t1, t2=t2, beta=beta, gama=gama).calc_distance(birth_year=birth_year, gender=gender)
 
 
 # different distance options
-def freq_rep_dist(vec1: list, vec2: list, birth_year: bool = True, gender: bool = True) -> float:
+def freq_rep_dist(vec1: list, vec2: list, birth_year: bool = True, gender: bool = True,
+                  t1: int = 3, t2: int = 10, beta: float = 0.05, gama: float = 0.01) -> float:
     return run_distance_freq(vec1=vec1, vec2=vec2, representation_option=DistMethod.fix_length_freq,
-                             representation_option_set=DistMethod.fix_length_freq, birth_year=birth_year, gender=gender)
+                             representation_option_set=DistMethod.fix_length_freq, birth_year=birth_year, gender=gender,
+                             t1=t1, t2=t2, beta=beta, gama=gama)
 
 
 def hamming_rep_dist(vec1: list, vec2: list, birth_year: bool = True, gender: bool = True) -> float:
@@ -265,7 +252,7 @@ if __name__ == '__main__':
                   1, 2016, 3, 3, 6, 709, 156, 650, 658, 72, 491, 1, 1, 225, 58, 100, None, 1, 1, 1, 1, 225, 58, 3, None,
                   1,
                   7, 1, 1, 42, 21, 100, None, 1, 1, 1]
-    # freq_rep_dist(vec1=freq_vec1_, vec2=freq_vec2_, birth_year=True, gender=True)
+    freq_rep_dist(vec1=freq_vec1_, vec2=freq_vec2_, birth_year=True, gender=True)
 
     # option 2
     hamming_vec1_ = ['laura gao', 'laura', 'gao', 'female', 1996.0, None, 'internet', 'associate product manager ii',
@@ -515,4 +502,4 @@ if __name__ == '__main__':
     # inner_product_rep_dist(vec1=one_hot_vec1_, vec2=one_hot_vec2_, birth_year=True, gender=True)
 
     # option 4
-    intersection_rep_dist(vec1=one_hot_vec1_, vec2=one_hot_vec2_, birth_year=False, gender=True, one_hot_inx_flag=True)
+    # intersection_rep_dist(vec1=one_hot_vec1_, vec2=one_hot_vec2_, birth_year=False, gender=True, one_hot_inx_flag=True)
