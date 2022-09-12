@@ -1,11 +1,16 @@
 import math
+import random
+
 import numpy as np
 import pandas as pd
 import copy
 from datetime import datetime
 import pickle as pkl
 from sklearn.decomposition import PCA
-from sklearn.preprocessing import normalize, StandardScaler
+from sklearn.preprocessing import normalize, StandardScaler, Normalizer
+from sklearn.cluster import KMeans
+from sklearn.datasets import load_iris
+from sklearn.datasets import load_digits
 import matplotlib.pyplot as plt
 from sklearn.utils import shuffle
 from program.DistanceFlow import run_distance_freq
@@ -59,6 +64,8 @@ class Kmeans:
         """
         df = program.ReadData.read_local_json_employees()
 
+        df = df.sample(n=250, random_state=1)
+
         if self.representation == DistMethod.intersection:
             loop_candidates_convert_to_freq_vec(df, representation_option=DistMethod.fix_length_freq,
                                                 representation_option_for_set=DistMethod.intersection,
@@ -79,7 +86,7 @@ class Kmeans:
                                                 representation_option_for_set=DistMethod.inner_product,
                                                 representation_option_for_nested=DistMethod.fix_length_freq)
 
-        raw_data = np.load('./dataTool/df_converted.npy', allow_pickle=True)
+        raw_data = np.load('../dataTool/df_converted.npy', allow_pickle=True)
 
         data = []
         order = []
@@ -147,7 +154,7 @@ class Kmeans:
         vector_length = len(cluster[0])
         group_size = len(cluster)
         new_centroid = []
-        with open("dataTool/one_hot_index.json") as f:
+        with open("../dataTool/one_hot_index.json") as f:
             indexes = json.load(f)
 
         for i in range(vector_length):
@@ -249,7 +256,7 @@ class Kmeans:
                 centroid = self.calc_centroids_by_representation(tmp)
                 self.clusters_inner_centroids[i][key] = centroid
 
-    def find_closest_cluster(self, entry, first_loop: bool = False):
+    def find_closest_cluster(self, entry, first_loop: bool = False,validation=False):
         """
         Function that finds the closest cluster 
         """
@@ -266,7 +273,8 @@ class Kmeans:
             distances.append(dist)
 
         best = np.argmin(distances)
-        self.clusters_distances[best].append(distances[best])
+        if not validation:
+            self.clusters_distances[best].append(distances[best])
         return best
 
     def add_to_cluster(self, cluster_idx, entry):
@@ -278,8 +286,10 @@ class Kmeans:
         """
         for i in range(len(self.centroids[0])):
             if not isinstance(self.centroids[index][i], str):
-                if math.isnan(self.centroids[index][i]) and math.isnan(old[index][i]):
-                    continue
+                pass
+                # print(index,i)
+                # if math.isnan(self.centroids[index][i]) and math.isnan(old[index][i]):
+                #     continue
 
             if self.centroids[index][i] != old[index][i]:
                 return False
@@ -501,6 +511,9 @@ class Kmeans:
         return distances
 
 
+
+
+
 def create_matrix():
     """
     utility function to create a matrix of distances between all entries
@@ -560,7 +573,6 @@ def create_matrix():
     with open('order.pkl', 'wb') as f:
         pkl.dump(order, f)
 
-
 def find_inner_correlation(path):
     with open(path, 'rb') as file:
         model: Kmeans = pkl.load(file)
@@ -595,27 +607,48 @@ def find_inner_correlation(path):
         for key in {k: v for k, v in sorted(roles["role"].items(), key=lambda item: item[1], reverse=True)}:
             print(f"key: {key}, amount: {roles['role'][key]}")
 
+def calc_wcss(clusters):
+    """
+    clusters: a list of clusters each containing all distances in the cluster.
+    """
+    total = 0
+    for cluster in clusters:
+        total += sum([number ** 2 for number in cluster])
 
-def calc_elbow():
-    pass
+    return total
+
+def calc_elbow(min_k = 2,max_k = 20 ,validation=False):
+    print("starting elbow method")
     wcss = []
-    for i in range(2, 18):
-        model = Kmeans(i, representation=DistMethod.fix_length_freq)
-        model.fit()
-        total = 0
-        for cluster in model.clusters_distances:
-            total += sum([number ** 2 for number in cluster])
+
+    for i in range(min_k, max_k):
+        model = None
+        if validation:
+            data = load_iris(return_X_y=True)
+            model : KMeans = KMeans(n_clusters=i, random_state=0).fit(data[0])
+            total = model.inertia_
+
+        else:
+            model = Kmeans(i, representation=DistMethod.fix_length_freq,max_iter=20)
+            model.fit()
+            total = calc_wcss(model.clusters_distances)
+
         wcss.append(total)
         print(f"******  wcss: {wcss}")
 
-    print(wcss)
-    plt.plot(range(2, 18), wcss)
+    print("***********************")
+    for i,dist in enumerate(wcss):
+        print(f"K = {i + min_k}, WCSS: {dist}")
+
+    plt.plot(range(min_k, max_k), wcss)
+    plt.title("Iris data set")
+    plt.xticks(range(min_k,max_k))
     plt.xlabel('Number of clusters')
     plt.ylabel('WCSS')
     plt.show()
 
 
-def calc_clustering_quality(path):
+def calc_clustering_quality(path, type=""):
     with open(path, 'rb') as file:
         model: Kmeans = pkl.load(file)
 
@@ -631,6 +664,7 @@ def calc_clustering_quality(path):
             _max = max(cluster) if max(cluster) > _max else _max
 
     normalized = []
+
     for cluster in model.clusters_distances:
         tmp = []
         for val in cluster:
@@ -641,6 +675,50 @@ def calc_clustering_quality(path):
 
     sums = [sum(cluster) for cluster in normalized]
 
-    print(f"sums: {sums}")
-    print(f"total sum: {sum(sums)}")
-    print(f"mean: {sum(sums) / model.n_clusters}")
+    print(f"{type} distance measure")
+    print(f"total sum: {sum(sums)}\n")
+
+
+def mini_batch_test(path):
+    with open(path, 'rb') as file:
+        model: Kmeans = pkl.load(file)
+        print(len(model.data))
+
+        test_group = []
+
+        for cluster in model.clusters:
+            group = random.sample(cluster,10)
+            tmp = []
+            for entry in group:
+                cur = copy.deepcopy(entry)
+                size = math.ceil(len(entry) * 0.025)
+                indexes = random.sample(range(0,len(entry)),size)
+
+                for index in indexes:
+                    if entry[index] is not None:
+                        target = math.ceil(entry[index] * 0.98)
+                        if entry[index] == target:
+                            cur[index] = entry[index] + 1
+                        else:
+                            cur[index] = target
+
+                tmp.append(cur)
+
+            test_group.append(tmp)
+
+
+        correct = 0
+        wrong = 0
+        for i,group in enumerate(test_group):
+            for entry in group:
+                actual = model.find_closest_cluster(entry,validation=True)
+
+                if i == actual:
+                    correct += 1
+                else:
+                    wrong += 1
+
+        print(100 * correct / (correct + wrong))
+        return 100 * correct / (correct + wrong)
+
+
