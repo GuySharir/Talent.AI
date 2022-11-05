@@ -335,11 +335,11 @@ if __name__ == '__main__':
     # hamming
     # loop_candidates_convert_to_freq_vec(df=df_,representation_option=DistMethod.hamming_distance, representation_option_for_set=DistMethod.hamming_distance, representation_option_for_nested=DistMethod.hamming_distance)
     # freq
-    loop_candidates_convert_to_freq_vec(df=df_, representation_option=DistMethod.fix_length_freq, representation_option_for_set=DistMethod.fix_length_freq, representation_option_for_nested=DistMethod.fix_length_freq)
+    # loop_candidates_convert_to_freq_vec(df=df_, representation_option=DistMethod.fix_length_freq, representation_option_for_set=DistMethod.fix_length_freq, representation_option_for_nested=DistMethod.fix_length_freq)
     # one hot intersection
     # loop_candidates_convert_to_freq_vec(df=df_,representation_option=DistMethod.fix_length_freq, representation_option_for_set=DistMethod.intersection, representation_option_for_nested=DistMethod.fix_length_freq)
     # one hot inner_product
-    # loop_candidates_convert_to_freq_vec(df=df_,representation_option=DistMethod.fix_length_freq, representation_option_for_set=DistMethod.inner_product, representation_option_for_nested=DistMethod.fix_length_freq)
+    loop_candidates_convert_to_freq_vec(df=df_,representation_option=DistMethod.fix_length_freq, representation_option_for_set=DistMethod.inner_product, representation_option_for_nested=DistMethod.fix_length_freq)
 
     # ---------------------------------------------------------------------------------------
 
@@ -843,7 +843,7 @@ if __name__ == '__main__':
 
     # freq_rep(instance=instance_)
     # hamming_rep(instance=instance_)
-    one_hot_rep(instance=instance_)
+    # one_hot_rep(instance=instance_)
 
     a = {
         "full_name": "sivan",
