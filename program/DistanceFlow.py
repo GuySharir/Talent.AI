@@ -1,4 +1,6 @@
 import json
+import math
+
 from program.ReadData import read_freq_per_value_data, read_domain_per_attr_data, DATA_TYPE_PER_INDEX, \
     ATTRIBUTE_PER_INDEX, DATA_TYPE_PER_INDEX_EXPERIENCE, DATA_TYPE_PER_INDEX_EDUCATION,\
     EXPERIENCE_ATTRIBUTE_PER_INDEX, EDUCATION_ATTRIBUTE_PER_INDEX, HAMMING_DEFAULT, \
@@ -110,12 +112,18 @@ class DistanceFlowFreq:
                 if self.one_hot_inx_flag:
                     self.write_inx_of_one_hot_vector(domain_size=domain_size)
                 inner_product_sum = 0
+                vec1_p = 0
+                vec2_q = 0
                 for _ in range(domain_size + ONE_HOT_SPARE):
                 # for _ in range(domain_size):
                     inner_product_sum += self.vec1[self.inx] * self.vec2[self.inx]
+                    vec1_p += pow(self.vec1[self.inx], 2)
+                    vec2_q += pow(self.vec2[self.inx], 2)
                     self.inx += 1
-
-                self.cat_distance_result.append(1 - inner_product_sum)
+                inner_product_res = vec1_p + vec2_q - (2 * inner_product_sum)
+                # math.sqrt(inner_product_res)
+                self.cat_distance_result.append(math.sqrt(inner_product_res))
+                # self.cat_distance_result.append(1 - inner_product_sum)
         self.inx = self.inx - 1
 
     def nested_distance(self, attr_name: str, frequency: dict, domain_size: dict):
