@@ -106,11 +106,6 @@ class DomainAndFrequency:
         elif self.val_type == dict:
             self.nested_values()
 
-        # logger(f'val frequency {self.value_frequency}')
-        # logger(f'attribute values {self.attr_values}')
-        # logger(f'attribute values dict {self.attr_values_dict}')
-        # logger(f'domain size {self.domain_size}')
-
         return self.value_frequency, self.domain_size
 
 
@@ -120,7 +115,6 @@ if __name__ == '__main__':
                                     join(os.path.dirname(__file__), '..', 'dataTool\\clean_data')).replace('/', '\\')
         logger(f'data path', data_path)
         adobe = os.path.join(data_path, 'AdobeEmployees.json')
-        # adobe = os.path.join(data_path, 'Demo.json')
         df = pd.read_json(adobe)
         return df
 
@@ -128,5 +122,4 @@ if __name__ == '__main__':
     data = read_employee_data()
     freq, size = DomainAndFrequency('experience', dict, data).calc_domain_and_frequency()
     logger(freq, size)
-    # DomainAndFrequency('skills', list).calc_domain_and_frequency()
-    # DomainAndFrequency('gender', str).calc_domain_and_frequency()
+

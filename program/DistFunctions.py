@@ -2,7 +2,6 @@ import math
 from dataclasses import dataclass
 from program.ReadData import read_freq_per_value_data, read_domain_per_attr_data, DATA_TYPE_PER_INDEX, \
     ATTRIBUTE_PER_INDEX
-from dataTool.runtimeObjectsInfo.ListLengthData import LIST_LENGTH_PER_ATTR, NESTED_LENGTH_PER_ATTR
 
 
 @dataclass
@@ -14,6 +13,10 @@ class DistanceData:
     frequency: dict
     domain_size: int
     attribute_inx: int
+    t1: int
+    t2: int
+    beta: float
+    gama: float
 
 
 class DistanceFunctions:
@@ -21,12 +24,12 @@ class DistanceFunctions:
         self.data = data
 
     def q2(self) -> float:
-        if self.data.domain_size <= 3:
+        if self.data.domain_size <= self.data.t1:
             return 1
-        elif 3 < self.data.domain_size <= 10:
-            return 1 - (0.05 * (self.data.domain_size - 3))
-        elif self.data.domain_size > 10:
-            return 0.65 - (0.01 * (self.data.domain_size - 10))
+        elif self.data.t1 < self.data.domain_size <= self.data.t2:
+            return 1 - (self.data.beta * (self.data.domain_size - self.data.t1))
+        elif self.data.domain_size > self.data.t2:
+            return 1 - (self.data.beta * (self.data.t2 - self.data.t1)) - (self.data.gama * (self.data.domain_size - self.data.t2))
 
     def q3(self) -> float:
         min_freq = min(self.data.frequency.items(), key=lambda x: x[1])[1]
@@ -57,10 +60,6 @@ class DistanceFunctions:
 
 
 def calc_num_distance_q13(val1, val2) -> float:
-    # change missing value according to michal article
-    # if not val1 or not val2:
-    #     return 0
-    # else:
     return (val1 - val2) ** 2
 
 
@@ -83,7 +82,7 @@ def q14(categorical_sum, numerical_sum) -> float:
     return math.sqrt(categorical_sum + numerical_sum)
 
 
-def prepare_data_for_dist_calc_between_freq_vectors(vec1: list, vec2: list):
+def prepare_data_for_dist_calc_between_freq_vectors(vec1: list, vec2: list, t1: int = 3, t2: int = 10, beta: float = 0.05, gama: float = 0.01):
     cat_distance_result = []
     num_distance_result = []
 
@@ -98,7 +97,7 @@ def prepare_data_for_dist_calc_between_freq_vectors(vec1: list, vec2: list):
         if DATA_TYPE_PER_INDEX[inx] == str:
             data = DistanceData(instance1=vec1, instance2=vec2, val1_frequency=val,
                                 val2_frequency=vec2[inx], frequency=attr_freq,
-                                domain_size=attr_domain, attribute_inx=inx)
+                                domain_size=attr_domain, attribute_inx=inx, t1=t1, t2=t2, beta=beta, gama=gama)
 
             cat_distance_result.append(categorical_dist_between_freq_vectors(attr_type=DATA_TYPE_PER_INDEX[inx],
                                                                              data=data))
@@ -107,10 +106,7 @@ def prepare_data_for_dist_calc_between_freq_vectors(vec1: list, vec2: list):
             num_distance_result.append(numerical_dist_between_freq_vectors(attr_type=DATA_TYPE_PER_INDEX[inx],
                                                                            num_val1=val, num_val2=vec2[inx]))
 
-    # print(f'categorical result-\n {cat_distance_result}')
-    # print(f'numerical result-\n {num_distance_result}')
     distance_result = q14(categorical_sum=sum(cat_distance_result), numerical_sum=sum(num_distance_result))
-    # print(f'distance result-\n {distance_result}')
     return distance_result
 
 

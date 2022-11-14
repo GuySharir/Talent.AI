@@ -14,7 +14,6 @@ def logger(*args):
 class DomainFreqCalc:
     def __init__(self, df: pd.DataFrame):
         self.attr_types = read_attr_types_data()
-        # self.df = read_local_json_employees()
 
         self.df = df
         self.domain_per_attribute = {}
@@ -38,8 +37,6 @@ class DomainFreqCalc:
 
             self.domain_per_attribute.update({attr: domain_size})
             self.freq_per_attribute.update({attr: value_frequency})
-        logger(f'domain per attribute {self.domain_per_attribute}')
-        logger(f'freq per attribute {self.freq_per_attribute}')
 
         domain_size_path = self.set_path('dataTool/domain_size')
         domain_path = os.path.abspath(os.path.join(

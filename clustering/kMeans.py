@@ -58,6 +58,12 @@ class Kmeans:
         self.percents = None
         self.one_hot_vec = None
 
+    def set_hyper_params(self, t1: int = 3, t2: int = 10, beta: float = 0.05, gama: float = 0.01):
+        self.t1 = t1
+        self.t2 = t2
+        self.beta = beta
+        self.gama = gama
+
     def load_data(self) -> pd.DataFrame:
         """
         Load the data from the json files in order to train the model.
@@ -86,7 +92,11 @@ class Kmeans:
                                                 representation_option_for_set=DistMethod.inner_product,
                                                 representation_option_for_nested=DistMethod.fix_length_freq)
 
-        raw_data = np.load('../dataTool/df_converted.npy', allow_pickle=True)
+        raw_data = np.load('./dataTool/df_converted.npy', allow_pickle=True)
+        raw_data = np.load('../dataTool/df_genetic_alg.npy', allow_pickle=True)
+
+        # data for genetic algorithm
+        # raw_data = np.load('../dataTool/df_genetic_alg.npy', allow_pickle=True)
 
         data = []
         order = []
@@ -268,6 +278,8 @@ class Kmeans:
                 if self.one_hot_vec is None:
                     with open(set_path('dataTool/one_hot_index.json')) as f:
                         self.one_hot_vec = pd.read_json(f)
+            elif self.representation == DistMethod.fix_length_freq:
+                dist = self.distance_calc(entry, centroid, t1=self.t1, t2=self.t2, beta=self.beta, gama=self.gama)
             else:
                 dist = self.distance_calc(entry, centroid)
             distances.append(dist)

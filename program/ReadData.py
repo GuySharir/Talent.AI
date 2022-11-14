@@ -57,23 +57,23 @@ def set_path(name) -> str:
 
 def read_local_json_employees() -> pd.DataFrame:
     path = set_path('dataTool/clean_data')
-    all_files = [os.path.join(path, 'AppleEmployees.json'),
-                 os.path.join(path, 'AmazonEmployees.json'),
-                 os.path.join(path, 'AdobeEmployees.json'),
-                 os.path.join(path, 'FacebookEmployees.json'),
-                 os.path.join(path, 'TwitterEmployees.json'),
-                 os.path.join(path, 'TeslaEmployees.json'),
-                 os.path.join(path, 'GoogleEmployees.json'),
-                 os.path.join(path, 'IbmEmployees.json'),
-                 os.path.join(path, 'MicrosoftEmployees.json'),
-                 os.path.join(path, 'NvidiaEmployees.json'),
-                 os.path.join(path, 'OracleEmployees.json'),
-                 os.path.join(path, 'SalesforceEmployees.json'),
-                 os.path.join(path, 'UberEmployees.json')
-                 ]
+    # all_files = [os.path.join(path, 'AppleEmployees.json'),
+    #              os.path.join(path, 'AmazonEmployees.json'),
+    #              os.path.join(path, 'AdobeEmployees.json'),
+    #              os.path.join(path, 'FacebookEmployees.json'),
+    #              os.path.join(path, 'TwitterEmployees.json'),
+    #              os.path.join(path, 'TeslaEmployees.json'),
+    #              os.path.join(path, 'GoogleEmployees.json'),
+    #              os.path.join(path, 'IbmEmployees.json'),
+    #              os.path.join(path, 'MicrosoftEmployees.json'),
+    #              os.path.join(path, 'NvidiaEmployees.json'),
+    #              os.path.join(path, 'OracleEmployees.json'),
+    #              os.path.join(path, 'SalesforceEmployees.json'),
+    #              os.path.join(path, 'UberEmployees.json')
+    #              ]
 
-    # all_files = [os.path.join(path, 'TwitterEmployees.json'),
-    #              os.path.join(path, 'TeslaEmployees.json')]
+    all_files = [os.path.join(path, 'TwitterEmployees.json'),
+                 os.path.join(path, 'TeslaEmployees.json')]
     li = []
     for filename in all_files:
         with open(filename) as f:
@@ -82,7 +82,6 @@ def read_local_json_employees() -> pd.DataFrame:
 
     df = pd.concat(li, axis=0, ignore_index=True)
     # df = df.sample(n=30)
-    # logger(f'data from local json- \n{df}')
 
     return df
 
@@ -93,7 +92,6 @@ def read_freq_per_value_data() -> dict:
     with open(frequencies_path) as fp:
         freq = json.load(fp)
 
-    # logger(f'frequencies- \n{freq}')
     return freq
 
 
@@ -103,7 +101,6 @@ def read_domain_per_attr_data() -> dict:
     with open(domain_path) as fp:
         domain = json.load(fp)
 
-    # logger(f'domain- \n{domain}')
     return domain
 
 
