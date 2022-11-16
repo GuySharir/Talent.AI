@@ -122,7 +122,8 @@ class DistanceFlowFreq:
                     self.inx += 1
                 inner_product_res = vec1_p + vec2_q - (2 * inner_product_sum)
                 # math.sqrt(inner_product_res)
-                self.cat_distance_result.append(math.sqrt(inner_product_res))
+                # self.cat_distance_result.append(math.sqrt(inner_product_res))
+                self.cat_distance_result.append(inner_product_res)
                 # self.cat_distance_result.append(1 - inner_product_sum)
         self.inx = self.inx - 1
 
